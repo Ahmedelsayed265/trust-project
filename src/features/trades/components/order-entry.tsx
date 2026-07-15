@@ -33,7 +33,7 @@ export function OrderEntry({ onReview }: { onReview?: () => void }) {
   const qty = estimateQuantity(amount);
 
   return (
-    <Card className="shadow-sm">
+    <Card className="">
       <CardHeader className="border-b [.border-b]:pb-4">
         <div className="flex w-full items-start justify-between gap-3">
           <div className="flex items-center gap-3">
@@ -67,7 +67,7 @@ export function OrderEntry({ onReview }: { onReview?: () => void }) {
                 className={cn(
                   "rounded-lg px-3 py-2 text-sm font-semibold capitalize transition-colors",
                   orderType === type
-                    ? "bg-card text-foreground shadow-sm"
+                    ? "bg-card text-foreground"
                     : "text-muted-foreground hover:text-foreground"
                 )}
               >

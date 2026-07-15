@@ -144,7 +144,7 @@ export function ProfileSettingsGrid() {
           ]}
         />
 
-        <Card className="border-destructive/30 bg-destructive/5 shadow-sm dark:bg-destructive/10">
+        <Card className="border-destructive/30 bg-destructive/5 dark:bg-destructive/10">
           <CardHeader>
             <CardTitle className="text-destructive">Danger Zone</CardTitle>
           </CardHeader>
@@ -172,7 +172,7 @@ function SettingsCard({
   items: React.ComponentProps<typeof SettingsLink>["item"][];
 }) {
   return (
-    <Card className="shadow-sm">
+    <Card className="">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
       </CardHeader>

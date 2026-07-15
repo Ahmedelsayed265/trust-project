@@ -10,7 +10,7 @@ const metrics = [
 
 export function AccountSummary() {
   return (
-    <Card className="shadow-sm">
+    <Card className="">
       <CardContent className="space-y-4 pt-0">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div>

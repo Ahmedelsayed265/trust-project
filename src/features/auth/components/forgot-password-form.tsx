@@ -77,7 +77,7 @@ export function ForgotPasswordForm() {
         />
         <Button
           type="submit"
-          className="mt-2 h-11 w-full rounded-xl"
+          className="mt-2 h-12 w-full rounded-md py-3"
           disabled={form.formState.isSubmitting}
         >
           {form.formState.isSubmitting ? "Sending..." : "Send reset link"}

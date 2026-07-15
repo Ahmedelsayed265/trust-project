@@ -52,6 +52,7 @@ export function AppHeader() {
           size="icon"
           className="hidden shrink-0 text-muted-foreground sm:inline-flex"
           aria-label="Settings"
+          render={<Link href={routes.settings} />}
         >
           <Settings className="size-5" />
         </Button>
@@ -99,7 +100,9 @@ export function AppHeader() {
               <DropdownMenuItem render={<Link href={routes.profile} />}>
                 Profile
               </DropdownMenuItem>
-              <DropdownMenuItem>Settings</DropdownMenuItem>
+              <DropdownMenuItem render={<Link href={routes.settings} />}>
+                Settings
+              </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>

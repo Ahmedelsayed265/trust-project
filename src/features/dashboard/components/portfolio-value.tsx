@@ -13,7 +13,7 @@ export function PortfolioValue() {
   const [timeframe, setTimeframe] = useState<(typeof timeframes)[number]>("1D");
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+    <div className="rounded-lg border border-border bg-card p-5">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
         <div className="min-w-0 flex-1">
           <div className="mb-3 flex items-center gap-2 text-sm text-muted-foreground">

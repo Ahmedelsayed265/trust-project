@@ -2,7 +2,7 @@ import { ArrowUpRight } from "lucide-react";
 
 export function AISignal() {
   return (
-    <div className="flex h-full flex-col rounded-2xl border border-border bg-card p-5 shadow-sm">
+    <div className="flex h-full flex-col rounded-lg border border-border bg-card p-5">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-base font-semibold text-foreground">AI Signal</h2>
         <span className="text-xs text-muted-foreground">Updated 30s ago</span>

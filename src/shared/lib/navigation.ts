@@ -28,21 +28,21 @@ export const primaryNav: NavItem[] = [
   { label: "Markets", icon: LineChart, href: routes.markets },
   { label: "Trade", icon: ArrowLeftRight, href: routes.trades },
   { label: "Orders", icon: ClipboardList, href: routes.orders },
-  { label: "Portfolio", icon: Briefcase, href: "#" },
-  { label: "Wallet", icon: Wallet, href: "#" },
-  { label: "AI Signals", icon: Sparkles, href: "#" },
+  { label: "Portfolio", icon: Briefcase, href: routes.portfolio },
+  { label: "Wallet", icon: Wallet, href: routes.wallet },
+  { label: "AI Signals", icon: Sparkles, href: routes.aiSignals },
 ];
 
 export const secondaryNav: NavItem[] = [
-  { label: "Watchlist", icon: Star, href: "#" },
-  { label: "News", icon: Newspaper, href: "#" },
-  { label: "Calendar", icon: CalendarDays, href: "#" },
+  { label: "Watchlist", icon: Star, href: routes.watchlist },
+  { label: "News", icon: Newspaper, href: routes.news },
+  { label: "Calendar", icon: CalendarDays, href: routes.calendar },
 ];
 
 export const systemNav: NavItem[] = [
   { label: "Profile", icon: UserRound, href: routes.profile },
-  { label: "Settings", icon: Settings, href: "#" },
-  { label: "Help Center", icon: HelpCircle, href: "#" },
+  { label: "Settings", icon: Settings, href: routes.settings },
+  { label: "Help Center", icon: HelpCircle, href: routes.help },
   { label: "Log Out", icon: LogOut, href: routes.login },
 ];
 

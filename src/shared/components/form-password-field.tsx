@@ -56,7 +56,7 @@ export function FormPasswordField<T extends FieldValues>({
                 placeholder={placeholder}
                 autoComplete={autoComplete}
                 aria-invalid={fieldState.invalid}
-                className="h-11 rounded-xl bg-card pr-10 text-sm"
+                className="h-12 rounded-md bg-card py-3 pr-10 text-sm"
               />
               <Button
                 type="button"
@@ -89,7 +89,7 @@ export function PasswordInput({
     <div className="relative">
       <Input
         type={visible ? "text" : "password"}
-        className={cn("h-11 rounded-xl bg-card pr-10 text-sm", className)}
+        className={cn("h-12 rounded-md bg-card py-3 pr-10 text-sm", className)}
         {...props}
       />
       <Button

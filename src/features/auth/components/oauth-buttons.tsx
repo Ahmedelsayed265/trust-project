@@ -3,11 +3,11 @@ import { Button } from "@/components/ui/button";
 export function OAuthButtons() {
   return (
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-      <Button type="button" variant="outline" className="h-11 rounded-xl">
+      <Button type="button" variant="outline" className="h-12 rounded-md py-3">
         <GoogleIcon />
         Google
       </Button>
-      <Button type="button" variant="outline" className="h-11 rounded-xl">
+      <Button type="button" variant="outline" className="h-12 rounded-md py-3">
         <AppleIcon />
         Apple
       </Button>

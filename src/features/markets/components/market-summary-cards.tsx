@@ -4,7 +4,7 @@ import { Sparkline } from "@/shared/components/sparkline";
 export function MarketSummaryCards() {
   return (
     <div className="grid w-full min-w-0 gap-4 xl:grid-cols-[1fr_1fr_1fr_280px]">
-      <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+      <div className="rounded-lg border border-border bg-card p-4">
         <div className="mb-3 flex items-start justify-between gap-3">
           <div>
             <p className="text-sm font-medium text-muted-foreground">
@@ -44,7 +44,7 @@ export function MarketSummaryCards() {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+      <div className="rounded-lg border border-border bg-card p-4">
         <p className="text-sm font-medium text-muted-foreground">Top Gainer</p>
         <div className="mt-3 flex items-start justify-between gap-3">
           <div className="flex items-center gap-2.5">
@@ -68,7 +68,7 @@ export function MarketSummaryCards() {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+      <div className="rounded-lg border border-border bg-card p-4">
         <p className="text-sm font-medium text-muted-foreground">Top Loser</p>
         <div className="mt-3 flex items-start justify-between gap-3">
           <div className="flex items-center gap-2.5">
@@ -93,7 +93,7 @@ export function MarketSummaryCards() {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-primary/20 bg-gradient-to-br from-blue-50 to-sky-50 p-4 shadow-sm dark:from-blue-950/40 dark:to-slate-900">
+      <div className="rounded-lg border border-primary/20 bg-gradient-to-br from-blue-50 to-sky-50 p-4 dark:from-blue-950/40 dark:to-slate-900">
         <div className="mb-2 flex items-center gap-2">
           <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
             <Bot className="size-5" />

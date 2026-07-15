@@ -55,7 +55,7 @@ export function ThemeToggle({
         className={cn(
           "flex flex-1 items-center justify-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors",
           !isDark
-            ? "bg-card text-foreground shadow-sm"
+            ? "bg-card text-foreground"
             : "text-muted-foreground hover:text-foreground"
         )}
       >
@@ -68,7 +68,7 @@ export function ThemeToggle({
         className={cn(
           "flex flex-1 items-center justify-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors",
           isDark
-            ? "bg-card text-foreground shadow-sm"
+            ? "bg-card text-foreground"
             : "text-muted-foreground hover:text-foreground"
         )}
       >

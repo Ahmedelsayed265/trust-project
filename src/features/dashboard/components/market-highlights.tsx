@@ -35,7 +35,7 @@ const markets = [
 
 export function MarketHighlights() {
   return (
-    <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+    <div className="rounded-lg border border-border bg-card p-5">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-base font-semibold text-foreground">
           Market Highlights

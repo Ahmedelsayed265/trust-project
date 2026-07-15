@@ -1,9 +1,11 @@
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { BadgeCheck, Camera, Check } from "lucide-react";
 import { currentUser } from "@/shared/lib/user";
+import { routes } from "@/shared/lib/routes";
 
 const benefits = [
   "Advanced AI Signals",
@@ -13,7 +15,7 @@ const benefits = [
 
 export function ProfileHero() {
   return (
-    <Card className="shadow-sm">
+    <Card className="">
       <CardContent>
         <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
@@ -42,7 +44,7 @@ export function ProfileHero() {
               </Avatar>
               <button
                 type="button"
-                className="absolute right-0 bottom-0 flex size-8 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm ring-2 ring-card"
+                className="absolute right-0 bottom-0 flex size-8 items-center justify-center rounded-full bg-primary text-primary-foreground ring-2 ring-card"
                 aria-label="Change photo"
               >
                 <Camera className="size-3.5" />
@@ -71,7 +73,7 @@ export function ProfileHero() {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-border bg-muted/40 p-4 lg:min-w-[280px]">
+          <div className="rounded-lg border border-border bg-muted/40 p-4 lg:min-w-[280px]">
             <p className="mb-3 text-sm font-semibold text-foreground">
               Premium Benefits
             </p>
@@ -88,7 +90,12 @@ export function ProfileHero() {
                 </li>
               ))}
             </ul>
-            <Button className="h-10 w-full rounded-xl">Manage Plan</Button>
+            <Button
+              className="h-10 w-full rounded-xl"
+              render={<Link href={routes.plans} />}
+            >
+              Manage Plan
+            </Button>
           </div>
         </div>
       </CardContent>

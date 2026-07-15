@@ -57,7 +57,7 @@ export function FormTextField<T extends FieldValues>({
               placeholder={placeholder}
               autoComplete={autoComplete}
               aria-invalid={fieldState.invalid}
-              className={cn("h-11 rounded-xl bg-card text-sm", inputClassName)}
+              className={cn("h-12 rounded-md bg-card py-3 text-sm", inputClassName)}
             />
             {description && !fieldState.error && (
               <FieldDescription>{description}</FieldDescription>

@@ -229,7 +229,7 @@ export function MarketsTable({ category = "All" }: { category?: string }) {
         </div>
       </div>
 
-      <div className="w-full min-w-0 overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+      <div className="w-full min-w-0 overflow-hidden rounded-lg border border-border bg-card">
         <div className="scrollbar-thin w-full max-w-full overflow-x-auto overscroll-x-contain">
           <table className="w-full min-w-[720px] text-left md:min-w-[860px]">
             <thead>

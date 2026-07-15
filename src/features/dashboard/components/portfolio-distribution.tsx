@@ -45,7 +45,7 @@ function DonutChart() {
 
 export function PortfolioDistribution() {
   return (
-    <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+    <div className="rounded-lg border border-border bg-card p-5">
       <h2 className="mb-4 text-base font-semibold text-foreground">
         Portfolio Distribution
       </h2>

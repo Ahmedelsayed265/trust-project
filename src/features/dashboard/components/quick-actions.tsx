@@ -34,7 +34,7 @@ export function QuickActions() {
         <button
           key={label}
           type="button"
-          className="flex flex-col items-center justify-center gap-2.5 rounded-2xl border border-border bg-card p-4 shadow-sm transition-colors hover:border-primary/30 hover:bg-accent/40"
+          className="flex flex-col items-center justify-center gap-2.5 rounded-lg border border-border bg-card p-4 transition-colors hover:border-primary/30 hover:bg-accent/40"
         >
           <div
             className={`flex size-11 items-center justify-center rounded-xl ${color}`}

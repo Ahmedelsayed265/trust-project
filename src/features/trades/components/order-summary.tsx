@@ -49,7 +49,7 @@ export function OrderSummary() {
   ];
 
   return (
-    <Card className="shadow-sm">
+    <Card className="">
       <CardHeader>
         <CardTitle>Order Summary</CardTitle>
       </CardHeader>

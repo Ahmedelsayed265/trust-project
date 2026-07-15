@@ -62,7 +62,7 @@ export function TradesView() {
               className={cn(
                 "rounded-lg px-3.5 py-1.5 text-sm font-semibold capitalize transition-colors",
                 tab === item
-                  ? "bg-card text-foreground shadow-sm"
+                  ? "bg-card text-foreground"
                   : "text-muted-foreground hover:text-foreground"
               )}
             >

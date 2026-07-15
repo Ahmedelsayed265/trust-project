@@ -14,7 +14,7 @@ import type { Fill } from "@/features/orders/data/orders";
 
 export function RecentFills({ fills }: { fills: Fill[] }) {
   return (
-    <Card className="shadow-sm">
+    <Card className="">
       <CardHeader>
         <CardTitle>Recent Fills</CardTitle>
         <CardAction>

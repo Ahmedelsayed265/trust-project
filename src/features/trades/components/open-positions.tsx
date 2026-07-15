@@ -12,7 +12,7 @@ import { routes } from "@/shared/lib/routes";
 
 export function OpenPositions() {
   return (
-    <Card className="shadow-sm">
+    <Card className="">
       <CardHeader>
         <CardTitle>Open Positions ({openPositions.length})</CardTitle>
         <CardAction>

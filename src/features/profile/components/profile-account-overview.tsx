@@ -5,7 +5,7 @@ import { currentUser } from "@/shared/lib/user";
 
 export function ProfileAccountOverview() {
   return (
-    <Card className="shadow-sm">
+    <Card className="">
       <CardContent>
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
           <div className="flex items-start gap-3">

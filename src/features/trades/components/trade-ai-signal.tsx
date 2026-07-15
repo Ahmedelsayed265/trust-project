@@ -12,7 +12,7 @@ import { routes } from "@/shared/lib/routes";
 
 export function TradeAiSignal() {
   return (
-    <Card className="shadow-sm">
+    <Card className="">
       <CardHeader>
         <CardTitle>AI Signal</CardTitle>
         <CardAction>

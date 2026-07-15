@@ -53,7 +53,7 @@ export function OrdersSummary({
       {stats.map((stat, index) => {
         const Icon = stat.icon;
         return (
-          <Card key={stat.label} className="shadow-sm" size="sm">
+          <Card key={stat.label} className="" size="sm">
             <CardContent className="flex items-center gap-3">
               <div
                 className={cn(
