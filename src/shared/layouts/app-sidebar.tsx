@@ -91,7 +91,7 @@ function SidebarContent({
         className={cn(
           "flex items-center border-b border-sidebar-border",
           collapsed
-            ? "justify-center px-2 py-4"
+            ? "justify-center px-2 py-4 h-[64px]"
             : "justify-between gap-2 px-3 py-4"
         )}
       >

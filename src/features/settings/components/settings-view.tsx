@@ -75,7 +75,7 @@ export function SettingsView() {
                       <select
                         id="language"
                         {...field}
-                        className="h-11 w-full rounded-xl border border-input bg-card px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+                        className="h-12 w-full rounded-md border border-input bg-card px-3 py-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
                       >
                         <option value="en">English</option>
                         <option value="ar">Arabic</option>
@@ -95,7 +95,7 @@ export function SettingsView() {
                       <select
                         id="currency"
                         {...field}
-                        className="h-11 w-full rounded-xl border border-input bg-card px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+                        className="h-12 w-full rounded-md border border-input bg-card px-3 py-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
                       >
                         <option value="USD">USD</option>
                         <option value="EUR">EUR</option>
@@ -126,7 +126,7 @@ export function SettingsView() {
                 control={form.control}
                 name={name}
                 render={({ field }) => (
-                  <label className="flex items-center gap-3 rounded-xl border border-border px-3 py-3 text-sm">
+                  <label className="flex items-center gap-3 rounded-[12px] border border-border px-3 py-3 text-sm">
                     <Checkbox
                       checked={field.value}
                       onCheckedChange={(checked) =>
@@ -142,7 +142,7 @@ export function SettingsView() {
         </Card>
 
         <div className="flex items-center gap-3">
-          <Button type="submit" className="rounded-xl" disabled={form.formState.isSubmitting}>
+          <Button type="submit" className="rounded-md" disabled={form.formState.isSubmitting}>
             Save changes
           </Button>
           {saved && (

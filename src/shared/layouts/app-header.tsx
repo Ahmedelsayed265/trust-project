@@ -65,7 +65,7 @@ export function AppHeader() {
           aria-label="Notifications"
         >
           <Bell className="size-5" />
-          <span className="absolute top-1.5 right-1.5 flex size-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold leading-none text-white">
+          <span className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold leading-none text-white">
             3
           </span>
         </Button>
