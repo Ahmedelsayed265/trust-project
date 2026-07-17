@@ -67,7 +67,7 @@ export function PortfolioView() {
             <Button variant="outline" className="rounded-xl" render={<Link href={routes.trades} />}>
               Trade
             </Button>
-            <Button className="rounded-xl" render={<Link href={routes.wallet} />}>
+            <Button className="rounded-xl" nativeButton={false} render={<Link href={`${routes.wallet}?action=deposit`} />}>
               Deposit
             </Button>
           </>

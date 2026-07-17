@@ -2,6 +2,7 @@ import Link from "next/link";
 import {
   BookOpen,
   CircleHelp,
+  HelpCircle,
   MessageCircle,
   Shield,
   Sparkles,
@@ -16,21 +17,31 @@ const topics = [
     title: "Getting started",
     description: "Fund your wallet, place your first trade, and follow signals.",
     icon: BookOpen,
+    href: routes.wallet,
   },
   {
     title: "Security & verification",
     description: "2FA, KYC status, and account recovery best practices.",
     icon: Shield,
+    href: routes.security,
   },
   {
     title: "AI Signals explained",
     description: "How confidence scores and strong/moderate labels work.",
     icon: Sparkles,
+    href: routes.aiSignals,
   },
   {
     title: "Billing & plans",
     description: "Upgrade, downgrade, invoices, and renewal dates.",
     icon: CircleHelp,
+    href: routes.plans,
+  },
+  {
+    title: "FAQs",
+    description: "Quick answers to common wallet, trading, and account questions.",
+    icon: HelpCircle,
+    href: routes.faq,
   },
 ];
 
@@ -41,7 +52,11 @@ export function HelpView() {
         title="Help Center"
         description="Guides and support for trading on TrustAI."
         actions={
-          <Button className="rounded-xl">
+          <Button
+            className="rounded-xl"
+            nativeButton={false}
+            render={<Link href={routes.contact} />}
+          >
             <MessageCircle />
             Contact Support
           </Button>
@@ -52,19 +67,21 @@ export function HelpView() {
         {topics.map((topic) => {
           const Icon = topic.icon;
           return (
-            <Card key={topic.title} className="">
-              <CardHeader className="flex-row items-start gap-3 space-y-0">
-                <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                  <Icon className="size-5" />
-                </div>
-                <div>
-                  <CardTitle className="text-base">{topic.title}</CardTitle>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    {topic.description}
-                  </p>
-                </div>
-              </CardHeader>
-            </Card>
+            <Link key={topic.title} href={topic.href} className="group block">
+              <Card className="h-full transition-colors group-hover:border-primary/30 group-hover:bg-muted/20">
+                <CardHeader className="flex-row items-start gap-3 space-y-0">
+                  <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <Icon className="size-5" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-base">{topic.title}</CardTitle>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      {topic.description}
+                    </p>
+                  </div>
+                </CardHeader>
+              </Card>
+            </Link>
           );
         })}
       </div>
@@ -79,7 +96,11 @@ export function HelpView() {
               Review tiers, billing dates, and upgrade options anytime.
             </p>
           </div>
-          <Button className="rounded-xl" render={<Link href={routes.plans} />}>
+          <Button
+            className="rounded-xl"
+            nativeButton={false}
+            render={<Link href={routes.plans} />}
+          >
             Manage Plans
           </Button>
         </CardContent>

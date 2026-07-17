@@ -1,11 +1,12 @@
 import {
   Bell,
-  BookOpen,
   CircleHelp,
+  HelpCircle,
   History,
   Languages,
   Link2,
   LogOut,
+  MessageCircle,
   Palette,
   Shield,
   SlidersHorizontal,
@@ -36,6 +37,7 @@ export function ProfileSettingsGrid() {
               label: "Personal Information",
               description: "Name, email, phone",
               icon: User,
+              href: routes.settings,
             },
             {
               label: "Verification",
@@ -43,11 +45,13 @@ export function ProfileSettingsGrid() {
               icon: BadgeCheck,
               badge: "Verified",
               badgeTone: "success",
+              href: routes.verification,
             },
             {
               label: "Security",
               description: "Password, 2FA",
               icon: Shield,
+              href: routes.security,
             },
           ]}
         />
@@ -63,6 +67,7 @@ export function ProfileSettingsGrid() {
               label: "Trading Preferences",
               description: "Defaults & risk",
               icon: SlidersHorizontal,
+              href: routes.settings,
             },
             {
               label: "Order & Trade History",
@@ -82,16 +87,19 @@ export function ProfileSettingsGrid() {
               label: "Language",
               description: "English",
               icon: Languages,
+              href: routes.settings,
             },
             {
               label: "Appearance",
               description: "Light Mode",
               icon: Palette,
+              href: routes.settings,
             },
             {
               label: "Notifications",
               description: "Emails & push",
               icon: Bell,
+              href: routes.settings,
             },
           ]}
         />
@@ -102,11 +110,19 @@ export function ProfileSettingsGrid() {
               label: "Help Center",
               description: "Guides & FAQs",
               icon: CircleHelp,
+              href: routes.help,
+            },
+            {
+              label: "FAQs",
+              description: "Common questions",
+              icon: HelpCircle,
+              href: routes.faq,
             },
             {
               label: "Contact Support",
               description: "Get help from us",
-              icon: BookOpen,
+              icon: MessageCircle,
+              href: routes.contact,
             },
             {
               label: "Chat with AI Assistant",
@@ -114,6 +130,7 @@ export function ProfileSettingsGrid() {
               icon: Sparkles,
               badge: "New",
               badgeTone: "primary",
+              href: routes.aiSignals,
             },
           ]}
         />
@@ -134,6 +151,7 @@ export function ProfileSettingsGrid() {
               label: "About TrustAI",
               description: "Version 1.0.0",
               icon: Info,
+              href: routes.about,
             },
             {
               label: "Log Out",

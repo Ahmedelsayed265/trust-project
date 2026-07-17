@@ -1,9 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { Eye, TrendingUp } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Sparkline } from "@/shared/components/sparkline";
+import { routes } from "@/shared/lib/routes";
 
 const timeframes = ["1D", "1W", "1M", "3M", "1Y", "ALL"] as const;
 
@@ -31,18 +33,18 @@ export function PortfolioValue() {
           </div>
 
           <div className="mt-5 flex gap-2.5">
-            <button
-              type="button"
+            <Link
+              href={`${routes.wallet}?action=deposit`}
               className="rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
             >
               Deposit
-            </button>
-            <button
-              type="button"
+            </Link>
+            <Link
+              href={`${routes.wallet}?action=withdraw`}
               className="rounded-xl border border-primary bg-transparent px-5 py-2.5 text-sm font-semibold text-primary transition-colors hover:bg-accent"
             >
               Withdraw
-            </button>
+            </Link>
           </div>
         </div>
 

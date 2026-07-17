@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Bell, ChevronDown, Menu, Search, Settings } from "lucide-react";
+import { ChevronDown, Menu, Search, Settings } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -14,6 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { NotificationsDropdown } from "@/features/notifications";
 import { useSidebar } from "@/shared/providers/sidebar-provider";
 import { routes } from "@/shared/lib/routes";
 import { currentUser } from "@/shared/lib/user";
@@ -52,23 +53,13 @@ export function AppHeader() {
           size="icon"
           className="hidden shrink-0 text-muted-foreground sm:inline-flex"
           aria-label="Settings"
+          nativeButton={false}
           render={<Link href={routes.settings} />}
         >
           <Settings className="size-5" />
         </Button>
 
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="relative shrink-0 text-muted-foreground"
-          aria-label="Notifications"
-        >
-          <Bell className="size-5" />
-          <span className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold leading-none text-white">
-            3
-          </span>
-        </Button>
+        <NotificationsDropdown />
 
         <DropdownMenu>
           <DropdownMenuTrigger

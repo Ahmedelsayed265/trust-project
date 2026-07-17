@@ -1,9 +1,18 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowDownLeft, ArrowUpRight, Copy, WalletCards } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/shared/components/page-header";
 import { ChangeIndicator } from "@/shared/components/change-indicator";
+import {
+  WalletTransferSheet,
+  type WalletAction,
+} from "@/features/wallet/components/wallet-transfer-sheet";
+import { routes } from "@/shared/lib/routes";
 
 const balances = [
   { asset: "USDT", name: "Tether", amount: "8,642.21", value: "$8,642.21" },
@@ -36,7 +45,43 @@ const transfers = [
   },
 ];
 
+function parseAction(value: string | null): WalletAction | null {
+  if (value === "deposit" || value === "withdraw") return value;
+  return null;
+}
+
 export function WalletView() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [action, setAction] = useState<WalletAction | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    const next = parseAction(searchParams.get("action"));
+    if (next) setAction(next);
+  }, [searchParams]);
+
+  function openAction(next: WalletAction) {
+    setAction(next);
+    router.replace(`${routes.wallet}?action=${next}`, { scroll: false });
+  }
+
+  function handleOpenChange(open: boolean) {
+    if (open) return;
+    setAction(null);
+    router.replace(routes.wallet, { scroll: false });
+  }
+
+  async function handleCopyAddress() {
+    try {
+      await navigator.clipboard.writeText("0x7f2a9c14b8e3d1a6f0c5e2b9471d8a3f");
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1500);
+    } catch {
+      // ignore clipboard errors in unsupported environments
+    }
+  }
+
   return (
     <div className="flex w-full min-w-0 flex-col gap-4 sm:gap-5">
       <PageHeader
@@ -44,11 +89,20 @@ export function WalletView() {
         description="Manage balances, deposits, and withdrawals."
         actions={
           <>
-            <Button variant="outline" className="rounded-xl">
+            <Button
+              type="button"
+              variant="outline"
+              className="rounded-xl"
+              onClick={() => openAction("withdraw")}
+            >
               <ArrowUpRight />
               Withdraw
             </Button>
-            <Button className="rounded-xl">
+            <Button
+              type="button"
+              className="rounded-xl"
+              onClick={() => openAction("deposit")}
+            >
               <ArrowDownLeft />
               Deposit
             </Button>
@@ -72,10 +126,18 @@ export function WalletView() {
               </div>
             </div>
             <div className="rounded-xl border border-border bg-muted/40 px-3 py-2 text-sm">
-              <p className="text-muted-foreground">Deposit address</p>
+              <p className="text-muted-foreground">
+                {copied ? "Address copied" : "Deposit address"}
+              </p>
               <div className="mt-1 flex items-center gap-2 font-mono text-xs text-foreground">
                 <span className="truncate">0x7f2a…9c14</span>
-                <Button type="button" variant="ghost" size="icon-xs" aria-label="Copy">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-xs"
+                  aria-label="Copy"
+                  onClick={handleCopyAddress}
+                >
                   <Copy />
                 </Button>
               </div>
@@ -156,6 +218,12 @@ export function WalletView() {
           </CardContent>
         </Card>
       </div>
+
+      <WalletTransferSheet
+        action={action}
+        open={action !== null}
+        onOpenChange={handleOpenChange}
+      />
     </div>
   );
 }
