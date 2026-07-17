@@ -32,7 +32,7 @@ export function LoginForm() {
   }
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
       <FormTextField
         control={form.control}
         name="email"
@@ -40,6 +40,7 @@ export function LoginForm() {
         type="email"
         autoComplete="email"
         placeholder="you@example.com"
+        inputClassName="h-12 rounded-xl bg-card px-3"
       />
 
       <FormPasswordField
@@ -48,9 +49,10 @@ export function LoginForm() {
         label="Password"
         autoComplete="current-password"
         placeholder="Enter your password"
+        inputClassName="h-12 rounded-xl bg-card px-3"
       />
 
-      <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <Controller
           control={form.control}
           name="remember"
@@ -74,14 +76,18 @@ export function LoginForm() {
 
       <Button
         type="submit"
-        className="mt-2 h-12 w-full rounded-md py-3"
+        className="h-12 w-full rounded-xl text-sm font-semibold"
         disabled={form.formState.isSubmitting}
       >
         {form.formState.isSubmitting ? "Signing in..." : "Sign in"}
       </Button>
 
-      <FieldSeparator>Or continue with</FieldSeparator>
-      <OAuthButtons />
+      <div className="space-y-4 pt-1">
+        <FieldSeparator className="my-0 h-auto py-1">
+          Or continue with
+        </FieldSeparator>
+        <OAuthButtons />
+      </div>
     </form>
   );
 }

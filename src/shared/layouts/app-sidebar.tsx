@@ -96,34 +96,7 @@ function SidebarContent({
         )}
       >
         <Logo iconOnly={collapsed} />
-        {showCollapseControl && !collapsed && (
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon-sm"
-            onClick={toggleCollapsed}
-            aria-label="Collapse sidebar"
-            className="shrink-0 text-muted-foreground"
-          >
-            <PanelLeftClose />
-          </Button>
-        )}
       </div>
-
-      {showCollapseControl && collapsed && (
-        <div className="flex justify-center border-b border-sidebar-border py-2">
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon-sm"
-            onClick={toggleCollapsed}
-            aria-label="Expand sidebar"
-            className="text-muted-foreground"
-          >
-            <PanelLeftOpen />
-          </Button>
-        </div>
-      )}
 
       <nav className="scrollbar-none flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto px-2.5 py-3">
         <div className="space-y-0.5">

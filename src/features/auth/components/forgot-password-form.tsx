@@ -66,7 +66,7 @@ export function ForgotPasswordForm() {
         </p>
       </div>
 
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
         <FormTextField
           control={form.control}
           name="email"
@@ -74,10 +74,11 @@ export function ForgotPasswordForm() {
           type="email"
           autoComplete="email"
           placeholder="you@example.com"
+          inputClassName="h-12 rounded-xl bg-card px-3"
         />
         <Button
           type="submit"
-          className="mt-2 h-12 w-full rounded-md py-3"
+          className="h-12 w-full rounded-xl text-sm font-semibold"
           disabled={form.formState.isSubmitting}
         >
           {form.formState.isSubmitting ? "Sending..." : "Send reset link"}

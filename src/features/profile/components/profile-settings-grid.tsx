@@ -6,7 +6,6 @@ import {
   Languages,
   Link2,
   LogOut,
-  MessageCircle,
   Palette,
   Shield,
   SlidersHorizontal,
@@ -119,18 +118,12 @@ export function ProfileSettingsGrid() {
               href: routes.faq,
             },
             {
-              label: "Contact Support",
-              description: "Get help from us",
-              icon: MessageCircle,
-              href: routes.contact,
-            },
-            {
               label: "Chat with AI Assistant",
               description: "Ask anything",
               icon: Sparkles,
               badge: "New",
               badgeTone: "primary",
-              href: routes.aiSignals,
+              href: routes.aiChat,
             },
           ]}
         />
@@ -146,6 +139,7 @@ export function ProfileSettingsGrid() {
               icon: UserPlus,
               badge: "Rewards",
               badgeTone: "success",
+              href: routes.invite,
             },
             {
               label: "About TrustAI",

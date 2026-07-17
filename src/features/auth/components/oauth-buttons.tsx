@@ -1,13 +1,33 @@
+"use client";
+
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { routes } from "@/shared/lib/routes";
 
 export function OAuthButtons() {
+  const router = useRouter();
+
+  function continueWithProvider() {
+    router.push(routes.home);
+  }
+
   return (
-    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-      <Button type="button" variant="outline" className="h-12 rounded-md py-3">
+    <div className="grid grid-cols-2 gap-3 mt-2">
+      <Button
+        type="button"
+        variant="outline"
+        className="h-12 gap-2.5 rounded-xl border-border bg-card px-3 text-sm font-semibold shadow-none hover:bg-muted/60"
+        onClick={continueWithProvider}
+      >
         <GoogleIcon />
         Google
       </Button>
-      <Button type="button" variant="outline" className="h-12 rounded-md py-3">
+      <Button
+        type="button"
+        variant="outline"
+        className="h-12 gap-2.5 rounded-xl border-border bg-card px-3 text-sm font-semibold shadow-none hover:bg-muted/60"
+        onClick={continueWithProvider}
+      >
         <AppleIcon />
         Apple
       </Button>
@@ -17,7 +37,7 @@ export function OAuthButtons() {
 
 function GoogleIcon() {
   return (
-    <svg viewBox="0 0 24 24" className="size-4" aria-hidden>
+    <svg viewBox="0 0 24 24" className="size-5 shrink-0" aria-hidden>
       <path
         fill="#4285F4"
         d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"
@@ -40,8 +60,12 @@ function GoogleIcon() {
 
 function AppleIcon() {
   return (
-    <svg viewBox="0 0 24 24" className="size-4 fill-current" aria-hidden>
-      <path d="M16.37 12.63c0-2.1 1.72-3.12 1.8-3.17-.98-.1.45-2.55-1.3-3.35-.87-.4-1.72-.35-2.4-.16-.87.23-1.65.37-2.42.37-.8 0-1.64-.15-2.5-.4-1.07-.3-1.95-.42-2.8-.42-3.4 0-6.05 3.1-6.05 6.95 0 1.85.71 3.83 1.96 5.38 1.07 1.3 2.35 2.77 4.1 2.72.97-.02 1.68-.38 2.5-.38.8 0 1.45.36 2.48.38 1.78.04 3.03-1.5 4.08-2.8.72-.92 1.02-1.4 1.6-2.46-4.18-1.62-4.05-5.68-1.05-5.86zm-1.76-6.33c.85-1.03.9-2.27.76-2.8-.87.1-1.98.7-2.54 1.43-.54.7-.93 1.82-.78 2.83.96.05 1.87-.45 2.56-1.46z" />
+    <svg
+      viewBox="0 0 24 24"
+      className="size-5 shrink-0 fill-current"
+      aria-hidden
+    >
+      <path d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 22 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.1 22C7.79 22.05 6.8 20.68 5.96 19.47C4.25 16.99 2.93 12.45 4.7 9.39C5.57 7.87 7.13 6.91 8.82 6.88C10.1 6.86 11.32 7.75 12.11 7.75C12.89 7.75 14.37 6.68 15.92 6.84C16.57 6.87 18.39 7.1 19.56 8.82C19.47 8.88 17.39 10.1 17.41 12.63C17.44 15.65 20.06 16.66 20.09 16.67C20.06 16.74 19.67 18.11 18.71 19.5ZM13 3.5C13.73 2.67 14.94 2.04 15.94 2C16.07 3.17 15.6 4.35 14.9 5.19C14.21 6.04 13.07 6.7 11.95 6.61C11.8 5.46 12.36 4.26 13 3.5Z" />
     </svg>
   );
 }

@@ -24,7 +24,9 @@ export function AuthShell({
         <div className="flex flex-1 items-start justify-center px-5 pb-10 sm:items-center sm:px-6">
           <div className="w-full max-w-[420px]">
             {children}
-            {footer && <div className="mt-8 text-center text-sm">{footer}</div>}
+            {footer && (
+              <div className="mt-6 text-center text-sm sm:mt-8">{footer}</div>
+            )}
           </div>
         </div>
       </div>

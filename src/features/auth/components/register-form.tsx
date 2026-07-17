@@ -9,14 +9,18 @@ import {
   Field,
   FieldContent,
   FieldError,
+  FieldSeparator,
 } from "@/components/ui/field";
 import { FormTextField } from "@/shared/components/form-text-field";
 import { FormPasswordField } from "@/shared/components/form-password-field";
+import { OAuthButtons } from "@/features/auth/components/oauth-buttons";
 import {
   registerSchema,
   type RegisterFormValues,
 } from "@/features/auth/schemas/auth";
 import { routes } from "@/shared/lib/routes";
+
+const authInputClassName = "h-12 rounded-xl bg-card px-3";
 
 export function RegisterForm() {
   const router = useRouter();
@@ -37,14 +41,15 @@ export function RegisterForm() {
   }
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <FormTextField
           control={form.control}
           name="firstName"
           label="First name"
           autoComplete="given-name"
           placeholder="John"
+          inputClassName={authInputClassName}
         />
         <FormTextField
           control={form.control}
@@ -52,6 +57,7 @@ export function RegisterForm() {
           label="Last name"
           autoComplete="family-name"
           placeholder="Doe"
+          inputClassName={authInputClassName}
         />
       </div>
 
@@ -62,6 +68,7 @@ export function RegisterForm() {
         type="email"
         autoComplete="email"
         placeholder="you@example.com"
+        inputClassName={authInputClassName}
       />
 
       <FormPasswordField
@@ -70,6 +77,7 @@ export function RegisterForm() {
         label="Password"
         autoComplete="new-password"
         placeholder="Min. 8 characters"
+        inputClassName={authInputClassName}
       />
 
       <FormPasswordField
@@ -78,6 +86,7 @@ export function RegisterForm() {
         label="Confirm password"
         autoComplete="new-password"
         placeholder="Repeat your password"
+        inputClassName={authInputClassName}
       />
 
       <Controller
@@ -121,11 +130,18 @@ export function RegisterForm() {
 
       <Button
         type="submit"
-        className="mt-2 h-12 w-full rounded-md py-3"
+        className="h-12 w-full rounded-xl text-sm font-semibold"
         disabled={form.formState.isSubmitting}
       >
         {form.formState.isSubmitting ? "Creating account..." : "Create account"}
       </Button>
+
+      <div className="space-y-4 pt-1">
+        <FieldSeparator className="my-0 h-auto py-1">
+          Or continue with
+        </FieldSeparator>
+        <OAuthButtons />
+      </div>
     </form>
   );
 }

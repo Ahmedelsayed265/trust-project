@@ -25,6 +25,7 @@ type FormPasswordFieldProps<T extends FieldValues> = {
   placeholder?: string;
   autoComplete?: string;
   className?: string;
+  inputClassName?: string;
 };
 
 export function FormPasswordField<T extends FieldValues>({
@@ -34,6 +35,7 @@ export function FormPasswordField<T extends FieldValues>({
   placeholder,
   autoComplete,
   className,
+  inputClassName,
 }: FormPasswordFieldProps<T>) {
   const [visible, setVisible] = useState(false);
 
@@ -56,7 +58,10 @@ export function FormPasswordField<T extends FieldValues>({
                 placeholder={placeholder}
                 autoComplete={autoComplete}
                 aria-invalid={fieldState.invalid}
-                className="h-12 rounded-md bg-card py-3 pr-10 text-sm"
+                className={cn(
+                  "h-12 rounded-md bg-card py-3 pr-10 text-sm",
+                  inputClassName
+                )}
               />
               <Button
                 type="button"
