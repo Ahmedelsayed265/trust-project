@@ -23,15 +23,15 @@ const SidebarContext = createContext<SidebarContextValue | null>(null);
 
 const COLLAPSED_KEY = "trustai-sidebar-collapsed";
 
+function readCollapsedPreference() {
+  if (typeof window === "undefined") return false;
+  return localStorage.getItem(COLLAPSED_KEY) === "true";
+}
+
 export function SidebarProvider({ children }: { children: React.ReactNode }) {
-  const [collapsed, setCollapsedState] = useState(false);
+  const [collapsed, setCollapsedState] = useState(readCollapsedPreference);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(true);
-
-  useEffect(() => {
-    const stored = localStorage.getItem(COLLAPSED_KEY);
-    if (stored != null) setCollapsedState(stored === "true");
-  }, []);
 
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 1024px)");
