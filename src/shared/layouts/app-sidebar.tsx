@@ -89,9 +89,9 @@ function SidebarContent({
     <div className="flex h-full min-h-0 flex-col overflow-hidden">
       <div
         className={cn(
-          "flex items-center border-b border-sidebar-border",
+          "flex items-center border-b border-sidebar-border h-[64px]",
           collapsed
-            ? "justify-center px-2 py-4 h-[64px]"
+            ? "justify-center px-2 py-4"
             : "justify-between gap-2 px-3 py-4"
         )}
       >
@@ -125,7 +125,7 @@ function SidebarContent({
         </div>
       )}
 
-      <nav className="scrollbar-thin flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto px-2.5 py-3">
+      <nav className="scrollbar-none flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto px-2.5 py-3">
         <div className="space-y-0.5">
           {primaryNav.map((item) => (
             <NavLink
