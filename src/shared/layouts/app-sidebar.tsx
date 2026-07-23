@@ -137,7 +137,7 @@ function SidebarContent({
         </div>
       </nav>
 
-      <div className="border-t border-sidebar-border p-2.5">
+      <div className="border-t border-sidebar-border p-2.5 flex items-center justify-center">
         <ThemeToggle collapsed={collapsed} />
       </div>
     </div>

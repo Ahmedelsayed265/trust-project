@@ -48,7 +48,7 @@ export function ThemeToggle({
   }
 
   return (
-    <div className={cn("flex items-center rounded-full bg-muted p-1", className)}>
+    <div className={cn("flex items-center rounded-full bg-muted p-1 w-full", className)}>
       <button
         type="button"
         onClick={() => setTheme("light")}

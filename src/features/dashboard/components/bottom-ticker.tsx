@@ -35,7 +35,7 @@ function TickerItems() {
 
 export function BottomTicker() {
   return (
-    <div className="relative shrink-0 overflow-hidden border-t border-border bg-card py-2.5">
+    <div className="relative shrink-0 overflow-hidden border-t border-border bg-card py-[18px]">
       <div className="animate-ticker flex w-max">
         <TickerItems />
         <TickerItems />
