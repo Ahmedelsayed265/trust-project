@@ -1,3 +1,6 @@
+"use client";
+
+import { useId } from "react";
 import { cn } from "@/lib/utils";
 
 export function Sparkline({
@@ -6,29 +9,34 @@ export function Sparkline({
   positive = true,
   fill = false,
   strokeWidth = 2,
+  showDot = false,
 }: {
   data: number[];
   className?: string;
   positive?: boolean;
   fill?: boolean;
   strokeWidth?: number;
+  showDot?: boolean;
 }) {
+  const gradientId = useId();
   const width = 120;
   const height = 40;
   const min = Math.min(...data);
   const max = Math.max(...data);
   const range = max - min || 1;
 
-  const points = data
-    .map((value, index) => {
-      const x = (index / (data.length - 1)) * width;
-      const y = height - ((value - min) / range) * (height - 4) - 2;
-      return `${x},${y}`;
-    })
-    .join(" ");
+  const coords = data.map((value, index) => {
+    const x = (index / Math.max(data.length - 1, 1)) * width;
+    const y = height - ((value - min) / range) * (height - 6) - 3;
+    return { x, y };
+  });
 
-  const areaPoints = `0,${height} ${points} ${width},${height}`;
+  const linePath = coords
+    .map(({ x, y }, i) => `${i === 0 ? "M" : "L"}${x} ${y}`)
+    .join(" ");
+  const areaPath = `${linePath} L${width} ${height} L0 ${height} Z`;
   const color = positive ? "var(--success)" : "var(--destructive)";
+  const last = coords[coords.length - 1];
 
   return (
     <svg
@@ -38,16 +46,36 @@ export function Sparkline({
       aria-hidden
     >
       {fill && (
-        <polygon points={areaPoints} fill={color} fillOpacity={0.12} />
+        <>
+          <defs>
+            <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={color} stopOpacity={0.28} />
+              <stop offset="100%" stopColor={color} stopOpacity={0} />
+            </linearGradient>
+          </defs>
+          <path d={areaPath} fill={`url(#${gradientId})`} />
+        </>
       )}
-      <polyline
-        points={points}
+      <path
+        d={linePath}
         fill="none"
         stroke={color}
         strokeWidth={strokeWidth}
         strokeLinecap="round"
         strokeLinejoin="round"
+        vectorEffect="non-scaling-stroke"
       />
+      {showDot && last && (
+        <circle
+          cx={last.x}
+          cy={last.y}
+          r={2.25}
+          fill={color}
+          stroke="var(--card)"
+          strokeWidth={1.5}
+          vectorEffect="non-scaling-stroke"
+        />
+      )}
     </svg>
   );
 }
