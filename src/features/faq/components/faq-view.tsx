@@ -16,14 +16,14 @@ const faqSections = [
     title: "Getting started",
     items: [
       {
-        question: "How do I fund my wallet?",
+        question: "How do I fund my trading account?",
         answer:
-          "Open Wallet, choose Deposit, pick an asset, and send funds to the generated address. Deposits usually appear after network confirmation.",
+          "TrustAI does not hold an internal wallet. Fund your Binance Spot or Alpaca account on the provider’s site, then connect API keys under Accounts so balances sync here.",
       },
       {
         question: "How do I place my first trade?",
         answer:
-          "Go to Trade, select a market, choose buy or sell, enter size, and confirm. You can also start from an AI signal with one click.",
+          "Connect a provider, go to Trade, select a market, choose buy or sell, enter size, and confirm. Orders are sent to the provider API — not an in-app ledger.",
       },
       {
         question: "What is included with Premium?",
@@ -48,7 +48,7 @@ const faqSections = [
       {
         question: "Where can I find order history?",
         answer:
-          "Open Orders to review open, filled, and canceled activity. You can also jump there from Profile → Trading.",
+          "Open Orders to review open, filled, and canceled activity from your connected provider.",
       },
     ],
   },
@@ -68,7 +68,7 @@ const faqSections = [
       {
         question: "How do withdrawals work?",
         answer:
-          "From Wallet, choose Withdraw, select the asset, enter the destination address and amount, then confirm. 2FA may be required.",
+          "Withdrawals are handled by your broker/exchange (Binance or Alpaca). TrustAI never custodied funds and does not run in-app withdrawals.",
       },
     ],
   },
@@ -79,7 +79,7 @@ export function FaqView() {
     <div className="flex w-full min-w-0 flex-col gap-4 sm:gap-5">
       <PageHeader
         title="FAQs"
-        description="Answers to common questions about trading, wallet, and account security."
+        description="Answers about connecting providers, trading, and account security."
         actions={
           <Button
             className="rounded-xl"

@@ -59,8 +59,9 @@ export function ProfileSettingsGrid() {
           items={[
             {
               label: "Connected Accounts",
-              description: "Binance · 2 linked",
+              description: "Binance Spot / Alpaca",
               icon: Link2,
+              href: routes.accounts,
             },
             {
               label: "Trading Preferences",

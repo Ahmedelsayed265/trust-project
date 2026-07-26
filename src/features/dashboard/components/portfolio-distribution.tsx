@@ -1,11 +1,104 @@
-const segments = [
-  { label: "Crypto", percent: 45.6, amount: "$11,185.89", color: "#2563eb" },
-  { label: "Stocks", percent: 30.2, amount: "$7,408.20", color: "#14b8a6" },
-  { label: "Metals", percent: 15.7, amount: "$3,851.28", color: "#8b5cf6" },
-  { label: "Cash", percent: 8.5, amount: "$2,085.08", color: "#f59e0b" },
-];
+"use client";
 
-function DonutChart() {
+import {
+  formatMoney,
+  useTrading,
+} from "@/shared/trading";
+
+const palette = ["#2563eb", "#14b8a6", "#8b5cf6", "#f59e0b", "#64748b"];
+
+export function PortfolioDistribution() {
+  const { snapshot, positions, loading } = useTrading();
+  const currency = snapshot?.currency ?? "USD";
+  const equity = snapshot?.equity ?? 0;
+
+  const segments =
+    positions.length > 0
+      ? positions.map((p, i) => ({
+          label: p.symbol,
+          percent: equity > 0 ? (p.marketValue / equity) * 100 : 0,
+          amount: formatMoney(p.marketValue, currency),
+          color: palette[i % palette.length],
+        }))
+      : [];
+
+  const cashBalance = snapshot?.balances.find(
+    (b) => b.asset === "USDT" || b.asset === "USD"
+  );
+  if (cashBalance && (cashBalance.usdValue ?? 0) > 0) {
+    segments.push({
+      label: `${cashBalance.asset} free`,
+      percent:
+        equity > 0 ? ((cashBalance.usdValue ?? 0) / equity) * 100 : 0,
+      amount: formatMoney(cashBalance.usdValue ?? 0, currency),
+      color: palette[segments.length % palette.length],
+    });
+  }
+
+  const totalPercent = segments.reduce((s, seg) => s + seg.percent, 0);
+  const normalized =
+    totalPercent > 0
+      ? segments.map((seg) => ({
+          ...seg,
+          percent: (seg.percent / totalPercent) * 100,
+        }))
+      : segments;
+
+  return (
+    <div className="rounded-lg border border-border bg-card p-5">
+      <h2 className="mb-4 text-base font-semibold text-foreground">
+        Portfolio Distribution
+      </h2>
+
+      {loading || !snapshot || normalized.length === 0 ? (
+        <p className="text-sm text-muted-foreground">
+          {loading
+            ? "Loading provider balances…"
+            : "Connect a provider to see allocation."}
+        </p>
+      ) : (
+        <div className="flex flex-col items-center gap-5 sm:flex-row sm:items-center">
+          <DonutChart
+            segments={normalized}
+            total={formatMoney(equity, currency)}
+          />
+
+          <ul className="w-full space-y-3">
+            {normalized.map((segment) => (
+              <li key={segment.label} className="flex items-center gap-2.5">
+                <span
+                  className="size-2.5 shrink-0 rounded-full"
+                  style={{ backgroundColor: segment.color }}
+                />
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-sm font-medium text-foreground">
+                      {segment.label}
+                    </span>
+                    <span className="text-sm font-semibold text-foreground">
+                      {segment.percent.toFixed(1)}%
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {segment.amount}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DonutChart({
+  segments,
+  total,
+}: {
+  segments: { label: string; percent: number; color: string }[];
+  total: string;
+}) {
   const size = 160;
   const stroke = 28;
   const radius = (size - stroke) / 2;
@@ -36,44 +129,8 @@ function DonutChart() {
         })}
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <p className="text-[10px] text-muted-foreground">Total</p>
-        <p className="text-sm font-bold text-foreground">$24,530.45</p>
-      </div>
-    </div>
-  );
-}
-
-export function PortfolioDistribution() {
-  return (
-    <div className="rounded-lg border border-border bg-card p-5">
-      <h2 className="mb-4 text-base font-semibold text-foreground">
-        Portfolio Distribution
-      </h2>
-
-      <div className="flex flex-col items-center gap-5 sm:flex-row sm:items-center">
-        <DonutChart />
-
-        <ul className="w-full space-y-3">
-          {segments.map((segment) => (
-            <li key={segment.label} className="flex items-center gap-2.5">
-              <span
-                className="size-2.5 shrink-0 rounded-full"
-                style={{ backgroundColor: segment.color }}
-              />
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-sm font-medium text-foreground">
-                    {segment.label}
-                  </span>
-                  <span className="text-sm font-semibold text-foreground">
-                    {segment.percent}%
-                  </span>
-                </div>
-                <p className="text-xs text-muted-foreground">{segment.amount}</p>
-              </div>
-            </li>
-          ))}
-        </ul>
+        <p className="text-[10px] text-muted-foreground">Equity</p>
+        <p className="text-sm font-bold text-foreground">{total}</p>
       </div>
     </div>
   );

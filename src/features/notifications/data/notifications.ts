@@ -1,6 +1,6 @@
 import { routes } from "@/shared/lib/routes";
 
-export type NotificationType = "trade" | "signal" | "wallet" | "system";
+export type NotificationType = "trade" | "signal" | "account" | "system";
 
 export type Notification = {
   id: string;
@@ -33,12 +33,12 @@ export const notifications: Notification[] = [
   },
   {
     id: "3",
-    title: "Deposit confirmed",
-    description: "$2,500.00 USDT has been credited to your wallet.",
+    title: "Provider synced",
+    description: "Binance Spot balances and open orders were refreshed successfully.",
     time: "1h ago",
     read: false,
-    type: "wallet",
-    href: routes.wallet,
+    type: "account",
+    href: routes.accounts,
   },
   {
     id: "4",

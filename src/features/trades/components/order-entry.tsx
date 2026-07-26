@@ -20,17 +20,30 @@ import {
   formatQty,
   type OrderFormValues,
 } from "@/features/trades/schemas/order";
+import { formatMoney, useTrading } from "@/shared/trading";
 
 const percents = [25, 50, 75, 100] as const;
 const priceData = [40, 42, 38, 45, 48, 46, 52, 55, 58, 62, 65];
 
 export function OrderEntry({ onReview }: { onReview?: () => void }) {
   const form = useFormContext<OrderFormValues>();
+  const { snapshot, activeProvider, supports } = useTrading();
   const amount = form.watch("amount");
   const side = form.watch("side");
   const orderType = form.watch("orderType");
   const percent = form.watch("percent");
   const qty = estimateQuantity(amount);
+  const buyingPower = snapshot?.buyingPower ?? 0;
+  const currency = snapshot?.currency ?? "USDT";
+  const canTrade =
+    supports("marketOrders") || supports("limitOrders");
+
+  function applyPercent(value: number) {
+    form.setValue("percent", value);
+    form.setValue("amount", ((buyingPower * value) / 100).toFixed(2), {
+      shouldValidate: true,
+    });
+  }
 
   return (
     <Card className="">
@@ -150,11 +163,7 @@ export function OrderEntry({ onReview }: { onReview?: () => void }) {
             step={1}
             value={percent}
             onChange={(e) => {
-              const value = Number(e.target.value);
-              form.setValue("percent", value);
-              const buyingPower = 8642.21;
-              const nextAmount = ((buyingPower * value) / 100).toFixed(2);
-              form.setValue("amount", nextAmount, { shouldValidate: true });
+              applyPercent(Number(e.target.value));
             }}
             className="h-2 w-full cursor-pointer appearance-none rounded-full bg-muted accent-primary"
           />
@@ -163,13 +172,7 @@ export function OrderEntry({ onReview }: { onReview?: () => void }) {
               <button
                 key={p}
                 type="button"
-                onClick={() => {
-                  form.setValue("percent", p);
-                  const buyingPower = 8642.21;
-                  form.setValue("amount", ((buyingPower * p) / 100).toFixed(2), {
-                    shouldValidate: true,
-                  });
-                }}
+                onClick={() => applyPercent(p)}
                 className={cn(
                   "flex-1 rounded-lg border px-2 py-1.5 text-xs font-semibold transition-colors",
                   percent === p
@@ -181,6 +184,10 @@ export function OrderEntry({ onReview }: { onReview?: () => void }) {
               </button>
             ))}
           </div>
+          <p className="mt-2 text-xs text-muted-foreground">
+            Buying power from {activeProvider.displayName}:{" "}
+            {formatMoney(buyingPower, currency)}
+          </p>
         </div>
 
         <div className="rounded-xl bg-muted/60 px-3 py-2.5 text-sm">
@@ -193,11 +200,16 @@ export function OrderEntry({ onReview }: { onReview?: () => void }) {
         <Button
           type="button"
           className="h-11 w-full rounded-xl"
+          disabled={!canTrade || !snapshot}
           onClick={() => {
             void form.handleSubmit(() => onReview?.())();
           }}
         >
-          Review Order
+          {!snapshot
+            ? "Connect provider to trade"
+            : !canTrade
+              ? "Trading not supported"
+              : "Review Order"}
         </Button>
       </CardContent>
     </Card>

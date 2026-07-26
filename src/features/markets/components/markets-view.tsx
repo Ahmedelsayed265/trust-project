@@ -7,6 +7,8 @@ import { MarketsTable } from "@/features/markets/components/markets-table";
 
 export function MarketsView() {
   const [category, setCategory] = useState("All");
+  const [search, setSearch] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
 
   return (
     <div className="flex w-full min-w-0 flex-col gap-4 sm:gap-5">
@@ -19,9 +21,16 @@ export function MarketsView() {
         </p>
       </div>
 
-      <MarketCategoryTabs value={category} onChange={setCategory} />
+      <MarketCategoryTabs
+        value={category}
+        onChange={setCategory}
+        search={search}
+        onSearchChange={setSearch}
+        searchOpen={searchOpen}
+        onSearchOpenChange={setSearchOpen}
+      />
       <MarketSummaryCards />
-      <MarketsTable category={category} />
+      <MarketsTable category={category} search={search} />
     </div>
   );
 }

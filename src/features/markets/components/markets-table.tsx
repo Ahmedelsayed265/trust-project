@@ -1,30 +1,57 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import {
+  ArrowLeftRight,
   ChevronDown,
+  Copy,
   Filter,
   MoreVertical,
   RefreshCw,
+  Sparkles,
   Star,
 } from "lucide-react";
 import { Sparkline } from "@/shared/components/sparkline";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { routes } from "@/shared/lib/routes";
+
+type Currency = "USD" | "EUR" | "SAR";
+type ChangePeriod = "24h" | "7d" | "30d";
 
 type Asset = {
   symbol: string;
   name: string;
   category: string;
   region: string;
-  price: string;
-  changePct: string;
-  changeAbs: string;
-  positive: boolean;
-  marketCap: string;
+  priceUsd: number;
+  changePct24h: number;
+  changePct7d: number;
+  changePct30d: number;
+  marketCapUsd: number | null;
   starred?: boolean;
   data: number[];
   iconBg: string;
   iconLabel: string;
+};
+
+const FX: Record<Currency, number> = {
+  USD: 1,
+  EUR: 0.92,
+  SAR: 3.75,
 };
 
 const assets: Asset[] = [
@@ -33,11 +60,11 @@ const assets: Asset[] = [
     name: "Bitcoin",
     category: "Crypto",
     region: "All",
-    price: "$67,432.10",
-    changePct: "+2.45%",
-    changeAbs: "+$1,612.45",
-    positive: true,
-    marketCap: "$1.33T",
+    priceUsd: 67432.1,
+    changePct24h: 2.45,
+    changePct7d: 5.12,
+    changePct30d: 12.4,
+    marketCapUsd: 1.33e12,
     data: [40, 42, 38, 45, 48, 52, 50, 55, 58, 62, 65],
     iconBg: "bg-orange-100 text-orange-600",
     iconLabel: "₿",
@@ -47,11 +74,11 @@ const assets: Asset[] = [
     name: "Ethereum",
     category: "Crypto",
     region: "All",
-    price: "$3,456.78",
-    changePct: "+1.82%",
-    changeAbs: "+$61.85",
-    positive: true,
-    marketCap: "$415.2B",
+    priceUsd: 3456.78,
+    changePct24h: 1.82,
+    changePct7d: 3.4,
+    changePct30d: 8.1,
+    marketCapUsd: 415.2e9,
     data: [35, 38, 36, 40, 42, 45, 43, 48, 50, 52, 55],
     iconBg: "bg-indigo-100 text-indigo-600",
     iconLabel: "Ξ",
@@ -61,11 +88,11 @@ const assets: Asset[] = [
     name: "Solana",
     category: "Crypto",
     region: "All",
-    price: "$175.32",
-    changePct: "+8.63%",
-    changeAbs: "+$13.94",
-    positive: true,
-    marketCap: "$78.5B",
+    priceUsd: 175.32,
+    changePct24h: 8.63,
+    changePct7d: 14.2,
+    changePct30d: 28.5,
+    marketCapUsd: 78.5e9,
     data: [28, 30, 35, 32, 40, 45, 48, 52, 58, 62, 70],
     iconBg: "bg-violet-100 text-violet-700",
     iconLabel: "S",
@@ -75,11 +102,11 @@ const assets: Asset[] = [
     name: "Gold",
     category: "Metals",
     region: "All",
-    price: "$2,345.80",
-    changePct: "+0.68%",
-    changeAbs: "+$15.85",
-    positive: true,
-    marketCap: "—",
+    priceUsd: 2345.8,
+    changePct24h: 0.68,
+    changePct7d: 1.2,
+    changePct30d: 3.5,
+    marketCapUsd: null,
     data: [45, 44, 46, 45, 47, 48, 47, 49, 50, 51, 52],
     iconBg: "bg-yellow-100 text-yellow-700",
     iconLabel: "Au",
@@ -89,11 +116,11 @@ const assets: Asset[] = [
     name: "Apple Inc.",
     category: "Stocks",
     region: "US",
-    price: "$178.25",
-    changePct: "+1.30%",
-    changeAbs: "+$2.29",
-    positive: true,
-    marketCap: "$2.78T",
+    priceUsd: 178.25,
+    changePct24h: 1.3,
+    changePct7d: 2.1,
+    changePct30d: 4.8,
+    marketCapUsd: 2.78e12,
     starred: true,
     data: [40, 42, 41, 44, 43, 46, 48, 47, 50, 52, 54],
     iconBg: "bg-slate-100 text-slate-800",
@@ -104,11 +131,11 @@ const assets: Asset[] = [
     name: "Tesla Inc.",
     category: "Stocks",
     region: "US",
-    price: "$248.50",
-    changePct: "-1.28%",
-    changeAbs: "-$3.22",
-    positive: false,
-    marketCap: "$790.1B",
+    priceUsd: 248.5,
+    changePct24h: -1.28,
+    changePct7d: -3.4,
+    changePct30d: 6.2,
+    marketCapUsd: 790.1e9,
     data: [60, 58, 55, 56, 52, 50, 48, 45, 44, 42, 40],
     iconBg: "bg-red-100 text-red-600",
     iconLabel: "T",
@@ -118,11 +145,11 @@ const assets: Asset[] = [
     name: "Saudi Aramco",
     category: "Stocks",
     region: "MENA",
-    price: "SAR 28.45",
-    changePct: "+0.85%",
-    changeAbs: "+SAR 0.24",
-    positive: true,
-    marketCap: "$1.98T",
+    priceUsd: 7.58,
+    changePct24h: 0.85,
+    changePct7d: 1.1,
+    changePct30d: 2.4,
+    marketCapUsd: 1.98e12,
     data: [42, 43, 42, 44, 45, 44, 46, 47, 46, 48, 49],
     iconBg: "bg-emerald-100 text-emerald-700",
     iconLabel: "A",
@@ -132,16 +159,52 @@ const assets: Asset[] = [
     name: "Alibaba",
     category: "Stocks",
     region: "Asia",
-    price: "HK$78.20",
-    changePct: "-0.95%",
-    changeAbs: "-HK$0.75",
-    positive: false,
-    marketCap: "$186.4B",
+    priceUsd: 10.02,
+    changePct24h: -0.95,
+    changePct7d: -2.2,
+    changePct30d: 1.8,
+    marketCapUsd: 186.4e9,
     data: [55, 52, 53, 50, 48, 49, 46, 44, 43, 41, 40],
     iconBg: "bg-orange-100 text-orange-700",
     iconLabel: "阿",
   },
 ];
+
+function formatPrice(usd: number, currency: Currency) {
+  const value = usd * FX[currency];
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency,
+    minimumFractionDigits: value >= 100 ? 2 : 4,
+    maximumFractionDigits: value >= 100 ? 2 : 4,
+  }).format(value);
+}
+
+function formatMarketCap(usd: number | null, currency: Currency) {
+  if (usd == null) return "—";
+  const value = usd * FX[currency];
+  if (value >= 1e12) return `${(value / 1e12).toFixed(2)}T`;
+  if (value >= 1e9) return `${(value / 1e9).toFixed(1)}B`;
+  if (value >= 1e6) return `${(value / 1e6).toFixed(1)}M`;
+  return value.toFixed(0);
+}
+
+function changeFor(asset: Asset, period: ChangePeriod) {
+  if (period === "7d") return asset.changePct7d;
+  if (period === "30d") return asset.changePct30d;
+  return asset.changePct24h;
+}
+
+function formatPct(value: number) {
+  const sign = value > 0 ? "+" : "";
+  return `${sign}${value.toFixed(2)}%`;
+}
+
+function formatAbsChange(priceUsd: number, pct: number, currency: Currency) {
+  const abs = (priceUsd * pct) / 100;
+  const formatted = formatPrice(Math.abs(abs), currency);
+  return pct >= 0 ? `+${formatted}` : `-${formatted.replace("-", "")}`;
+}
 
 function AssetIcon({ asset }: { asset: Asset }) {
   if (asset.symbol === "AAPL") {
@@ -165,34 +228,128 @@ function AssetIcon({ asset }: { asset: Asset }) {
   );
 }
 
-export function MarketsTable({ category = "All" }: { category?: string }) {
+export function MarketsTable({
+  category = "All",
+  search = "",
+}: {
+  category?: string;
+  search?: string;
+}) {
   const [starred, setStarred] = useState<Record<string, boolean>>(() =>
     Object.fromEntries(assets.map((a) => [a.symbol, !!a.starred]))
   );
   const [watchlistOnly, setWatchlistOnly] = useState(false);
+  const [currency, setCurrency] = useState<Currency>("USD");
+  const [changePeriod, setChangePeriod] = useState<ChangePeriod>("24h");
+  const [gainersOnly, setGainersOnly] = useState(false);
+  const [losersOnly, setLosersOnly] = useState(false);
+  const [copied, setCopied] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
-    return assets.filter((asset) => {
+    const q = search.trim().toLowerCase();
+    const rows = assets.filter((asset) => {
       if (watchlistOnly && !starred[asset.symbol]) return false;
+      if (q) {
+        const hay = `${asset.symbol} ${asset.name}`.toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      const pct = changeFor(asset, changePeriod);
+      if (gainersOnly && pct <= 0) return false;
+      if (losersOnly && pct >= 0) return false;
       if (category === "All") return true;
       if (["Crypto", "Stocks", "Metals"].includes(category)) {
         return asset.category === category;
       }
       return asset.region === category;
     });
-  }, [category, starred, watchlistOnly]);
+
+    return [...rows].sort(
+      (a, b) => changeFor(b, changePeriod) - changeFor(a, changePeriod)
+    );
+  }, [
+    category,
+    starred,
+    watchlistOnly,
+    search,
+    changePeriod,
+    gainersOnly,
+    losersOnly,
+  ]);
+
+  function toggleStar(symbol: string) {
+    setStarred((prev) => ({ ...prev, [symbol]: !prev[symbol] }));
+  }
+
+  async function copySymbol(symbol: string) {
+    try {
+      await navigator.clipboard.writeText(symbol);
+      setCopied(symbol);
+      window.setTimeout(() => setCopied(null), 1500);
+    } catch {
+      // ignore clipboard failures
+    }
+  }
 
   return (
     <div className="w-full min-w-0 space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-card px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
-          >
-            <Filter className="size-4 text-muted-foreground" />
-            Filters
-          </button>
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={
+                <Button
+                  variant="outline"
+                  className="h-auto rounded-xl px-3 py-2 text-sm font-medium"
+                />
+              }
+            >
+              <Filter className="size-4 text-muted-foreground" />
+              Filters
+              <ChevronDown className="size-3.5 text-muted-foreground" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="min-w-48">
+              <DropdownMenuGroup>
+                <DropdownMenuLabel>Performance</DropdownMenuLabel>
+                <DropdownMenuCheckboxItem
+                  checked={gainersOnly}
+                  onCheckedChange={(checked) => {
+                    setGainersOnly(checked === true);
+                    if (checked) setLosersOnly(false);
+                  }}
+                >
+                  Gainers only
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem
+                  checked={losersOnly}
+                  onCheckedChange={(checked) => {
+                    setLosersOnly(checked === true);
+                    if (checked) setGainersOnly(false);
+                  }}
+                >
+                  Losers only
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem
+                  checked={watchlistOnly}
+                  onCheckedChange={(checked) =>
+                    setWatchlistOnly(checked === true)
+                  }
+                >
+                  Watchlist only
+                </DropdownMenuCheckboxItem>
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => {
+                  setGainersOnly(false);
+                  setLosersOnly(false);
+                  setWatchlistOnly(false);
+                }}
+              >
+                Clear filters
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           <button
             type="button"
             onClick={() => setWatchlistOnly((v) => !v)}
@@ -212,20 +369,61 @@ export function MarketsTable({ category = "All" }: { category?: string }) {
         </div>
 
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-card px-3 py-2 text-sm font-medium text-foreground"
-          >
-            USD
-            <ChevronDown className="size-3.5 text-muted-foreground" />
-          </button>
-          <button
-            type="button"
-            className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-card px-3 py-2 text-sm font-medium text-foreground"
-          >
-            24h Change
-            <ChevronDown className="size-3.5 text-muted-foreground" />
-          </button>
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={
+                <Button
+                  variant="outline"
+                  className="h-auto rounded-xl px-3 py-2 text-sm font-medium"
+                />
+              }
+            >
+              {currency}
+              <ChevronDown className="size-3.5 text-muted-foreground" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="min-w-36">
+              <DropdownMenuRadioGroup
+                value={currency}
+                onValueChange={(value) => setCurrency(value as Currency)}
+              >
+                <DropdownMenuRadioItem value="USD">USD</DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="EUR">EUR</DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="SAR">SAR</DropdownMenuRadioItem>
+              </DropdownMenuRadioGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={
+                <Button
+                  variant="outline"
+                  className="h-auto rounded-xl px-3 py-2 text-sm font-medium"
+                />
+              }
+            >
+              {changePeriod} Change
+              <ChevronDown className="size-3.5 text-muted-foreground" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="min-w-40">
+              <DropdownMenuRadioGroup
+                value={changePeriod}
+                onValueChange={(value) =>
+                  setChangePeriod(value as ChangePeriod)
+                }
+              >
+                <DropdownMenuRadioItem value="24h">
+                  24h Change
+                </DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="7d">
+                  7d Change
+                </DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="30d">
+                  30d Change
+                </DropdownMenuRadioItem>
+              </DropdownMenuRadioGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
@@ -236,7 +434,7 @@ export function MarketsTable({ category = "All" }: { category?: string }) {
               <tr className="border-b border-border text-xs font-medium text-muted-foreground">
                 <th className="px-4 py-3 font-medium">Asset</th>
                 <th className="px-4 py-3 font-medium">Price</th>
-                <th className="px-4 py-3 font-medium">24h Change</th>
+                <th className="px-4 py-3 font-medium">{changePeriod} Change</th>
                 <th className="px-4 py-3 font-medium">Market Cap</th>
                 <th className="px-4 py-3 font-medium">Chart</th>
                 <th className="px-4 py-3 font-medium">
@@ -245,101 +443,160 @@ export function MarketsTable({ category = "All" }: { category?: string }) {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((asset) => (
-                <tr
-                  key={asset.symbol}
-                  className="border-b border-border/70 last:border-0 transition-colors hover:bg-muted/40"
-                >
-                  <td className="px-4 py-3.5">
-                    <div className="flex items-center gap-3">
-                      <AssetIcon asset={asset} />
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-sm font-semibold text-foreground">
-                            {asset.symbol}
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setStarred((prev) => ({
-                                ...prev,
-                                [asset.symbol]: !prev[asset.symbol],
-                              }))
-                            }
-                            className={cn(
-                              "transition-colors",
-                              starred[asset.symbol]
-                                ? "text-primary"
-                                : "text-muted-foreground/50 hover:text-primary"
-                            )}
-                            aria-label="Toggle watchlist"
-                          >
-                            <Star
-                              className="size-3.5"
-                              fill={
-                                starred[asset.symbol] ? "currentColor" : "none"
-                              }
-                            />
-                          </button>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-xs text-muted-foreground">
-                            {asset.name}
-                          </span>
-                          <span className="rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
-                            {asset.category === "Metals"
-                              ? "Metal"
-                              : asset.category === "Stocks"
-                                ? "Stock"
-                                : asset.category}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3.5 text-sm font-semibold text-foreground">
-                    {asset.price}
-                  </td>
-                  <td className="px-4 py-3.5">
-                    <p
-                      className={cn(
-                        "text-sm font-semibold",
-                        asset.positive ? "text-success" : "text-destructive"
-                      )}
-                    >
-                      {asset.changePct}
-                    </p>
-                    <p
-                      className={cn(
-                        "text-xs",
-                        asset.positive ? "text-success/80" : "text-destructive/80"
-                      )}
-                    >
-                      {asset.changeAbs}
-                    </p>
-                  </td>
-                  <td className="px-4 py-3.5 text-sm text-foreground">
-                    {asset.marketCap}
-                  </td>
-                  <td className="px-4 py-3.5">
-                    <Sparkline
-                      data={asset.data}
-                      positive={asset.positive}
-                      className="h-8 w-24"
-                      strokeWidth={1.75}
-                    />
-                  </td>
-                  <td className="px-4 py-3.5">
-                    <button
-                      type="button"
-                      className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                      aria-label="More actions"
-                    >
-                      <MoreVertical className="size-4" />
-                    </button>
+              {filtered.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={6}
+                    className="px-4 py-10 text-center text-sm text-muted-foreground"
+                  >
+                    No markets match your search or filters.
                   </td>
                 </tr>
-              ))}
+              ) : (
+                filtered.map((asset) => {
+                  const pct = changeFor(asset, changePeriod);
+                  const positive = pct >= 0;
+                  return (
+                    <tr
+                      key={asset.symbol}
+                      className="border-b border-border/70 last:border-0 transition-colors hover:bg-muted/40"
+                    >
+                      <td className="px-4 py-3.5">
+                        <div className="flex items-center gap-3">
+                          <AssetIcon asset={asset} />
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-sm font-semibold text-foreground">
+                                {asset.symbol}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => toggleStar(asset.symbol)}
+                                className={cn(
+                                  "transition-colors",
+                                  starred[asset.symbol]
+                                    ? "text-primary"
+                                    : "text-muted-foreground/50 hover:text-primary"
+                                )}
+                                aria-label="Toggle watchlist"
+                              >
+                                <Star
+                                  className="size-3.5"
+                                  fill={
+                                    starred[asset.symbol]
+                                      ? "currentColor"
+                                      : "none"
+                                  }
+                                />
+                              </button>
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-xs text-muted-foreground">
+                                {asset.name}
+                              </span>
+                              <span className="rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
+                                {asset.category === "Metals"
+                                  ? "Metal"
+                                  : asset.category === "Stocks"
+                                    ? "Stock"
+                                    : asset.category}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3.5 text-sm font-semibold text-foreground">
+                        {formatPrice(asset.priceUsd, currency)}
+                      </td>
+                      <td className="px-4 py-3.5">
+                        <p
+                          className={cn(
+                            "text-sm font-semibold",
+                            positive ? "text-success" : "text-destructive"
+                          )}
+                        >
+                          {formatPct(pct)}
+                        </p>
+                        <p
+                          className={cn(
+                            "text-xs",
+                            positive
+                              ? "text-success/80"
+                              : "text-destructive/80"
+                          )}
+                        >
+                          {formatAbsChange(asset.priceUsd, pct, currency)}
+                        </p>
+                      </td>
+                      <td className="px-4 py-3.5 text-sm text-foreground">
+                        {formatMarketCap(asset.marketCapUsd, currency)}
+                      </td>
+                      <td className="px-4 py-3.5">
+                        <Sparkline
+                          data={asset.data}
+                          positive={positive}
+                          className="h-8 w-24"
+                          strokeWidth={1.75}
+                        />
+                      </td>
+                      <td className="px-4 py-3.5">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger
+                            render={
+                              <button
+                                type="button"
+                                className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                                aria-label={`Actions for ${asset.symbol}`}
+                              />
+                            }
+                          >
+                            <MoreVertical className="size-4" />
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="min-w-44">
+                            <DropdownMenuItem
+                              render={
+                                <Link
+                                  href={`${routes.trades}?symbol=${encodeURIComponent(asset.symbol)}`}
+                                />
+                              }
+                            >
+                              <ArrowLeftRight className="size-4" />
+                              Trade
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => toggleStar(asset.symbol)}
+                            >
+                              <Star className="size-4" />
+                              {starred[asset.symbol]
+                                ? "Remove from watchlist"
+                                : "Add to watchlist"}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              render={
+                                <Link
+                                  href={`${routes.aiChat}?q=${encodeURIComponent(`Analyze ${asset.symbol}`)}`}
+                                />
+                              }
+                            >
+                              <Sparkles className="size-4" />
+                              Ask AI
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              onClick={() => void copySymbol(asset.symbol)}
+                            >
+                              <Copy className="size-4" />
+                              {copied === asset.symbol
+                                ? "Copied"
+                                : "Copy symbol"}
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
             </tbody>
           </table>
         </div>
@@ -347,7 +604,7 @@ export function MarketsTable({ category = "All" }: { category?: string }) {
 
       <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
         <RefreshCw className="size-3.5" />
-        Last updated: 30s ago
+        Showing {filtered.length} markets · currency {currency} · {changePeriod}
       </div>
     </div>
   );

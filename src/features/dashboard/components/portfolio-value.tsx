@@ -1,11 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { Eye, TrendingUp } from "lucide-react";
+import { Eye, Link2, TrendingUp } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Sparkline } from "@/shared/components/sparkline";
 import { routes } from "@/shared/lib/routes";
+import {
+  formatMoney,
+  formatPct,
+  formatSignedMoney,
+  useTrading,
+} from "@/shared/trading";
 
 const timeframes = ["1D", "1W", "1M", "3M", "1Y", "ALL"] as const;
 
@@ -20,40 +26,61 @@ const chartByTimeframe: Record<(typeof timeframes)[number], number[]> = {
 
 export function PortfolioValue() {
   const [timeframe, setTimeframe] = useState<(typeof timeframes)[number]>("1D");
+  const { snapshot, activeProvider, loading, error } = useTrading();
   const chartData = chartByTimeframe[timeframe];
+  const equity = snapshot?.equity ?? null;
+  const dayPnl = snapshot?.dayPnl ?? null;
+  const dayPnlPct = snapshot?.dayPnlPct ?? null;
+  const currency = snapshot?.currency ?? "USD";
 
   return (
     <div className="rounded-[12px] border border-border bg-card px-5 py-6 shadow-none sm:px-6 sm:py-7">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-stretch lg:gap-8">
         <div className="flex min-w-0 flex-1 flex-col justify-between gap-5">
           <div>
-            <div className="mb-3 flex items-center gap-2 text-sm text-muted-foreground">
-              <span>Total Portfolio Value</span>
+            <div className="mb-3 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+              <span>Provider equity</span>
               <Eye className="size-3.5 opacity-70" />
+              <span className="rounded-md border border-border px-2 py-0.5 text-[11px] font-semibold">
+                {activeProvider.displayName}
+              </span>
             </div>
 
             <p className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-              $24,530.45
+              {loading
+                ? "…"
+                : equity != null
+                  ? formatMoney(equity, currency)
+                  : "—"}
             </p>
 
-            <div className="mt-2.5 inline-flex items-center gap-1.5 rounded-md bg-emerald-50 px-2.5 py-1 text-sm font-semibold text-success dark:bg-emerald-950/40">
-              <TrendingUp className="size-3.5" />
-              <span>+$1,250.34 (5.37%)</span>
-            </div>
+            {dayPnl != null && dayPnlPct != null ? (
+              <div className="mt-2.5 inline-flex items-center gap-1.5 rounded-md bg-emerald-50 px-2.5 py-1 text-sm font-semibold text-success dark:bg-emerald-950/40">
+                <TrendingUp className="size-3.5" />
+                <span>
+                  {formatSignedMoney(dayPnl, currency)} ({formatPct(dayPnlPct)})
+                </span>
+              </div>
+            ) : (
+              <p className="mt-2 text-sm text-muted-foreground">
+                {error ?? "Connect a provider to load live balances."}
+              </p>
+            )}
           </div>
 
           <div className="flex gap-2.5">
             <Link
-              href={`${routes.wallet}?action=deposit`}
-              className="rounded-md bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+              href={routes.accounts}
+              className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
             >
-              Deposit
+              <Link2 className="size-4" />
+              Manage accounts
             </Link>
             <Link
-              href={`${routes.wallet}?action=withdraw`}
+              href={routes.trades}
               className="rounded-md border border-primary bg-transparent px-5 py-2.5 text-sm font-semibold text-primary transition-colors hover:bg-accent"
             >
-              Withdraw
+              Trade
             </Link>
           </div>
         </div>
@@ -62,13 +89,15 @@ export function PortfolioValue() {
           <div className="mb-3 flex items-start justify-between gap-3">
             <div>
               <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
-                Today&apos;s P&L
+                Day P&L
               </p>
               <p className="mt-1 text-lg font-semibold tracking-tight text-success">
-                +$320.45
-                <span className="ml-1.5 text-sm font-medium text-success/80">
-                  (1.32%)
-                </span>
+                {dayPnl != null ? formatSignedMoney(dayPnl, currency) : "—"}
+                {dayPnlPct != null && (
+                  <span className="ml-1.5 text-sm font-medium text-success/80">
+                    ({formatPct(dayPnlPct)})
+                  </span>
+                )}
               </p>
             </div>
             <span className="rounded-md border border-border px-2 py-0.5 text-[11px] font-semibold text-muted-foreground">

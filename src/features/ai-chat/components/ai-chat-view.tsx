@@ -50,7 +50,7 @@ function buildReply(prompt: string) {
     return "Your portfolio is up today with crypto still the main driver. Concentration looks elevated in BTC/ETH, so avoid stacking highly correlated longs unless conviction is strong.";
   }
 
-  return "Got it. I can help with market outlook, AI signals, trade sizing, wallet actions, or account settings. Ask a more specific question and I’ll go deeper.";
+  return "Got it. I can help with market outlook, AI signals, trade sizing, connected providers, or account settings. Ask a more specific question and I’ll go deeper.";
 }
 
 export function AiChatView() {

@@ -1,4 +1,6 @@
-import { TrendingUp } from "lucide-react";
+"use client";
+
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -6,85 +8,110 @@ import { PageHeader } from "@/shared/components/page-header";
 import { Sparkline } from "@/shared/components/sparkline";
 import { ChangeIndicator } from "@/shared/components/change-indicator";
 import { routes } from "@/shared/lib/routes";
-import Link from "next/link";
-
-const holdings = [
-  {
-    symbol: "BTC",
-    name: "Bitcoin",
-    allocation: "42%",
-    value: "$10,302.79",
-    pnl: "+8.2%",
-    positive: true,
-    data: [30, 35, 32, 40, 45, 48, 52],
-  },
-  {
-    symbol: "ETH",
-    name: "Ethereum",
-    allocation: "24%",
-    value: "$5,887.31",
-    pnl: "+5.1%",
-    positive: true,
-    data: [28, 30, 34, 32, 38, 42, 40],
-  },
-  {
-    symbol: "AAPL",
-    name: "Apple Inc.",
-    allocation: "18%",
-    value: "$4,415.48",
-    pnl: "+2.4%",
-    positive: true,
-    data: [40, 42, 41, 44, 43, 46, 48],
-  },
-  {
-    symbol: "XAU",
-    name: "Gold",
-    allocation: "10%",
-    value: "$2,453.05",
-    pnl: "+0.9%",
-    positive: true,
-    data: [44, 45, 44, 46, 47, 46, 48],
-  },
-  {
-    symbol: "CASH",
-    name: "USD Cash",
-    allocation: "6%",
-    value: "$1,471.82",
-    pnl: "0.0%",
-    positive: true,
-    data: [50, 50, 50, 50, 50, 50, 50],
-  },
-];
+import {
+  formatMoney,
+  formatPct,
+  formatSignedMoney,
+  useTrading,
+} from "@/shared/trading";
 
 export function PortfolioView() {
+  const { snapshot, positions, activeProvider, loading, error } = useTrading();
+  const currency = snapshot?.currency ?? "USD";
+  const equity = snapshot?.equity ?? 0;
+  const invested = positions.reduce((sum, p) => sum + p.marketValue, 0);
+  const openPnl = snapshot?.openPnl ?? 0;
+
+  const holdings = [
+    ...positions.map((p) => ({
+      symbol: p.symbol,
+      name: p.symbol,
+      allocation:
+        equity > 0 ? `${((p.marketValue / equity) * 100).toFixed(0)}%` : "—",
+      value: formatMoney(p.marketValue, currency),
+      pnl: formatPct((p.unrealizedPnl / (p.marketValue - p.unrealizedPnl || 1)) * 100),
+      positive: p.unrealizedPnl >= 0,
+      data: [30, 35, 32, 40, 45, 48, 52],
+    })),
+    ...(snapshot?.balances
+      .filter((b) => b.free + b.locked > 0 && (b.usdValue ?? 0) > 0)
+      .filter((b) => !positions.some((p) => p.symbol.startsWith(b.asset)))
+      .map((b) => ({
+        symbol: b.asset,
+        name: `${b.asset} (free)`,
+        allocation:
+          equity > 0
+            ? `${(((b.usdValue ?? 0) / equity) * 100).toFixed(0)}%`
+            : "—",
+        value: formatMoney(b.usdValue ?? 0, currency),
+        pnl: "0.0%",
+        positive: true,
+        data: [50, 50, 50, 50, 50, 50, 50],
+      })) ?? []),
+  ];
+
+  const stats = [
+    {
+      label: "Provider equity",
+      value: snapshot ? formatMoney(equity, currency) : "—",
+      change: snapshot ? formatPct(snapshot.dayPnlPct) : null,
+    },
+    {
+      label: "Positions value",
+      value: snapshot ? formatMoney(invested, currency) : "—",
+      change: null,
+    },
+    {
+      label: "Unrealized P&L",
+      value: snapshot ? formatSignedMoney(openPnl, currency) : "—",
+      change: null,
+    },
+    {
+      label: "Day change",
+      value: snapshot ? formatSignedMoney(snapshot.dayPnl, currency) : "—",
+      change: snapshot ? formatPct(snapshot.dayPnlPct) : null,
+    },
+  ];
+
   return (
     <div className="flex w-full min-w-0 flex-col gap-4 sm:gap-5">
       <PageHeader
         title="Portfolio"
-        description="Track allocation, performance, and holdings."
+        description={`Read-only holdings from ${activeProvider.displayName}. No internal TrustAI wallet.`}
         actions={
           <>
-            <Button variant="outline" className="rounded-xl" render={<Link href={routes.trades} />}>
+            <Button
+              variant="outline"
+              className="rounded-md"
+              render={<Link href={routes.trades} />}
+            >
               Trade
             </Button>
-            <Button className="rounded-xl" nativeButton={false} render={<Link href={`${routes.wallet}?action=deposit`} />}>
-              Deposit
+            <Button
+              className="rounded-md"
+              nativeButton={false}
+              render={<Link href={routes.accounts} />}
+            >
+              Manage accounts
             </Button>
           </>
         }
       />
 
+      {(error || (!loading && !snapshot)) && (
+        <p className="rounded-[12px] border border-border px-4 py-3 text-sm text-muted-foreground">
+          {error ?? "Connect a trading provider to load portfolio balances."}
+        </p>
+      )}
+
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {[
-          { label: "Total Equity", value: "$24,530.45", change: "+5.37%" },
-          { label: "Invested", value: "$23,058.63", change: null },
-          { label: "Unrealized P&L", value: "+$1,471.82", change: "+6.38%" },
-          { label: "Day Change", value: "+$320.45", change: "+1.32%" },
-        ].map((stat) => (
+        {stats.map((stat) => (
           <Card key={stat.label} className="" size="sm">
             <CardContent>
               <p className="text-xs text-muted-foreground">{stat.label}</p>
-              <p className="mt-1 text-xl font-bold text-foreground">{stat.value}</p>
+              <p className="mt-1 text-xl font-bold text-foreground">
+                {loading ? "…" : stat.value}
+              </p>
               {stat.change && (
                 <ChangeIndicator value={stat.change} className="mt-1 text-xs" />
               )}
@@ -98,102 +125,55 @@ export function PortfolioView() {
           <CardHeader className="flex-row items-center justify-between">
             <CardTitle>Performance</CardTitle>
             <Badge variant="secondary" className="border-0">
-              30D
+              Provider
             </Badge>
           </CardHeader>
           <CardContent>
-            <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-success">
-              <TrendingUp className="size-4" />
-              +12.4% this month
-            </div>
             <Sparkline
-              data={[35, 38, 36, 42, 40, 48, 52, 50, 58, 62, 70]}
+              data={[42, 45, 43, 48, 52, 50, 55, 58, 54, 60, 63, 68, 65, 72, 78]}
               fill
+              showDot
               className="h-40 w-full"
-              strokeWidth={2.5}
+              strokeWidth={2.25}
             />
           </CardContent>
         </Card>
 
         <Card className="">
           <CardHeader>
-            <CardTitle>Allocation</CardTitle>
+            <CardTitle>Holdings</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
+            {holdings.length === 0 && (
+              <p className="text-sm text-muted-foreground">
+                No provider holdings yet.
+              </p>
+            )}
             {holdings.map((item) => (
-              <div key={item.symbol} className="space-y-1.5">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="font-medium text-foreground">
-                    {item.symbol}
-                  </span>
-                  <span className="text-muted-foreground">{item.allocation}</span>
+              <div
+                key={item.symbol}
+                className="flex items-center justify-between gap-3 rounded-[12px] border border-border px-3 py-2.5"
+              >
+                <div className="min-w-0">
+                  <p className="font-semibold text-foreground">{item.symbol}</p>
+                  <p className="text-xs text-muted-foreground">{item.name}</p>
                 </div>
-                <div className="h-2 overflow-hidden rounded-full bg-muted">
-                  <div
-                    className="h-full rounded-full bg-primary"
-                    style={{ width: item.allocation }}
-                  />
+                <Sparkline
+                  data={item.data}
+                  positive={item.positive}
+                  className="h-8 w-16"
+                />
+                <div className="text-right">
+                  <p className="text-sm font-semibold">{item.value}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {item.allocation} · {item.pnl}
+                  </p>
                 </div>
               </div>
             ))}
           </CardContent>
         </Card>
       </div>
-
-      <Card className="">
-        <CardHeader>
-          <CardTitle>Holdings</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-1 p-0 sm:p-0">
-          <div className="scrollbar-thin overflow-x-auto">
-            <table className="w-full min-w-[640px] text-left text-sm">
-              <thead>
-                <tr className="border-b border-border text-xs text-muted-foreground">
-                  <th className="px-5 py-3 font-medium">Asset</th>
-                  <th className="px-4 py-3 font-medium">Allocation</th>
-                  <th className="px-4 py-3 font-medium">Value</th>
-                  <th className="px-4 py-3 font-medium">P&L</th>
-                  <th className="px-4 py-3 font-medium">Trend</th>
-                </tr>
-              </thead>
-              <tbody>
-                {holdings.map((item) => (
-                  <tr
-                    key={item.symbol}
-                    className="border-b border-border/70 last:border-0"
-                  >
-                    <td className="px-5 py-3.5">
-                      <p className="font-semibold text-foreground">
-                        {item.symbol}
-                      </p>
-                      <p className="text-xs text-muted-foreground">{item.name}</p>
-                    </td>
-                    <td className="px-4 py-3.5 text-foreground">
-                      {item.allocation}
-                    </td>
-                    <td className="px-4 py-3.5 font-semibold text-foreground">
-                      {item.value}
-                    </td>
-                    <td className="px-4 py-3.5">
-                      <ChangeIndicator
-                        value={item.pnl}
-                        positive={item.positive}
-                      />
-                    </td>
-                    <td className="px-4 py-3.5">
-                      <Sparkline
-                        data={item.data}
-                        positive={item.positive}
-                        className="h-8 w-20"
-                      />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }

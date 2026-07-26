@@ -53,7 +53,7 @@ const notificationOptions = [
   {
     name: "emailAlerts" as const,
     title: "Email alerts",
-    description: "Get notified about fills, deposits, and withdrawals.",
+    description: "Get notified about fills and provider account sync events.",
     icon: Mail,
   },
   {

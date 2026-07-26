@@ -15,9 +15,9 @@ import { routes } from "@/shared/lib/routes";
 const topics = [
   {
     title: "Getting started",
-    description: "Fund your wallet, place your first trade, and follow signals.",
+    description: "Connect Binance or Alpaca, sync balances, and place your first trade.",
     icon: BookOpen,
-    href: routes.wallet,
+    href: routes.accounts,
   },
   {
     title: "Security & verification",
@@ -39,7 +39,7 @@ const topics = [
   },
   {
     title: "FAQs",
-    description: "Quick answers to common wallet, trading, and account questions.",
+    description: "Quick answers about providers, trading, and account security.",
     icon: HelpCircle,
     href: routes.faq,
   },

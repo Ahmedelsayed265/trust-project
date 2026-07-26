@@ -4,7 +4,7 @@ import {
   ArrowLeftRight,
   ClipboardList,
   Briefcase,
-  Wallet,
+  Link2,
   Sparkles,
   Star,
   Newspaper,
@@ -29,7 +29,7 @@ export const primaryNav: NavItem[] = [
   { label: "Trade", icon: ArrowLeftRight, href: routes.trades },
   { label: "Orders", icon: ClipboardList, href: routes.orders },
   { label: "Portfolio", icon: Briefcase, href: routes.portfolio },
-  { label: "Wallet", icon: Wallet, href: routes.wallet },
+  { label: "Accounts", icon: Link2, href: routes.accounts },
   { label: "AI Signals", icon: Sparkles, href: routes.aiSignals },
 ];
 

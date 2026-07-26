@@ -26,7 +26,7 @@ const rewards = [
   },
   {
     title: "They earn $15",
-    description: "Welcome bonus unlocked after verification and first deposit.",
+    description: "Welcome bonus unlocked after verification and connecting a trading provider.",
   },
   {
     title: "Unlimited invites",
@@ -36,7 +36,7 @@ const rewards = [
 
 const recentInvites = [
   { name: "Sara K.", status: "Joined", reward: "+$25", done: true },
-  { name: "Omar H.", status: "Pending deposit", reward: "—", done: false },
+  { name: "Omar H.", status: "Pending provider connect", reward: "—", done: false },
   { name: "Lina M.", status: "Joined", reward: "+$25", done: true },
 ];
 

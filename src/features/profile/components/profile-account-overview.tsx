@@ -1,9 +1,20 @@
+"use client";
+
 import { Crown, TrendingUp } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { ChangeIndicator } from "@/shared/components/change-indicator";
 import { currentUser } from "@/shared/lib/user";
+import {
+  formatMoney,
+  formatPct,
+  formatSignedMoney,
+  useTrading,
+} from "@/shared/trading";
 
 export function ProfileAccountOverview() {
+  const { snapshot, activeProvider, loading } = useTrading();
+  const currency = snapshot?.currency ?? "USD";
+
   return (
     <Card className="">
       <CardContent>
@@ -24,25 +35,44 @@ export function ProfileAccountOverview() {
           </div>
 
           <div>
-            <p className="text-xs text-muted-foreground">Total Equity</p>
-            <p className="text-base font-bold text-foreground">$24,530.45</p>
-            <div className="mt-0.5 flex items-center gap-1 text-xs font-semibold text-success">
-              <TrendingUp className="size-3.5" />
-              +$1,250.34 (5.37%)
-            </div>
+            <p className="text-xs text-muted-foreground">
+              Provider equity · {activeProvider.displayName}
+            </p>
+            <p className="text-base font-bold text-foreground">
+              {loading
+                ? "…"
+                : snapshot
+                  ? formatMoney(snapshot.equity, currency)
+                  : "—"}
+            </p>
+            {snapshot && (
+              <div className="mt-0.5 flex items-center gap-1 text-xs font-semibold text-success">
+                <TrendingUp className="size-3.5" />
+                {formatSignedMoney(snapshot.dayPnl, currency)} (
+                {formatPct(snapshot.dayPnlPct)})
+              </div>
+            )}
           </div>
 
           <div>
             <p className="text-xs text-muted-foreground">Buying Power</p>
-            <p className="text-base font-bold text-foreground">$8,642.21</p>
+            <p className="text-base font-bold text-foreground">
+              {snapshot
+                ? formatMoney(snapshot.buyingPower, currency)
+                : "—"}
+            </p>
           </div>
 
           <div>
-            <p className="text-xs text-muted-foreground">Total P&L (Today)</p>
-            <ChangeIndicator
-              value="+$320.45 (1.32%)"
-              className="text-base font-bold"
-            />
+            <p className="text-xs text-muted-foreground">Day P&L</p>
+            {snapshot ? (
+              <ChangeIndicator
+                value={`${formatSignedMoney(snapshot.dayPnl, currency)} (${formatPct(snapshot.dayPnlPct)})`}
+                className="text-base font-bold"
+              />
+            ) : (
+              <p className="text-base font-bold text-foreground">—</p>
+            )}
           </div>
         </div>
       </CardContent>

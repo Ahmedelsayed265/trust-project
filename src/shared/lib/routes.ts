@@ -4,7 +4,7 @@ export const routes = {
   trades: "/trades",
   orders: "/orders",
   portfolio: "/portfolio",
-  wallet: "/wallet",
+  accounts: "/accounts",
   aiSignals: "/ai-signals",
   aiChat: "/ai-chat",
   watchlist: "/watchlist",

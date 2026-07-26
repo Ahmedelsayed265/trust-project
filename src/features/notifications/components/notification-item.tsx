@@ -2,7 +2,7 @@ import Link from "next/link";
 import {
   ArrowLeftRight,
   Sparkles,
-  Wallet,
+  Link2,
   Info,
   type LucideIcon,
 } from "lucide-react";
@@ -12,7 +12,7 @@ import type { Notification, NotificationType } from "@/features/notifications/da
 const typeIcon: Record<NotificationType, LucideIcon> = {
   trade: ArrowLeftRight,
   signal: Sparkles,
-  wallet: Wallet,
+  account: Link2,
   system: Info,
 };
 
@@ -20,7 +20,7 @@ const typeColor: Record<NotificationType, string> = {
   trade: "bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-300",
   signal:
     "bg-violet-50 text-violet-600 dark:bg-violet-950/40 dark:text-violet-300",
-  wallet:
+  account:
     "bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-300",
   system:
     "bg-sky-50 text-sky-600 dark:bg-sky-950/40 dark:text-sky-300",

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeftRight, Sparkles, Briefcase, Wallet } from "lucide-react";
+import { ArrowLeftRight, Sparkles, Briefcase, Link2 } from "lucide-react";
 import { routes } from "@/shared/lib/routes";
 
 const actions = [
@@ -25,9 +25,9 @@ const actions = [
       "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-300",
   },
   {
-    label: "Wallet",
-    href: routes.wallet,
-    icon: Wallet,
+    label: "Accounts",
+    href: routes.accounts,
+    icon: Link2,
     color:
       "bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-300",
   },

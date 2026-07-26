@@ -13,7 +13,7 @@ const highlights = [
   {
     title: "Built for active traders",
     description:
-      "Portfolio tracking, wallet tools, and order history stay in one place so you can move faster.",
+      "Portfolio tracking, provider balances, and order history stay in one place so you can move faster.",
     icon: Building2,
   },
   {
