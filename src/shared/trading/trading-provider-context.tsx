@@ -82,20 +82,29 @@ export function TradingProviderContext({ children }: { children: ReactNode }) {
       const nextAccounts = await provider.getAccounts();
       setAccounts(nextAccounts);
 
-      if (nextAccounts.some((a) => a.status === "connected")) {
-        const [nextSnapshot, nextPositions, nextOrders] = await Promise.all([
+      const connected = nextAccounts.some((a) => a.status === "connected");
+
+      // Demo adapters always expose seed balances for UI. If the account is
+      // disconnected, auto-use demo credentials so the dashboard isn't empty.
+      if (!connected) {
+        await provider.connect({
+          apiKey: "demo",
+          apiSecret: "demo",
+          environment: activeProviderId === "alpaca" ? "paper" : "live",
+        });
+      }
+
+      const [nextSnapshot, nextPositions, nextOrders, refreshedAccounts] =
+        await Promise.all([
           provider.getPortfolioSnapshot(),
           provider.getPositions(),
           provider.getOrders({ status: "open" }),
+          provider.getAccounts(),
         ]);
-        setSnapshot(nextSnapshot);
-        setPositions(nextPositions);
-        setOpenOrders(nextOrders);
-      } else {
-        setSnapshot(null);
-        setPositions([]);
-        setOpenOrders([]);
-      }
+      setAccounts(refreshedAccounts);
+      setSnapshot(nextSnapshot);
+      setPositions(nextPositions);
+      setOpenOrders(nextOrders);
     } catch (err) {
       const message =
         err instanceof ProviderError

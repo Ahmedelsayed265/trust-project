@@ -29,15 +29,15 @@ export class AlpacaProvider implements TradingProvider {
     PROVIDER_CAPABILITIES.alpaca
   );
 
-  private connected = false;
+  private connected = true;
   private account: ProviderAccount = {
     id: "alpaca-paper",
     providerId: "alpaca",
     label: "Alpaca Paper",
     environment: "paper",
-    status: "disconnected",
-    permissions: [],
-    lastSyncedAt: null,
+    status: "connected",
+    permissions: ["trading", "account:read"],
+    lastSyncedAt: new Date().toISOString(),
   };
 
   private balances: ProviderBalance[] = [

@@ -26,7 +26,7 @@ const chartByTimeframe: Record<(typeof timeframes)[number], number[]> = {
 
 export function PortfolioValue() {
   const [timeframe, setTimeframe] = useState<(typeof timeframes)[number]>("1D");
-  const { snapshot, activeProvider, loading, error } = useTrading();
+  const { snapshot, activeProvider, loading } = useTrading();
   const chartData = chartByTimeframe[timeframe];
   const equity = snapshot?.equity ?? null;
   const dayPnl = snapshot?.dayPnl ?? null;
@@ -44,6 +44,9 @@ export function PortfolioValue() {
               <span className="rounded-md border border-border px-2 py-0.5 text-[11px] font-semibold">
                 {activeProvider.displayName}
               </span>
+              <span className="rounded-md border border-amber-200 bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-700 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-300">
+                Demo
+              </span>
             </div>
 
             <p className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
@@ -51,7 +54,7 @@ export function PortfolioValue() {
                 ? "…"
                 : equity != null
                   ? formatMoney(equity, currency)
-                  : "—"}
+                  : formatMoney(0, currency)}
             </p>
 
             {dayPnl != null && dayPnlPct != null ? (
@@ -63,7 +66,7 @@ export function PortfolioValue() {
               </div>
             ) : (
               <p className="mt-2 text-sm text-muted-foreground">
-                {error ?? "Connect a provider to load live balances."}
+                Demo balances from {activeProvider.displayName}.
               </p>
             )}
           </div>
