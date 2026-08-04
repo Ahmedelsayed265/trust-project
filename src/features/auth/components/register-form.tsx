@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -128,19 +129,19 @@ export function RegisterForm() {
                 />
                 <span>
                   I agree to the{" "}
-                  <button
-                    type="button"
+                  <Link
+                    href="/terms"
                     className="font-medium text-primary hover:underline"
                   >
                     Terms of Service
-                  </button>{" "}
+                  </Link>{" "}
                   and{" "}
-                  <button
-                    type="button"
+                  <Link
+                    href="/privacy"
                     className="font-medium text-primary hover:underline"
                   >
                     Privacy Policy
-                  </button>
+                  </Link>
                 </span>
               </label>
 
