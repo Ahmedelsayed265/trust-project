@@ -5,8 +5,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { BadgeCheck, Camera, Check } from "lucide-react";
 import { currentUser } from "@/shared/lib/user";
-import { routes } from "@/shared/lib/routes";
-
 const benefits = [
   "Advanced AI Signals",
   "Real-time News",
@@ -92,7 +90,7 @@ export function ProfileHero() {
             </ul>
             <Button
               className="h-10 w-full rounded-xl"
-              render={<Link href={routes.plans} />}
+              render={<Link href="/profile/plans" />}
             >
               Manage Plan
             </Button>

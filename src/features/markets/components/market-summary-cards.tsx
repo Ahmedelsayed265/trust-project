@@ -1,8 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, Bot } from "lucide-react";
 import { Sparkline } from "@/shared/components/sparkline";
-import { routes } from "@/shared/lib/routes";
-
 export function MarketSummaryCards() {
   return (
     <div className="grid w-full min-w-0 gap-4 xl:grid-cols-[1fr_1fr_1fr_280px]">
@@ -113,7 +111,7 @@ export function MarketSummaryCards() {
           Get AI-powered insights and smart analysis for any asset in real-time.
         </p>
         <Link
-          href={routes.aiSignals}
+          href="/ai-signals"
           className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-3.5 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
         >
           Ask AI

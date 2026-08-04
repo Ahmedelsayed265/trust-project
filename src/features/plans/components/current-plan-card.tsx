@@ -4,8 +4,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { currentPlanMeta } from "@/features/plans/data/plans";
-import { routes } from "@/shared/lib/routes";
-
 export function CurrentPlanCard() {
   return (
     <Card className="">
@@ -49,7 +47,7 @@ export function CurrentPlanCard() {
             <Button
               variant="outline"
               className="rounded-xl"
-              render={<Link href={routes.profile} />}
+              render={<Link href="/profile" />}
             >
               <History />
               Billing History

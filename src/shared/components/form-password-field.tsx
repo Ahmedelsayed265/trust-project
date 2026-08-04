@@ -49,6 +49,7 @@ export function FormPasswordField<T extends FieldValues>({
           className={className}
         >
           <FieldLabel htmlFor={field.name}>{label}</FieldLabel>
+
           <FieldContent>
             <div className="relative">
               <Input
@@ -59,10 +60,11 @@ export function FormPasswordField<T extends FieldValues>({
                 autoComplete={autoComplete}
                 aria-invalid={fieldState.invalid}
                 className={cn(
-                  "h-12 rounded-md bg-card py-3 pr-10 text-sm",
-                  inputClassName
+                  "h-12 rounded-[12px]! bg-card py-3 pr-10 text-sm",
+                  inputClassName,
                 )}
               />
+
               <Button
                 type="button"
                 variant="ghost"
@@ -74,6 +76,7 @@ export function FormPasswordField<T extends FieldValues>({
                 {visible ? <EyeOff /> : <Eye />}
               </Button>
             </div>
+
             {fieldState.error && (
               <FieldError>{fieldState.error.message}</FieldError>
             )}

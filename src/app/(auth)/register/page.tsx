@@ -1,23 +1,10 @@
 import Link from "next/link";
 import { AuthShell } from "@/shared/layouts/auth-shell";
 import { RegisterForm } from "@/features/auth";
-import { routes } from "@/shared/lib/routes";
 
 export default function RegisterPage() {
   return (
-    <AuthShell
-      footer={
-        <p className="text-muted-foreground">
-          Already have an account?{" "}
-          <Link
-            href={routes.login}
-            className="font-semibold text-primary hover:underline"
-          >
-            Sign in
-          </Link>
-        </p>
-      }
-    >
+    <AuthShell>
       <div className="mb-8 space-y-2">
         <h2 className="text-2xl font-bold tracking-tight text-foreground">
           Create your account
@@ -26,7 +13,18 @@ export default function RegisterPage() {
           Start trading with AI-powered insights
         </p>
       </div>
+
       <RegisterForm />
+
+      <p className="text-muted-foreground text-center mt-6">
+        Already have an account?{" "}
+        <Link
+          href="/login"
+          className="font-semibold text-primary hover:underline"
+        >
+          Sign in
+        </Link>
+      </p>
     </AuthShell>
   );
 }

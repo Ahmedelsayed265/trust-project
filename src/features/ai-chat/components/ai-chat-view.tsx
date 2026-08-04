@@ -6,7 +6,6 @@ import { ArrowUp, Bot, Sparkles, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { PageHeader } from "@/shared/components/page-header";
-import { routes } from "@/shared/lib/routes";
 import { cn } from "@/lib/utils";
 
 type ChatMessage = {
@@ -105,7 +104,7 @@ export function AiChatView() {
             variant="outline"
             className="rounded-xl"
             nativeButton={false}
-            render={<Link href={routes.aiSignals} />}
+            render={<Link href="/ai-signals" />}
           >
             <Sparkles />
             View AI Signals

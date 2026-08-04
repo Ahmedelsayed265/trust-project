@@ -9,8 +9,6 @@ import { Sparkline } from "@/shared/components/sparkline";
 import { ChangeIndicator } from "@/shared/components/change-indicator";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { routes } from "@/shared/lib/routes";
-
 const seed = [
   {
     symbol: "BTC/USDT",
@@ -70,7 +68,7 @@ export function WatchlistView() {
           <Button
             variant="outline"
             className="rounded-xl"
-            render={<Link href={routes.markets} />}
+            render={<Link href="/markets" />}
           >
             Browse Markets
           </Button>

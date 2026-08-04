@@ -9,8 +9,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/shared/components/page-header";
-import { routes } from "@/shared/lib/routes";
-
 const faqSections = [
   {
     title: "Getting started",
@@ -84,7 +82,7 @@ export function FaqView() {
           <Button
             className="rounded-xl"
             nativeButton={false}
-            render={<Link href={routes.contact} />}
+            render={<Link href="/contact" />}
           >
             <MessageCircle />
             Contact Support
@@ -131,14 +129,14 @@ export function FaqView() {
               variant="outline"
               className="rounded-xl"
               nativeButton={false}
-              render={<Link href={routes.help} />}
+              render={<Link href="/help" />}
             >
               Help Center
             </Button>
             <Button
               className="rounded-xl"
               nativeButton={false}
-              render={<Link href={routes.contact} />}
+              render={<Link href="/contact" />}
             >
               Contact Support
             </Button>

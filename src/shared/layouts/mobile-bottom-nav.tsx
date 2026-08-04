@@ -9,16 +9,15 @@ import {
   LineChart,
   UserRound,
 } from "lucide-react";
-import { routes } from "@/shared/lib/routes";
 import { cn } from "@/lib/utils";
 import { useSidebar } from "@/shared/providers/sidebar-provider";
 
 const items = [
-  { label: "Home", href: routes.home, icon: Home },
-  { label: "Markets", href: routes.markets, icon: LineChart },
-  { label: "Trade", href: routes.trades, icon: ArrowLeftRight },
-  { label: "Orders", href: routes.orders, icon: ClipboardList },
-  { label: "Profile", href: routes.profile, icon: UserRound },
+  { label: "Home", href: "/", icon: Home },
+  { label: "Markets", href: "/markets", icon: LineChart },
+  { label: "Trade", href: "/trades", icon: ArrowLeftRight },
+  { label: "Orders", href: "/orders", icon: ClipboardList },
+  { label: "Profile", href: "/profile", icon: UserRound },
 ];
 
 export function MobileBottomNav() {
@@ -31,8 +30,8 @@ export function MobileBottomNav() {
         {items.map((item) => {
           const Icon = item.icon;
           const active =
-            item.href === routes.home
-              ? pathname === routes.home
+            item.href === "/"
+              ? pathname === "/"
               : pathname.startsWith(item.href);
 
           return (

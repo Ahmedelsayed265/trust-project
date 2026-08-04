@@ -1,5 +1,3 @@
-import { routes } from "@/shared/lib/routes";
-
 export type NotificationType = "trade" | "signal" | "account" | "system";
 
 export type Notification = {
@@ -20,7 +18,7 @@ export const notifications: Notification[] = [
     time: "2 min ago",
     read: false,
     type: "signal",
-    href: routes.aiSignals,
+    href: "/ai-signals",
   },
   {
     id: "2",
@@ -29,7 +27,7 @@ export const notifications: Notification[] = [
     time: "18 min ago",
     read: false,
     type: "trade",
-    href: routes.orders,
+    href: "/orders",
   },
   {
     id: "3",
@@ -38,7 +36,7 @@ export const notifications: Notification[] = [
     time: "1h ago",
     read: false,
     type: "account",
-    href: routes.accounts,
+    href: "/accounts",
   },
   {
     id: "4",
@@ -47,7 +45,7 @@ export const notifications: Notification[] = [
     time: "3h ago",
     read: true,
     type: "system",
-    href: routes.watchlist,
+    href: "/watchlist",
   },
   {
     id: "5",
@@ -56,7 +54,7 @@ export const notifications: Notification[] = [
     time: "Yesterday",
     read: true,
     type: "trade",
-    href: routes.trades,
+    href: "/trades",
   },
   {
     id: "6",
@@ -65,7 +63,7 @@ export const notifications: Notification[] = [
     time: "2d ago",
     read: true,
     type: "signal",
-    href: routes.aiSignals,
+    href: "/ai-signals",
   },
 ];
 

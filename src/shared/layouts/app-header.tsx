@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { NotificationsDropdown } from "@/features/notifications";
 import { useSidebar } from "@/shared/providers/sidebar-provider";
-import { routes } from "@/shared/lib/routes";
 import { currentUser } from "@/shared/lib/user";
 
 export function AppHeader() {
@@ -54,7 +53,7 @@ export function AppHeader() {
           className="hidden shrink-0 text-muted-foreground sm:inline-flex"
           aria-label="Settings"
           nativeButton={false}
-          render={<Link href={routes.settings} />}
+          render={<Link href="/settings" />}
         >
           <Settings className="size-5" />
         </Button>
@@ -88,16 +87,16 @@ export function AppHeader() {
           <DropdownMenuContent align="end" className="min-w-48">
             <DropdownMenuGroup>
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuItem render={<Link href={routes.profile} />}>
+              <DropdownMenuItem render={<Link href="/profile" />}>
                 Profile
               </DropdownMenuItem>
-              <DropdownMenuItem render={<Link href={routes.settings} />}>
+              <DropdownMenuItem render={<Link href="/settings" />}>
                 Settings
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem render={<Link href={routes.login} />}>
+              <DropdownMenuItem render={<Link href="/login" />}>
                 Log out
               </DropdownMenuItem>
             </DropdownMenuGroup>

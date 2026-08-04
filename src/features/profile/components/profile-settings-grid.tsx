@@ -23,8 +23,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { SettingsLink } from "@/features/profile/components/settings-link";
-import { routes } from "@/shared/lib/routes";
-
 export function ProfileSettingsGrid() {
   return (
     <div className="grid gap-4 xl:grid-cols-3">
@@ -36,7 +34,7 @@ export function ProfileSettingsGrid() {
               label: "Personal Information",
               description: "Name, email, phone",
               icon: User,
-              href: routes.settings,
+              href: "/settings",
             },
             {
               label: "Verification",
@@ -44,13 +42,13 @@ export function ProfileSettingsGrid() {
               icon: BadgeCheck,
               badge: "Verified",
               badgeTone: "success",
-              href: routes.verification,
+              href: "/profile/verification",
             },
             {
               label: "Security",
               description: "Password, 2FA",
               icon: Shield,
-              href: routes.security,
+              href: "/profile/security",
             },
           ]}
         />
@@ -61,19 +59,19 @@ export function ProfileSettingsGrid() {
               label: "Connected Accounts",
               description: "Binance Spot / Alpaca",
               icon: Link2,
-              href: routes.accounts,
+              href: "/accounts",
             },
             {
               label: "Trading Preferences",
               description: "Defaults & risk",
               icon: SlidersHorizontal,
-              href: routes.settings,
+              href: "/settings",
             },
             {
               label: "Order & Trade History",
               description: "View past activity",
               icon: History,
-              href: routes.orders,
+              href: "/orders",
             },
           ]}
         />
@@ -87,19 +85,19 @@ export function ProfileSettingsGrid() {
               label: "Language",
               description: "English",
               icon: Languages,
-              href: routes.settings,
+              href: "/settings",
             },
             {
               label: "Appearance",
               description: "Light Mode",
               icon: Palette,
-              href: routes.settings,
+              href: "/settings",
             },
             {
               label: "Notifications",
               description: "Emails & push",
               icon: Bell,
-              href: routes.settings,
+              href: "/settings",
             },
           ]}
         />
@@ -110,13 +108,13 @@ export function ProfileSettingsGrid() {
               label: "Help Center",
               description: "Guides & FAQs",
               icon: CircleHelp,
-              href: routes.help,
+              href: "/help",
             },
             {
               label: "FAQs",
               description: "Common questions",
               icon: HelpCircle,
-              href: routes.faq,
+              href: "/faq",
             },
             {
               label: "Chat with AI Assistant",
@@ -124,7 +122,7 @@ export function ProfileSettingsGrid() {
               icon: Sparkles,
               badge: "New",
               badgeTone: "primary",
-              href: routes.aiChat,
+              href: "/ai-chat",
             },
           ]}
         />
@@ -140,19 +138,19 @@ export function ProfileSettingsGrid() {
               icon: UserPlus,
               badge: "Rewards",
               badgeTone: "success",
-              href: routes.invite,
+              href: "/invite",
             },
             {
               label: "About TrustAI",
               description: "Version 1.0.0",
               icon: Info,
-              href: routes.about,
+              href: "/about",
             },
             {
               label: "Log Out",
               description: "Sign out of this device",
               icon: LogOut,
-              href: routes.login,
+              href: "/login",
             },
           ]}
         />

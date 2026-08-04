@@ -5,8 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/shared/components/page-header";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { routes } from "@/shared/lib/routes";
-
 const signals = [
   {
     pair: "BTC/USDT",
@@ -49,7 +47,7 @@ export function AiSignalsView() {
         title="AI Signals"
         description="Confidence-scored trade ideas updated in real time."
         actions={
-          <Button className="rounded-xl" render={<Link href={routes.trades} />}>
+          <Button className="rounded-xl" render={<Link href="/trades" />}>
             Open Trade Desk
           </Button>
         }
@@ -139,7 +137,7 @@ export function AiSignalsView() {
                 <Button
                   variant="outline"
                   className="h-9 w-full rounded-xl"
-                  render={<Link href={routes.trades} />}
+                  render={<Link href="/trades" />}
                 >
                   Act on Signal
                 </Button>

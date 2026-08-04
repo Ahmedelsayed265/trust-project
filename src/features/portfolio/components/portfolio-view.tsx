@@ -7,7 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/shared/components/page-header";
 import { Sparkline } from "@/shared/components/sparkline";
 import { ChangeIndicator } from "@/shared/components/change-indicator";
-import { routes } from "@/shared/lib/routes";
 import {
   formatMoney,
   formatPct,
@@ -83,14 +82,14 @@ export function PortfolioView() {
             <Button
               variant="outline"
               className="rounded-md"
-              render={<Link href={routes.trades} />}
+              render={<Link href="/trades" />}
             >
               Trade
             </Button>
             <Button
               className="rounded-md"
               nativeButton={false}
-              render={<Link href={routes.accounts} />}
+              render={<Link href="/accounts" />}
             >
               Manage accounts
             </Button>

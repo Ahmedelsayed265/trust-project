@@ -5,7 +5,6 @@ import { Eye, Link2, TrendingUp } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Sparkline } from "@/shared/components/sparkline";
-import { routes } from "@/shared/lib/routes";
 import {
   formatMoney,
   formatPct,
@@ -73,14 +72,14 @@ export function PortfolioValue() {
 
           <div className="flex gap-2.5">
             <Link
-              href={routes.accounts}
+              href="/accounts"
               className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
             >
               <Link2 className="size-4" />
               Manage accounts
             </Link>
             <Link
-              href={routes.trades}
+              href="/trades"
               className="rounded-md border border-primary bg-transparent px-5 py-2.5 text-sm font-semibold text-primary transition-colors hover:bg-accent"
             >
               Trade

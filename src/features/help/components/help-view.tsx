@@ -10,38 +10,36 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/shared/components/page-header";
-import { routes } from "@/shared/lib/routes";
-
 const topics = [
   {
     title: "Getting started",
     description: "Connect Binance or Alpaca, sync balances, and place your first trade.",
     icon: BookOpen,
-    href: routes.accounts,
+    href: "/accounts",
   },
   {
     title: "Security & verification",
     description: "2FA, KYC status, and account recovery best practices.",
     icon: Shield,
-    href: routes.security,
+    href: "/profile/security",
   },
   {
     title: "AI Signals explained",
     description: "How confidence scores and strong/moderate labels work.",
     icon: Sparkles,
-    href: routes.aiSignals,
+    href: "/ai-signals",
   },
   {
     title: "Billing & plans",
     description: "Upgrade, downgrade, invoices, and renewal dates.",
     icon: CircleHelp,
-    href: routes.plans,
+    href: "/profile/plans",
   },
   {
     title: "FAQs",
     description: "Quick answers about providers, trading, and account security.",
     icon: HelpCircle,
-    href: routes.faq,
+    href: "/faq",
   },
 ];
 
@@ -55,7 +53,7 @@ export function HelpView() {
           <Button
             className="rounded-xl"
             nativeButton={false}
-            render={<Link href={routes.contact} />}
+            render={<Link href="/contact" />}
           >
             <MessageCircle />
             Contact Support
@@ -99,7 +97,7 @@ export function HelpView() {
           <Button
             className="rounded-xl"
             nativeButton={false}
-            render={<Link href={routes.plans} />}
+            render={<Link href="/profile/plans" />}
           >
             Manage Plans
           </Button>

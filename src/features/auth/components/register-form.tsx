@@ -18,8 +18,6 @@ import {
   registerSchema,
   type RegisterFormValues,
 } from "@/features/auth/schemas/auth";
-import { routes } from "@/shared/lib/routes";
-
 const authInputClassName = "h-12 rounded-xl bg-card px-3";
 
 export function RegisterForm() {
@@ -37,7 +35,7 @@ export function RegisterForm() {
   });
 
   function onSubmit(_values: RegisterFormValues) {
-    router.push(routes.home);
+    router.push("/");
   }
 
   return (
@@ -51,6 +49,7 @@ export function RegisterForm() {
           placeholder="John"
           inputClassName={authInputClassName}
         />
+        
         <FormTextField
           control={form.control}
           name="lastName"
@@ -101,7 +100,7 @@ export function RegisterForm() {
                   onCheckedChange={(checked) =>
                     field.onChange(checked === true)
                   }
-                  className="mt-0.5"
+                  className="mt-0.5 cursor-pointer"
                 />
                 <span>
                   I agree to the{" "}
@@ -120,6 +119,7 @@ export function RegisterForm() {
                   </button>
                 </span>
               </label>
+              
               {fieldState.error && (
                 <FieldError>{fieldState.error.message}</FieldError>
               )}

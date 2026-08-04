@@ -27,8 +27,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import { routes } from "@/shared/lib/routes";
-
 type Currency = "USD" | "EUR" | "SAR";
 type ChangePeriod = "24h" | "7d" | "30d";
 
@@ -556,7 +554,7 @@ export function MarketsTable({
                             <DropdownMenuItem
                               render={
                                 <Link
-                                  href={`${routes.trades}?symbol=${encodeURIComponent(asset.symbol)}`}
+                                  href={`${"/trades"}?symbol=${encodeURIComponent(asset.symbol)}`}
                                 />
                               }
                             >
@@ -574,7 +572,7 @@ export function MarketsTable({
                             <DropdownMenuItem
                               render={
                                 <Link
-                                  href={`${routes.aiChat}?q=${encodeURIComponent(`Analyze ${asset.symbol}`)}`}
+                                  href={`${"/ai-chat"}?q=${encodeURIComponent(`Analyze ${asset.symbol}`)}`}
                                 />
                               }
                             >

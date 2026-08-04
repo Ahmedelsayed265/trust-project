@@ -15,7 +15,6 @@ import {
   LogOut,
   type LucideIcon,
 } from "lucide-react";
-import { routes } from "@/shared/lib/routes";
 
 export type NavItem = {
   label: string;
@@ -24,30 +23,30 @@ export type NavItem = {
 };
 
 export const primaryNav: NavItem[] = [
-  { label: "Home", icon: Home, href: routes.home },
-  { label: "Markets", icon: LineChart, href: routes.markets },
-  { label: "Trade", icon: ArrowLeftRight, href: routes.trades },
-  { label: "Orders", icon: ClipboardList, href: routes.orders },
-  { label: "Portfolio", icon: Briefcase, href: routes.portfolio },
-  { label: "Accounts", icon: Link2, href: routes.accounts },
-  { label: "AI Signals", icon: Sparkles, href: routes.aiSignals },
+  { label: "Home", icon: Home, href: "/" },
+  { label: "Markets", icon: LineChart, href: "/markets" },
+  { label: "Trade", icon: ArrowLeftRight, href: "/trades" },
+  { label: "Orders", icon: ClipboardList, href: "/orders" },
+  { label: "Portfolio", icon: Briefcase, href: "/portfolio" },
+  { label: "Accounts", icon: Link2, href: "/accounts" },
+  { label: "AI Signals", icon: Sparkles, href: "/ai-signals" },
 ];
 
 export const secondaryNav: NavItem[] = [
-  { label: "Watchlist", icon: Star, href: routes.watchlist },
-  { label: "News", icon: Newspaper, href: routes.news },
-  { label: "Calendar", icon: CalendarDays, href: routes.calendar },
+  { label: "Watchlist", icon: Star, href: "/watchlist" },
+  { label: "News", icon: Newspaper, href: "/news" },
+  { label: "Calendar", icon: CalendarDays, href: "/calendar" },
 ];
 
 export const systemNav: NavItem[] = [
-  { label: "Profile", icon: UserRound, href: routes.profile },
-  { label: "Settings", icon: Settings, href: routes.settings },
-  { label: "Help Center", icon: HelpCircle, href: routes.help },
-  { label: "Log Out", icon: LogOut, href: routes.login },
+  { label: "Profile", icon: UserRound, href: "/profile" },
+  { label: "Settings", icon: Settings, href: "/settings" },
+  { label: "Help Center", icon: HelpCircle, href: "/help" },
+  { label: "Log Out", icon: LogOut, href: "/login" },
 ];
 
 export function isNavActive(pathname: string, href: string) {
-  if (href === routes.home) return pathname === routes.home;
+  if (href === "/") return pathname === "/";
   if (href === "#") return false;
   return pathname.startsWith(href);
 }

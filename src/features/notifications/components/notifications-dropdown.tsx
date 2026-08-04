@@ -15,7 +15,6 @@ import {
   notifications,
   unreadNotificationCount,
 } from "@/features/notifications/data/notifications";
-import { routes } from "@/shared/lib/routes";
 import { cn } from "@/lib/utils";
 
 const previewNotifications = notifications.slice(0, 4);
@@ -67,7 +66,7 @@ export function NotificationsDropdown() {
         <DropdownMenuSeparator className="my-0" />
         <div className="px-2 py-2">
           <Link
-            href={routes.notifications}
+            href="/notifications"
             className="flex w-full items-center justify-center rounded-md px-3 py-2.5 text-sm font-semibold text-primary transition-colors hover:bg-muted"
           >
             View all notifications

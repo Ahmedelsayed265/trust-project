@@ -8,8 +8,6 @@ import {
 } from "@/components/ui/card";
 import { ChangeIndicator } from "@/shared/components/change-indicator";
 import { openPositions } from "@/features/trades/data/positions";
-import { routes } from "@/shared/lib/routes";
-
 export function OpenPositions() {
   return (
     <Card className="">
@@ -17,7 +15,7 @@ export function OpenPositions() {
         <CardTitle>Open Positions ({openPositions.length})</CardTitle>
         <CardAction>
           <Link
-            href={routes.trades}
+            href="/trades"
             className="text-sm font-medium text-primary hover:underline"
           >
             View All

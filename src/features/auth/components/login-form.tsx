@@ -14,8 +14,6 @@ import {
   loginSchema,
   type LoginFormValues,
 } from "@/features/auth/schemas/auth";
-import { routes } from "@/shared/lib/routes";
-
 export function LoginForm() {
   const router = useRouter();
   const form = useForm<LoginFormValues>({
@@ -28,7 +26,7 @@ export function LoginForm() {
   });
 
   function onSubmit(_values: LoginFormValues) {
-    router.push(routes.home);
+    router.push("/");
   }
 
   return (
@@ -67,7 +65,7 @@ export function LoginForm() {
           )}
         />
         <Link
-          href={routes.forgotPassword}
+          href="/forgot-password"
           className="text-sm font-medium text-primary hover:underline"
         >
           Forgot password?

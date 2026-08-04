@@ -8,8 +8,6 @@ import {
   CardAction,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { routes } from "@/shared/lib/routes";
-
 export function TradeAiSignal() {
   return (
     <Card className="">
@@ -47,7 +45,7 @@ export function TradeAiSignal() {
         </div>
 
         <Link
-          href={routes.markets}
+          href="/markets"
           className="inline-flex text-sm font-medium text-primary hover:underline"
         >
           View on Asset Page →

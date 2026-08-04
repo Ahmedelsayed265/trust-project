@@ -1,32 +1,30 @@
 import Link from "next/link";
 import { ArrowLeftRight, Sparkles, Briefcase, Link2 } from "lucide-react";
-import { routes } from "@/shared/lib/routes";
-
 const actions = [
   {
     label: "Trade",
-    href: routes.trades,
+    href: "/trades",
     icon: ArrowLeftRight,
     color:
       "bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-300",
   },
   {
     label: "AI Signals",
-    href: routes.aiSignals,
+    href: "/ai-signals",
     icon: Sparkles,
     color:
       "bg-violet-50 text-violet-600 dark:bg-violet-950/40 dark:text-violet-300",
   },
   {
     label: "Portfolio",
-    href: routes.portfolio,
+    href: "/portfolio",
     icon: Briefcase,
     color:
       "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-300",
   },
   {
     label: "Accounts",
-    href: routes.accounts,
+    href: "/accounts",
     icon: Link2,
     color:
       "bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-300",

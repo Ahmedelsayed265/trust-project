@@ -1,7 +1,5 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { routes } from "@/shared/lib/routes";
-
 type LogoProps = {
   className?: string;
   showTagline?: boolean;
@@ -17,7 +15,7 @@ export function Logo({
   iconOnly = false,
   size = "sm",
   variant = "default",
-  href = routes.home,
+  href = "/",
 }: LogoProps) {
   const markSize = size === "lg" ? "size-11" : "size-8";
   const iconSize = size === "lg" ? "size-6" : "size-5";
