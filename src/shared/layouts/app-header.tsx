@@ -73,7 +73,7 @@ export function AppHeader() {
             }
           >
             <Avatar size="default" className="size-8 sm:size-9">
-              <AvatarFallback className="bg-gradient-to-br from-sky-400 to-blue-600 text-xs font-bold text-white">
+              <AvatarFallback className="bg-linear-to-br from-sky-400 to-blue-600 text-xs font-bold text-white">
                 {currentUser.initials}
               </AvatarFallback>
             </Avatar>

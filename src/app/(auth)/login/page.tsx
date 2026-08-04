@@ -1,10 +1,9 @@
 import Link from "next/link";
-import { AuthShell } from "@/shared/layouts/auth-shell";
 import { LoginForm } from "@/features/auth";
 
 export default function LoginPage() {
   return (
-    <AuthShell>
+    <>
       <div className="mb-8 space-y-2">
         <h2 className="text-2xl font-bold tracking-tight text-foreground">
           Welcome back
@@ -16,7 +15,7 @@ export default function LoginPage() {
 
       <LoginForm />
 
-      <p className="text-muted-foreground text-sm text-center mt-6">
+      <p className="text-muted-foreground mt-6 text-center text-sm">
         Don&apos;t have an account?{" "}
         <Link
           href="/register"
@@ -25,6 +24,6 @@ export default function LoginPage() {
           Create account
         </Link>
       </p>
-    </AuthShell>
+    </>
   );
 }

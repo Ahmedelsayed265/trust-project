@@ -1,11 +1,15 @@
+import { redirect } from "next/navigation";
+import { getAuthToken } from "@/features/auth/session";
 import { AuthBrandPanel } from "@/features/auth/components/auth-brand-panel";
 
-export function AuthShell({
+export default async function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
-  footer?: React.ReactNode;
 }) {
+  const token = await getAuthToken();
+  if (token) redirect("/");
+
   return (
     <div className="flex h-svh max-h-svh overflow-hidden bg-background">
       <AuthBrandPanel />
