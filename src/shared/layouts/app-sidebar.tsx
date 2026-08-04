@@ -2,7 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { Logo } from "@/shared/components/logo";
+import { ThemeToggle } from "@/shared/components/theme-toggle";
+import { LogoutButton } from "@/features/auth/components/logout-button";
+import { useSidebar } from "@/shared/providers/sidebar-provider";
+import { cn } from "@/lib/utils";
+import { Separator } from "@/components/ui/separator";
 import {
   isNavActive,
   primaryNav,
@@ -10,12 +15,6 @@ import {
   systemNav,
   type NavItem,
 } from "@/shared/lib/navigation";
-import { Logo } from "@/shared/components/logo";
-import { ThemeToggle } from "@/shared/components/theme-toggle";
-import { useSidebar } from "@/shared/providers/sidebar-provider";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import {
   Tooltip,
   TooltipContent,
@@ -41,12 +40,34 @@ function NavLink({
   const active = isNavActive(pathname, item.href);
   const Icon = item.icon;
 
+  if (item.action === "logout") {
+    const button = (
+      <LogoutButton
+        collapsed={collapsed}
+        icon={Icon}
+        label={item.label}
+        onComplete={onNavigate}
+      />
+    );
+
+    if (!collapsed) return button;
+
+    return (
+      <Tooltip>
+        <TooltipTrigger render={<div className="w-full" />}>
+          {button}
+        </TooltipTrigger>
+        <TooltipContent side="right">{item.label}</TooltipContent>
+      </Tooltip>
+    );
+  }
+
   const className = cn(
     "flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-medium transition-colors",
     collapsed && "justify-center px-2",
     active
       ? "bg-sidebar-accent text-sidebar-accent-foreground"
-      : "text-sidebar-foreground hover:bg-muted hover:text-foreground"
+      : "text-sidebar-foreground hover:bg-muted hover:text-foreground",
   );
 
   const link = (
@@ -77,22 +98,19 @@ function NavLink({
 function SidebarContent({
   collapsed,
   onNavigate,
-  showCollapseControl,
 }: {
   collapsed: boolean;
   onNavigate?: () => void;
   showCollapseControl?: boolean;
 }) {
-  const { toggleCollapsed } = useSidebar();
-
   return (
     <div className="flex h-full min-h-0 flex-col overflow-hidden">
       <div
         className={cn(
-          "flex items-center border-b border-sidebar-border h-[64px]",
+          "flex items-center border-b border-sidebar-border h-16",
           collapsed
             ? "justify-center px-2 py-4"
-            : "justify-between gap-2 px-3 py-4"
+            : "justify-between gap-2 px-3 py-4",
         )}
       >
         <Logo iconOnly={collapsed} />
@@ -152,7 +170,7 @@ export function AppSidebar() {
       <aside
         className={cn(
           "hidden h-full min-h-0 shrink-0 flex-col overflow-hidden border-r border-sidebar-border bg-sidebar transition-[width] duration-200 lg:flex",
-          collapsed ? "w-[72px]" : "w-[220px]"
+          collapsed ? "w-18" : "w-55",
         )}
       >
         <SidebarContent collapsed={collapsed} showCollapseControl />
@@ -161,7 +179,7 @@ export function AppSidebar() {
       <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
         <SheetContent
           side="left"
-          className="w-[280px] gap-0 border-sidebar-border bg-sidebar p-0"
+          className="w-70 gap-0 border-sidebar-border bg-sidebar p-0"
           showCloseButton={false}
         >
           <SheetHeader className="sr-only">

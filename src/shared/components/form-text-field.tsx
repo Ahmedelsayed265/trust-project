@@ -59,7 +59,7 @@ export function FormTextField<T extends FieldValues>({
               autoComplete={autoComplete}
               aria-invalid={fieldState.invalid}
               className={cn(
-                "h-12 rounded-[12px]! bg-card py-3 text-sm",
+                "h-12 bg-card py-3 text-sm",
                 inputClassName,
               )}
             />

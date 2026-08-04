@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronDown, Menu, Search, Settings } from "lucide-react";
+import { useTransition } from "react";
+import { ChevronDown, Loader2, Menu, Search, Settings } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -15,11 +16,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { NotificationsDropdown } from "@/features/notifications";
+import { logoutAction } from "@/features/auth/actions/logout";
 import { useSidebar } from "@/shared/providers/sidebar-provider";
 import { currentUser } from "@/shared/lib/user";
 
 export function AppHeader() {
   const { isDesktop, toggleCollapsed, toggleMobile } = useSidebar();
+  const [loggingOut, startLogout] = useTransition();
 
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 border-b border-border bg-card px-3 sm:h-16 sm:gap-4 sm:px-5">
@@ -96,7 +99,13 @@ export function AppHeader() {
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem render={<Link href="/login" />}>
+              <DropdownMenuItem
+                disabled={loggingOut}
+                onClick={() => startLogout(() => logoutAction())}
+              >
+                {loggingOut ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : null}
                 Log out
               </DropdownMenuItem>
             </DropdownMenuGroup>

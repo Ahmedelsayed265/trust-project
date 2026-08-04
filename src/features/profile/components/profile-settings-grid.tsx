@@ -150,7 +150,7 @@ export function ProfileSettingsGrid() {
               label: "Log Out",
               description: "Sign out of this device",
               icon: LogOut,
-              href: "/login",
+              action: "logout",
             },
           ]}
         />

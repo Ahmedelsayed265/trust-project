@@ -1,41 +1,65 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useTransition } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
+import { FormTextField } from "@/shared/components/form-text-field";
+import { FormPasswordField } from "@/shared/components/form-password-field";
+import { SubmitButton } from "@/shared/components/submit-button";
+import { OAuthButtons } from "@/features/auth/components/oauth-buttons";
+import { registerAction } from "@/features/auth/actions/register";
 import {
   Field,
   FieldContent,
   FieldError,
   FieldSeparator,
 } from "@/components/ui/field";
-import { FormTextField } from "@/shared/components/form-text-field";
-import { FormPasswordField } from "@/shared/components/form-password-field";
-import { OAuthButtons } from "@/features/auth/components/oauth-buttons";
 import {
   registerSchema,
   type RegisterFormValues,
 } from "@/features/auth/schemas/auth";
-const authInputClassName = "h-12 rounded-xl bg-card px-3";
+
+const authInputClassName = "h-12 rounded-[12px]! bg-card px-3";
 
 export function RegisterForm() {
   const router = useRouter();
+  const [pending, startTransition] = useTransition();
+
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      firstName: "",
-      lastName: "",
+      first_name: "",
+      last_name: "",
       email: "",
       password: "",
-      confirmPassword: "",
+      password_confirmation: "",
       terms: false,
     },
   });
 
-  function onSubmit(_values: RegisterFormValues) {
-    router.push("/");
+  function onSubmit(values: RegisterFormValues) {
+    startTransition(async () => {
+      const result = await registerAction(values);
+
+      if (!result.ok) {
+        if (result.errors) {
+          for (const [field, messages] of Object.entries(result.errors)) {
+            form.setError(field as keyof RegisterFormValues, {
+              type: "server",
+              message: messages[0],
+            });
+          }
+        }
+        toast.error(result.message);
+        return;
+      }
+
+      router.push("/");
+      router.refresh();
+    });
   }
 
   return (
@@ -43,16 +67,16 @@ export function RegisterForm() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <FormTextField
           control={form.control}
-          name="firstName"
+          name="first_name"
           label="First name"
           autoComplete="given-name"
           placeholder="John"
           inputClassName={authInputClassName}
         />
-        
+
         <FormTextField
           control={form.control}
-          name="lastName"
+          name="last_name"
           label="Last name"
           autoComplete="family-name"
           placeholder="Doe"
@@ -75,13 +99,13 @@ export function RegisterForm() {
         name="password"
         label="Password"
         autoComplete="new-password"
-        placeholder="Min. 8 characters"
+        placeholder="8+ chars, upper, lower, number, symbol"
         inputClassName={authInputClassName}
       />
 
       <FormPasswordField
         control={form.control}
-        name="confirmPassword"
+        name="password_confirmation"
         label="Confirm password"
         autoComplete="new-password"
         placeholder="Repeat your password"
@@ -119,7 +143,7 @@ export function RegisterForm() {
                   </button>
                 </span>
               </label>
-              
+
               {fieldState.error && (
                 <FieldError>{fieldState.error.message}</FieldError>
               )}
@@ -128,13 +152,12 @@ export function RegisterForm() {
         )}
       />
 
-      <Button
-        type="submit"
-        className="h-12 w-full rounded-xl text-sm font-semibold"
-        disabled={form.formState.isSubmitting}
+      <SubmitButton
+        loading={pending || form.formState.isSubmitting}
+        loadingText="Creating account..."
       >
-        {form.formState.isSubmitting ? "Creating account..." : "Create account"}
-      </Button>
+        Create account
+      </SubmitButton>
 
       <div className="space-y-4 pt-1">
         <FieldSeparator className="my-0 h-auto py-1">

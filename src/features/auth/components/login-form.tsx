@@ -2,20 +2,26 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useTransition } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FieldSeparator } from "@/components/ui/field";
 import { FormTextField } from "@/shared/components/form-text-field";
 import { FormPasswordField } from "@/shared/components/form-password-field";
+import { SubmitButton } from "@/shared/components/submit-button";
 import { OAuthButtons } from "@/features/auth/components/oauth-buttons";
+import { loginAction } from "@/features/auth/actions/login";
 import {
   loginSchema,
   type LoginFormValues,
 } from "@/features/auth/schemas/auth";
+
 export function LoginForm() {
   const router = useRouter();
+  const [pending, startTransition] = useTransition();
+
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -25,8 +31,26 @@ export function LoginForm() {
     },
   });
 
-  function onSubmit(_values: LoginFormValues) {
-    router.push("/");
+  function onSubmit(values: LoginFormValues) {
+    startTransition(async () => {
+      const result = await loginAction(values);
+
+      if (!result.ok) {
+        if (result.errors) {
+          for (const [field, messages] of Object.entries(result.errors)) {
+            form.setError(field as keyof LoginFormValues, {
+              type: "server",
+              message: messages[0],
+            });
+          }
+        }
+        toast.error(result.message);
+        return;
+      }
+
+      router.push("/");
+      router.refresh();
+    });
   }
 
   return (
@@ -38,7 +62,7 @@ export function LoginForm() {
         type="email"
         autoComplete="email"
         placeholder="you@example.com"
-        inputClassName="h-12 rounded-xl bg-card px-3"
+        inputClassName="h-12 rounded-[12px]! bg-card px-3"
       />
 
       <FormPasswordField
@@ -47,7 +71,7 @@ export function LoginForm() {
         label="Password"
         autoComplete="current-password"
         placeholder="Enter your password"
-        inputClassName="h-12 rounded-xl bg-card px-3"
+        inputClassName="h-12 rounded-[12px]! bg-card px-3"
       />
 
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -72,13 +96,12 @@ export function LoginForm() {
         </Link>
       </div>
 
-      <Button
-        type="submit"
-        className="h-12 w-full rounded-xl text-sm font-semibold"
-        disabled={form.formState.isSubmitting}
+      <SubmitButton
+        loading={pending || form.formState.isSubmitting}
+        loadingText="Signing in..."
       >
-        {form.formState.isSubmitting ? "Signing in..." : "Sign in"}
-      </Button>
+        Sign in
+      </SubmitButton>
 
       <div className="space-y-4 pt-1">
         <FieldSeparator className="my-0 h-auto py-1">

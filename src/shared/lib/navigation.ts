@@ -20,6 +20,7 @@ export type NavItem = {
   label: string;
   href: string;
   icon: LucideIcon;
+  action?: "logout";
 };
 
 export const primaryNav: NavItem[] = [
@@ -42,7 +43,7 @@ export const systemNav: NavItem[] = [
   { label: "Profile", icon: UserRound, href: "/profile" },
   { label: "Settings", icon: Settings, href: "/settings" },
   { label: "Help Center", icon: HelpCircle, href: "/help" },
-  { label: "Log Out", icon: LogOut, href: "/login" },
+  { label: "Log Out", icon: LogOut, href: "/login", action: "logout" },
 ];
 
 export function isNavActive(pathname: string, href: string) {
