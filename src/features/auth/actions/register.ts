@@ -3,7 +3,6 @@
 import type { AuthUser, RegisterApiResponse } from "@/features/auth/types";
 import type { RegisterFormValues } from "@/features/auth/schemas/auth";
 import { api, ApiError, type ActionResult } from "@/shared/lib/api";
-import { setAuthToken } from "@/features/auth/session";
 
 export async function registerAction(
   input: RegisterFormValues
@@ -22,8 +21,7 @@ export async function registerAction(
       };
     }
 
-    await setAuthToken(user.token, true);
-
+    // Session cookie is set after email verification.
     return { ok: true, data: user };
   } catch (error) {
     if (error instanceof ApiError) {

@@ -13,6 +13,7 @@ import { FormPasswordField } from "@/shared/components/form-password-field";
 import { SubmitButton } from "@/shared/components/submit-button";
 import { OAuthButtons } from "@/features/auth/components/oauth-buttons";
 import { loginAction } from "@/features/auth/actions/login";
+import { startEmailVerificationAction } from "@/features/auth/actions/send-verification-code";
 import {
   loginSchema,
   type LoginFormValues,
@@ -48,67 +49,107 @@ export function LoginForm() {
         return;
       }
 
+      if (!result.data.email_verified) {
+        const started = await startEmailVerificationAction({
+          email: result.data.email,
+          token: result.data.token,
+          remember: values.remember,
+        });
+
+        if (!started.ok) {
+          toast.error(started.message);
+          return;
+        }
+
+        toast.message("Verify your email to continue.");
+        router.push("/verify-email");
+        return;
+      }
+
       router.push("/");
       router.refresh();
     });
   }
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-      <FormTextField
-        control={form.control}
-        name="email"
-        label="Email"
-        type="email"
-        autoComplete="email"
-        placeholder="you@example.com"
-        inputClassName="h-12 rounded-[12px]! bg-card px-3"
-      />
+    <>
+      <div className="mb-8 space-y-2">
+        <h2 className="text-2xl font-bold tracking-tight text-foreground">
+          Welcome back
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Sign in to your TrustAI account
+        </p>
+      </div>
 
-      <FormPasswordField
-        control={form.control}
-        name="password"
-        label="Password"
-        autoComplete="current-password"
-        placeholder="Enter your password"
-        inputClassName="h-12 rounded-[12px]! bg-card px-3"
-      />
-
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <Controller
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+        <FormTextField
           control={form.control}
-          name="remember"
-          render={({ field }) => (
-            <label className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Checkbox
-                checked={field.value}
-                onCheckedChange={(checked) => field.onChange(checked === true)}
-              />
-              Remember me
-            </label>
-          )}
+          name="email"
+          label="Email"
+          type="email"
+          autoComplete="email"
+          placeholder="you@example.com"
+          inputClassName="h-12 rounded-[12px]! bg-card px-3"
         />
-        <Link
-          href="/forgot-password"
-          className="text-sm font-medium text-primary hover:underline"
+
+        <FormPasswordField
+          control={form.control}
+          name="password"
+          label="Password"
+          autoComplete="current-password"
+          placeholder="Enter your password"
+          inputClassName="h-12 rounded-[12px]! bg-card px-3"
+        />
+
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <Controller
+            control={form.control}
+            name="remember"
+            render={({ field }) => (
+              <label className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={(checked) =>
+                    field.onChange(checked === true)
+                  }
+                />
+                Remember me
+              </label>
+            )}
+          />
+          <Link
+            href="/forgot-password"
+            className="text-sm font-medium text-primary hover:underline"
+          >
+            Forgot password?
+          </Link>
+        </div>
+
+        <SubmitButton
+          loading={pending || form.formState.isSubmitting}
+          loadingText="Signing in..."
         >
-          Forgot password?
+          Sign in
+        </SubmitButton>
+
+        <div className="space-y-4 pt-1">
+          <FieldSeparator className="my-0 h-auto py-1">
+            Or continue with
+          </FieldSeparator>
+          <OAuthButtons />
+        </div>
+      </form>
+
+      <p className="mt-6 text-center text-sm text-muted-foreground">
+        Don&apos;t have an account?{" "}
+        <Link
+          href="/register"
+          className="font-semibold text-primary hover:underline"
+        >
+          Create account
         </Link>
-      </div>
-
-      <SubmitButton
-        loading={pending || form.formState.isSubmitting}
-        loadingText="Signing in..."
-      >
-        Sign in
-      </SubmitButton>
-
-      <div className="space-y-4 pt-1">
-        <FieldSeparator className="my-0 h-auto py-1">
-          Or continue with
-        </FieldSeparator>
-        <OAuthButtons />
-      </div>
-    </form>
+      </p>
+    </>
   );
 }

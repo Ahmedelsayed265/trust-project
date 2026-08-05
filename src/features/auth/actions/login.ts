@@ -6,7 +6,7 @@ import { api, ApiError, type ActionResult } from "@/shared/lib/api";
 import { setAuthToken } from "@/features/auth/session";
 
 export async function loginAction(
-  input: LoginFormValues,
+  input: LoginFormValues
 ): Promise<ActionResult<AuthUser>> {
   const { email, password, remember = false } = input;
 
@@ -24,6 +24,11 @@ export async function loginAction(
         ok: false,
         message: "Login succeeded but no token was returned.",
       };
+    }
+
+    // Unverified users must complete OTP before getting a session cookie.
+    if (!user.email_verified) {
+      return { ok: true, data: user };
     }
 
     await setAuthToken(user.token, remember);

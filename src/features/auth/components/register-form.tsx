@@ -12,6 +12,7 @@ import { FormPasswordField } from "@/shared/components/form-password-field";
 import { SubmitButton } from "@/shared/components/submit-button";
 import { OAuthButtons } from "@/features/auth/components/oauth-buttons";
 import { registerAction } from "@/features/auth/actions/register";
+import { startEmailVerificationAction } from "@/features/auth/actions/send-verification-code";
 import {
   Field,
   FieldContent,
@@ -58,114 +59,146 @@ export function RegisterForm() {
         return;
       }
 
-      router.push("/");
-      router.refresh();
+      const started = await startEmailVerificationAction({
+        email: result.data.email,
+        token: result.data.token,
+        remember: true,
+      });
+
+      if (!started.ok) {
+        toast.error(started.message);
+        return;
+      }
+
+      toast.success("Account created. Check your email for the code.");
+      router.push("/verify-email");
     });
   }
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <>
+      <div className="mb-8 space-y-2">
+        <h2 className="text-2xl font-bold tracking-tight text-foreground">
+          Create your account
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Start trading with AI-powered insights
+        </p>
+      </div>
+
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <FormTextField
+            control={form.control}
+            name="first_name"
+            label="First name"
+            autoComplete="given-name"
+            placeholder="John"
+            inputClassName={authInputClassName}
+          />
+
+          <FormTextField
+            control={form.control}
+            name="last_name"
+            label="Last name"
+            autoComplete="family-name"
+            placeholder="Doe"
+            inputClassName={authInputClassName}
+          />
+        </div>
+
         <FormTextField
           control={form.control}
-          name="first_name"
-          label="First name"
-          autoComplete="given-name"
-          placeholder="John"
+          name="email"
+          label="Email"
+          type="email"
+          autoComplete="email"
+          placeholder="you@example.com"
           inputClassName={authInputClassName}
         />
 
-        <FormTextField
+        <FormPasswordField
           control={form.control}
-          name="last_name"
-          label="Last name"
-          autoComplete="family-name"
-          placeholder="Doe"
+          name="password"
+          label="Password"
+          autoComplete="new-password"
+          placeholder="8+ chars, upper, lower, number, symbol"
           inputClassName={authInputClassName}
         />
-      </div>
 
-      <FormTextField
-        control={form.control}
-        name="email"
-        label="Email"
-        type="email"
-        autoComplete="email"
-        placeholder="you@example.com"
-        inputClassName={authInputClassName}
-      />
+        <FormPasswordField
+          control={form.control}
+          name="password_confirmation"
+          label="Confirm password"
+          autoComplete="new-password"
+          placeholder="Repeat your password"
+          inputClassName={authInputClassName}
+        />
 
-      <FormPasswordField
-        control={form.control}
-        name="password"
-        label="Password"
-        autoComplete="new-password"
-        placeholder="8+ chars, upper, lower, number, symbol"
-        inputClassName={authInputClassName}
-      />
+        <Controller
+          control={form.control}
+          name="terms"
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid || undefined}>
+              <FieldContent>
+                <label className="flex items-start gap-2.5 text-sm text-muted-foreground">
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={(checked) =>
+                      field.onChange(checked === true)
+                    }
+                    className="mt-0.5 cursor-pointer"
+                  />
+                  <span>
+                    I agree to the{" "}
+                    <Link
+                      href="/terms"
+                      className="font-medium text-primary hover:underline"
+                    >
+                      Terms of Service
+                    </Link>{" "}
+                    and{" "}
+                    <Link
+                      href="/privacy"
+                      className="font-medium text-primary hover:underline"
+                    >
+                      Privacy Policy
+                    </Link>
+                  </span>
+                </label>
 
-      <FormPasswordField
-        control={form.control}
-        name="password_confirmation"
-        label="Confirm password"
-        autoComplete="new-password"
-        placeholder="Repeat your password"
-        inputClassName={authInputClassName}
-      />
+                {fieldState.error && (
+                  <FieldError>{fieldState.error.message}</FieldError>
+                )}
+              </FieldContent>
+            </Field>
+          )}
+        />
 
-      <Controller
-        control={form.control}
-        name="terms"
-        render={({ field, fieldState }) => (
-          <Field data-invalid={fieldState.invalid || undefined}>
-            <FieldContent>
-              <label className="flex items-start gap-2.5 text-sm text-muted-foreground">
-                <Checkbox
-                  checked={field.value}
-                  onCheckedChange={(checked) =>
-                    field.onChange(checked === true)
-                  }
-                  className="mt-0.5 cursor-pointer"
-                />
-                <span>
-                  I agree to the{" "}
-                  <Link
-                    href="/terms"
-                    className="font-medium text-primary hover:underline"
-                  >
-                    Terms of Service
-                  </Link>{" "}
-                  and{" "}
-                  <Link
-                    href="/privacy"
-                    className="font-medium text-primary hover:underline"
-                  >
-                    Privacy Policy
-                  </Link>
-                </span>
-              </label>
+        <SubmitButton
+          loading={pending || form.formState.isSubmitting}
+          loadingText="Creating account..."
+        >
+          Create account
+        </SubmitButton>
 
-              {fieldState.error && (
-                <FieldError>{fieldState.error.message}</FieldError>
-              )}
-            </FieldContent>
-          </Field>
-        )}
-      />
+        <div className="space-y-4 pt-1">
+          <FieldSeparator className="my-0 h-auto py-1">
+            Or continue with
+          </FieldSeparator>
+          <OAuthButtons />
+        </div>
+      </form>
 
-      <SubmitButton
-        loading={pending || form.formState.isSubmitting}
-        loadingText="Creating account..."
-      >
-        Create account
-      </SubmitButton>
-
-      <div className="space-y-4 pt-1">
-        <FieldSeparator className="my-0 h-auto py-1">
-          Or continue with
-        </FieldSeparator>
-        <OAuthButtons />
-      </div>
-    </form>
+      <p className="mt-6 text-center text-sm text-muted-foreground">
+        Already have an account?{" "}
+        <Link
+          href="/login"
+          className="font-semibold text-primary hover:underline"
+        >
+          Sign in
+        </Link>
+      </p>
+    </>
   );
 }
