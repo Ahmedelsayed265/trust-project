@@ -15,6 +15,10 @@ import {
   cancelEmailVerificationAction,
   verifyEmailAction,
 } from "@/features/auth/actions/verify-email";
+import {
+  cancelPasswordResetAction,
+  resendPasswordResetCodeAction,
+} from "@/features/auth/actions/forgot-password";
 
 const RESEND_SECONDS = 3 * 60;
 
@@ -24,12 +28,20 @@ function formatTimer(totalSeconds: number) {
   return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 }
 
-export function VerifyEmailForm({ email }: { email: string }) {
+export function VerifyEmailForm({
+  email,
+  purpose,
+}: {
+  email: string;
+  purpose: "signup" | "reset";
+}) {
   const router = useRouter();
   const [code, setCode] = useState("");
   const [secondsLeft, setSecondsLeft] = useState(RESEND_SECONDS);
   const [pending, startTransition] = useTransition();
   const [resending, startResend] = useTransition();
+
+  const isReset = purpose === "reset";
 
   useEffect(() => {
     if (secondsLeft <= 0) return;
@@ -52,8 +64,10 @@ export function VerifyEmailForm({ email }: { email: string }) {
         return;
       }
 
-      toast.success("Email verified.");
-      router.push("/");
+      toast.success(
+        isReset ? "Code verified. Set your new password." : "Email verified."
+      );
+      router.push(result.data.next);
       router.refresh();
     });
   }
@@ -62,7 +76,10 @@ export function VerifyEmailForm({ email }: { email: string }) {
     if (secondsLeft > 0 || resending) return;
 
     startResend(async () => {
-      const result = await sendVerificationCodeAction();
+      const result = isReset
+        ? await resendPasswordResetCodeAction()
+        : await sendVerificationCodeAction();
+
       if (!result.ok) {
         toast.error(result.message);
         return;
@@ -76,8 +93,13 @@ export function VerifyEmailForm({ email }: { email: string }) {
 
   function onBack() {
     startTransition(async () => {
-      await cancelEmailVerificationAction();
-      router.push("/login");
+      if (isReset) {
+        await cancelPasswordResetAction();
+        router.push("/forgot-password");
+      } else {
+        await cancelEmailVerificationAction();
+        router.push("/login");
+      }
       router.refresh();
     });
   }
@@ -99,7 +121,9 @@ export function VerifyEmailForm({ email }: { email: string }) {
           Verify your email
         </h2>
         <p className="text-sm text-muted-foreground">
-          Enter the code we sent to finish signing in
+          {isReset
+            ? "Enter the code we sent to reset your password"
+            : "Enter the code we sent to finish signing in"}
         </p>
       </div>
 
@@ -113,7 +137,7 @@ export function VerifyEmailForm({ email }: { email: string }) {
         <p className="text-sm leading-relaxed text-muted-foreground">
           We sent a 6-digit code to{" "}
           <span className="font-medium text-foreground">{email}</span>. Enter it
-          below to verify your email.
+          below to continue.
         </p>
 
         <div className="flex justify-center">
@@ -142,7 +166,7 @@ export function VerifyEmailForm({ email }: { email: string }) {
           loadingText="Verifying..."
           disabled={code.length !== 6}
         >
-          Verify email
+          Continue
         </SubmitButton>
 
         <p className="text-center text-sm text-muted-foreground">

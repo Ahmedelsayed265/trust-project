@@ -1,6 +1,6 @@
+import { ForgotPasswordForm } from "@/features/auth";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { ForgotPasswordForm } from "@/features/auth";
 
 export default function ForgotPasswordPage() {
   return (

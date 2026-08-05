@@ -4,7 +4,7 @@ import { api, ApiError, type ActionResult } from "@/shared/lib/api";
 import {
   getPendingVerification,
   setPendingVerification,
-} from "@/features/auth/session";
+} from "@/features/auth/pending-session";
 import type { ApiSuccessResponse } from "@/features/auth/types";
 
 export async function startEmailVerificationAction(input: {
@@ -17,13 +17,11 @@ export async function startEmailVerificationAction(input: {
   }
 
   try {
-    const response = await api.post<ApiSuccessResponse<unknown>>(
+    await api.post<ApiSuccessResponse<unknown>>(
       "/user/auth/send-verification-code",
       undefined,
-      { token: input.token }
+      { token: input.token },
     );
-
-    console.log("[send-verification-code]", response);
 
     await setPendingVerification({
       email: input.email,
@@ -64,7 +62,7 @@ export async function sendVerificationCodeAction(): Promise<
     const response = await api.post<ApiSuccessResponse<unknown>>(
       "/user/auth/send-verification-code",
       undefined,
-      { token: pending.token }
+      { token: pending.token },
     );
 
     console.log("[send-verification-code]", response);
