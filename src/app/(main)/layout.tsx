@@ -1,4 +1,5 @@
 import { requireAuth } from "@/features/auth/session";
+import { getCurrentUser } from "@/features/auth/get-current-user";
 import { MainChrome } from "./main-chrome";
 
 export default async function MainLayout({
@@ -7,5 +8,7 @@ export default async function MainLayout({
   children: React.ReactNode;
 }) {
   await requireAuth();
-  return <MainChrome>{children}</MainChrome>;
+  const user = await getCurrentUser();
+
+  return <MainChrome user={user}>{children}</MainChrome>;
 }

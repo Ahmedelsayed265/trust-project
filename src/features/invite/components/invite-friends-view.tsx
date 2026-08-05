@@ -14,19 +14,18 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { PageHeader } from "@/shared/components/page-header";
-import { currentUser } from "@/shared/lib/user";
-
-const REFERRAL_CODE = "AMMAR25";
-const REFERRAL_LINK = `https://trustai.app/register?ref=${REFERRAL_CODE}`;
+import { useCurrentUser } from "@/shared/providers/user-provider";
 
 const rewards = [
   {
     title: "You earn $25",
-    description: "Credit added when your friend funds and places their first trade.",
+    description:
+      "Credit added when your friend funds and places their first trade.",
   },
   {
     title: "They earn $15",
-    description: "Welcome bonus unlocked after verification and connecting a trading provider.",
+    description:
+      "Welcome bonus unlocked after verification and connecting a trading provider.",
   },
   {
     title: "Unlimited invites",
@@ -36,12 +35,20 @@ const rewards = [
 
 const recentInvites = [
   { name: "Sara K.", status: "Joined", reward: "+$25", done: true },
-  { name: "Omar H.", status: "Pending provider connect", reward: "—", done: false },
+  {
+    name: "Omar H.",
+    status: "Pending provider connect",
+    reward: "—",
+    done: false,
+  },
   { name: "Lina M.", status: "Joined", reward: "+$25", done: true },
 ];
 
 export function InviteFriendsView() {
+  const user = useCurrentUser();
   const [copied, setCopied] = useState<"code" | "link" | null>(null);
+  const referralCode = user.referral_code;
+  const referralLink = user.referral_link;
 
   async function copyValue(value: string, type: "code" | "link") {
     try {
@@ -77,7 +84,7 @@ export function InviteFriendsView() {
                 $50.00
               </p>
               <p className="mt-1 text-sm text-muted-foreground">
-                2 friends rewarded · Shared by {currentUser.name}
+                2 friends rewarded · Shared by {user.name}
               </p>
             </div>
           </div>
@@ -115,14 +122,14 @@ export function InviteFriendsView() {
               <div className="flex gap-2">
                 <Input
                   readOnly
-                  value={REFERRAL_CODE}
+                  value={referralCode}
                   className="h-12 rounded-xl bg-background px-3 font-semibold tracking-wide"
                 />
                 <Button
                   type="button"
                   variant="outline"
                   className="h-12 shrink-0 rounded-xl px-4"
-                  onClick={() => copyValue(REFERRAL_CODE, "code")}
+                  onClick={() => copyValue(referralCode, "code")}
                 >
                   {copied === "code" ? <Check /> : <Copy />}
                   {copied === "code" ? "Copied" : "Copy"}
@@ -135,13 +142,13 @@ export function InviteFriendsView() {
               <div className="flex gap-2">
                 <Input
                   readOnly
-                  value={REFERRAL_LINK}
+                  value={referralLink}
                   className="h-12 rounded-xl bg-background px-3 font-mono text-xs"
                 />
                 <Button
                   type="button"
                   className="h-12 shrink-0 rounded-xl px-4"
-                  onClick={() => copyValue(REFERRAL_LINK, "link")}
+                  onClick={() => copyValue(referralLink, "link")}
                 >
                   {copied === "link" ? <Check /> : <Copy />}
                   {copied === "link" ? "Copied" : "Copy"}
@@ -153,7 +160,7 @@ export function InviteFriendsView() {
               type="button"
               variant="outline"
               className="h-11 w-full rounded-xl"
-              onClick={() => copyValue(REFERRAL_LINK, "link")}
+              onClick={() => copyValue(referralLink, "link")}
             >
               <UserPlus />
               Copy invite link

@@ -12,7 +12,7 @@ export type UserPlan = {
   auto_renew: boolean;
 };
 
-export type AuthUser = {
+export type UserProfile = {
   id: number;
   first_name: string;
   last_name: string;
@@ -46,6 +46,9 @@ export type AuthUser = {
   has_active_subscription: boolean;
   unread_notifications: number;
   connected_providers: string[];
+};
+
+export type AuthUser = UserProfile & {
   auth: string;
   token: string;
 };
@@ -59,3 +62,4 @@ export type ApiSuccessResponse<T> = {
 export type RegisterApiResponse = ApiSuccessResponse<AuthUser>;
 export type LoginApiResponse = ApiSuccessResponse<AuthUser>;
 export type LogoutApiResponse = ApiSuccessResponse<null>;
+export type ProfileApiResponse = ApiSuccessResponse<UserProfile>;

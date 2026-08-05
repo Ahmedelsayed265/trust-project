@@ -3,7 +3,7 @@
 import { Crown, TrendingUp } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { ChangeIndicator } from "@/shared/components/change-indicator";
-import { currentUser } from "@/shared/lib/user";
+import { useCurrentUser } from "@/shared/providers/user-provider";
 import {
   formatMoney,
   formatPct,
@@ -12,6 +12,7 @@ import {
 } from "@/shared/trading";
 
 export function ProfileAccountOverview() {
+  const user = useCurrentUser();
   const { snapshot, activeProvider, loading } = useTrading();
   const currency = snapshot?.currency ?? "USD";
 
@@ -26,10 +27,12 @@ export function ProfileAccountOverview() {
             <div>
               <p className="text-xs text-muted-foreground">Current Plan</p>
               <p className="text-base font-bold text-foreground">
-                {currentUser.plan}
+                {user.plan?.name ?? "Free"}
               </p>
               <p className="text-xs text-muted-foreground">
-                Renews May 15, 2026
+                {user.plan?.renews_at_label
+                  ? `Renews ${user.plan.renews_at_label}`
+                  : "No active renewal"}
               </p>
             </div>
           </div>

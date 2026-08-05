@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/select";
 import { FormTextField } from "@/shared/components/form-text-field";
 import { PageHeader } from "@/shared/components/page-header";
-import { currentUser } from "@/shared/lib/user";
+import { useCurrentUser } from "@/shared/providers/user-provider";
 import {
   contactSchema,
   type ContactFormValues,
@@ -65,12 +65,13 @@ const supportChannels = [
 ];
 
 export function ContactView() {
+  const user = useCurrentUser();
   const [sent, setSent] = useState(false);
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactSchema),
     defaultValues: {
-      name: currentUser.name,
-      email: currentUser.email,
+      name: user.name,
+      email: user.email,
       category: "account",
       subject: "",
       message: "",
@@ -80,8 +81,8 @@ export function ContactView() {
   function onSubmit(_values: ContactFormValues) {
     setSent(true);
     form.reset({
-      name: currentUser.name,
-      email: currentUser.email,
+      name: user.name,
+      email: user.email,
       category: "account",
       subject: "",
       message: "",

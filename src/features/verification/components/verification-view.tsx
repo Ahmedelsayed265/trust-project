@@ -1,3 +1,5 @@
+"use client";
+
 import {
   BadgeCheck,
   Building,
@@ -10,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/shared/components/page-header";
-import { currentUser } from "@/shared/lib/user";
+import { useCurrentUser } from "@/shared/providers/user-provider";
 import { cn } from "@/lib/utils";
 
 const steps = [
@@ -35,6 +37,8 @@ const steps = [
 ];
 
 export function VerificationView() {
+  const user = useCurrentUser();
+
   return (
     <div className="flex w-full min-w-0 flex-col gap-4 sm:gap-5">
       <PageHeader
@@ -42,7 +46,7 @@ export function VerificationView() {
         description="Identity and KYC status for your TrustAI account."
         actions={
           <Badge className="border-0 bg-emerald-50 text-success hover:bg-emerald-50 dark:bg-emerald-950/40">
-            Verified
+            {user.kyc_verified ? "Verified" : "Pending"}
           </Badge>
         }
       />
@@ -56,16 +60,21 @@ export function VerificationView() {
             <div>
               <p className="text-sm text-muted-foreground">KYC status</p>
               <p className="mt-1 text-2xl font-bold tracking-tight text-foreground">
-                Fully verified
+                {user.kyc_verified ? "Fully verified" : (user.kyc_status ?? "Unverified")}
               </p>
               <p className="mt-1 text-sm text-muted-foreground">
-                {currentUser.name} · Verified since {currentUser.memberSince}
+                {user.name}
+                {user.member_since_label
+                  ? ` · Member since ${user.member_since_label}`
+                  : null}
               </p>
             </div>
           </div>
           <div className="rounded-xl border border-border bg-muted/40 px-3 py-2 text-sm">
             <p className="text-muted-foreground">Review level</p>
-            <p className="mt-0.5 font-semibold text-foreground">Standard KYC</p>
+            <p className="mt-0.5 font-semibold text-foreground">
+              {user.kyc_level ?? "—"}
+            </p>
           </div>
         </CardContent>
       </Card>

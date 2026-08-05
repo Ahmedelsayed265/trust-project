@@ -18,9 +18,10 @@ import {
 import { NotificationsDropdown } from "@/features/notifications";
 import { logoutAction } from "@/features/auth/actions/logout";
 import { useSidebar } from "@/shared/providers/sidebar-provider";
-import { currentUser } from "@/shared/lib/user";
+import { useCurrentUser } from "@/shared/providers/user-provider";
 
 export function AppHeader() {
+  const user = useCurrentUser();
   const { isDesktop, toggleCollapsed, toggleMobile } = useSidebar();
   const [loggingOut, startLogout] = useTransition();
 
@@ -74,15 +75,15 @@ export function AppHeader() {
           >
             <Avatar size="default" className="size-8 sm:size-9">
               <AvatarFallback className="bg-linear-to-br from-sky-400 to-blue-600 text-xs font-bold text-white">
-                {currentUser.initials}
+                {user.initials}
               </AvatarFallback>
             </Avatar>
             <div className="hidden min-w-0 leading-tight text-left md:block">
               <p className="truncate text-sm font-semibold text-foreground">
-                {currentUser.name}
+                {user.name}
               </p>
               <p className="text-[11px] font-medium text-primary">
-                {currentUser.plan}
+                {user.plan?.name ?? "Free"}
               </p>
             </div>
             <ChevronDown className="hidden size-4 shrink-0 text-muted-foreground md:block" />

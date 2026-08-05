@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/select";
 import { FormTextField } from "@/shared/components/form-text-field";
 import { PageHeader } from "@/shared/components/page-header";
-import { currentUser } from "@/shared/lib/user";
+import { useCurrentUser } from "@/shared/providers/user-provider";
 import {
   settingsSchema,
   type SettingsFormValues,
@@ -71,17 +71,22 @@ const notificationOptions = [
 ];
 
 export function SettingsView() {
+  const user = useCurrentUser();
   const [saved, setSaved] = useState(false);
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(settingsSchema),
     defaultValues: {
-      displayName: currentUser.name,
-      email: currentUser.email,
-      language: "en",
-      currency: "USD",
-      emailAlerts: true,
-      pushAlerts: true,
-      aiDigest: false,
+      displayName: user.name,
+      email: user.email,
+      language: (["en", "ar", "es"].includes(user.language)
+        ? user.language
+        : "en") as SettingsFormValues["language"],
+      currency: (["USD", "EUR", "SAR"].includes(user.currency)
+        ? user.currency
+        : "USD") as SettingsFormValues["currency"],
+      emailAlerts: user.email_alerts,
+      pushAlerts: user.push_alerts,
+      aiDigest: user.ai_digest,
     },
   });
 
