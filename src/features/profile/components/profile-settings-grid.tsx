@@ -11,7 +11,6 @@ import {
   Palette,
   Shield,
   SlidersHorizontal,
-  Trash2,
   User,
   UserPlus,
   Info,
@@ -19,6 +18,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { DeleteAccountCard } from '@/features/profile/components/delete-account-card';
 import { SettingsLink } from '@/features/profile/components/settings-link';
 export function ProfileSettingsGrid() {
   return (
@@ -157,14 +157,7 @@ export function ProfileSettingsGrid() {
             <CardTitle className="text-destructive">Danger Zone</CardTitle>
           </CardHeader>
           <CardContent>
-            <SettingsLink
-              item={{
-                label: 'Delete Account',
-                description: 'Permanently delete your data',
-                icon: Trash2,
-                danger: true,
-              }}
-            />
+            <DeleteAccountCard />
           </CardContent>
         </Card>
       </div>

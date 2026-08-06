@@ -112,7 +112,7 @@ export function AiChatView() {
         }
       />
 
-      <Card className="flex min-h-[560px] flex-1 flex-col overflow-hidden">
+      <Card className="flex min-h-140 flex-1 flex-col overflow-hidden">
         <CardContent className="flex min-h-0 flex-1 flex-col gap-0 p-0">
           <div className="border-border border-b px-4 py-3">
             <div className="flex flex-wrap gap-2">
