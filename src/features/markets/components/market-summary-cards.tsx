@@ -1,96 +1,91 @@
 import Link from 'next/link';
 import { ArrowRight, Bot } from 'lucide-react';
-import { Sparkline } from '@/shared/components/sparkline';
-export function MarketSummaryCards() {
+import { formatCompactMoney } from '@/features/markets/lib/market-display';
+import type { MarketsSummary } from '@/features/markets/types';
+import { formatMoney, formatPct } from '@/shared/trading';
+
+export function MarketSummaryCards({ summary }: { summary: MarketsSummary }) {
+  const gainer = summary.top_gainer;
+  const loser = summary.top_loser;
+
   return (
     <div className="grid w-full min-w-0 gap-4 xl:grid-cols-[1fr_1fr_1fr_280px]">
       <div className="border-border bg-card rounded-lg border p-4">
-        <div className="mb-3 flex items-start justify-between gap-3">
+        <p className="text-muted-foreground text-sm font-medium">
+          Market Overview
+        </p>
+        <div className="mt-3 space-y-2">
           <div>
-            <p className="text-muted-foreground text-sm font-medium">
-              Market Overview
-            </p>
-            <div className="mt-3 space-y-2">
-              <div>
-                <p className="text-muted-foreground text-xs">Market Cap</p>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-foreground text-lg font-bold">
-                    $2.45T
-                  </span>
-                  <span className="text-success text-xs font-semibold">
-                    +1.28%
-                  </span>
-                </div>
-              </div>
-              <div>
-                <p className="text-muted-foreground text-xs">24h Volume</p>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-foreground text-lg font-bold">
-                    $98.23B
-                  </span>
-                  <span className="text-success text-xs font-semibold">
-                    +6.42%
-                  </span>
-                </div>
-              </div>
+            <p className="text-muted-foreground text-xs">Symbols</p>
+            <div className="flex items-baseline gap-2">
+              <span className="text-foreground text-lg font-bold">
+                {summary.total_symbols}
+              </span>
+              <span className="text-muted-foreground text-xs">
+                {summary.gainers} up · {summary.losers} down
+              </span>
             </div>
           </div>
-          <Sparkline
-            data={[40, 42, 38, 45, 48, 46, 52, 55, 53, 58, 62]}
-            className="mt-2 h-14 w-24"
-            fill
-            strokeWidth={2}
-          />
+          <div>
+            <p className="text-muted-foreground text-xs">24h Volume</p>
+            <div className="flex items-baseline gap-2">
+              <span className="text-foreground text-lg font-bold">
+                {formatCompactMoney(summary.total_volume_24h)}
+              </span>
+              <span
+                className={
+                  summary.avg_change_pct >= 0
+                    ? 'text-success text-xs font-semibold'
+                    : 'text-destructive text-xs font-semibold'
+                }
+              >
+                Avg {formatPct(summary.avg_change_pct)}
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 
       <div className="border-border bg-card rounded-lg border p-4">
         <p className="text-muted-foreground text-sm font-medium">Top Gainer</p>
-        <div className="mt-3 flex items-start justify-between gap-3">
-          <div className="flex items-center gap-2.5">
-            <div className="flex size-9 items-center justify-center rounded-full bg-violet-100 text-xs font-bold text-violet-700">
-              S
+        {gainer ? (
+          <>
+            <p className="text-foreground mt-3 text-sm font-semibold">
+              {gainer.display_symbol || gainer.symbol}
+            </p>
+            <div className="mt-3 flex items-baseline gap-2">
+              <span className="text-foreground text-lg font-bold">
+                {formatMoney(gainer.price)}
+              </span>
+              <span className="text-success text-sm font-semibold">
+                {formatPct(gainer.change_24h_pct)}
+              </span>
             </div>
-            <div>
-              <p className="text-foreground text-sm font-semibold">SOL/USDT</p>
-              <p className="text-muted-foreground text-xs">Solana</p>
-            </div>
-          </div>
-          <Sparkline
-            data={[28, 30, 35, 32, 40, 45, 42, 50, 55, 58, 65]}
-            className="h-10 w-20"
-            strokeWidth={1.75}
-          />
-        </div>
-        <div className="mt-3 flex items-baseline gap-2">
-          <span className="text-foreground text-lg font-bold">$175.32</span>
-          <span className="text-success text-sm font-semibold">+8.63%</span>
-        </div>
+          </>
+        ) : (
+          <p className="text-muted-foreground mt-3 text-sm">No data</p>
+        )}
       </div>
 
       <div className="border-border bg-card rounded-lg border p-4">
         <p className="text-muted-foreground text-sm font-medium">Top Loser</p>
-        <div className="mt-3 flex items-start justify-between gap-3">
-          <div className="flex items-center gap-2.5">
-            <div className="flex size-9 items-center justify-center rounded-full bg-sky-100 text-xs font-bold text-sky-700">
-              A
+        {loser ? (
+          <>
+            <p className="text-foreground mt-3 text-sm font-semibold">
+              {loser.display_symbol || loser.symbol}
+            </p>
+            <div className="mt-3 flex items-baseline gap-2">
+              <span className="text-foreground text-lg font-bold">
+                {formatMoney(loser.price)}
+              </span>
+              <span className="text-destructive text-sm font-semibold">
+                {formatPct(loser.change_24h_pct)}
+              </span>
             </div>
-            <div>
-              <p className="text-foreground text-sm font-semibold">ADA/USDT</p>
-              <p className="text-muted-foreground text-xs">Cardano</p>
-            </div>
-          </div>
-          <Sparkline
-            data={[65, 60, 58, 55, 50, 52, 48, 42, 40, 35, 32]}
-            positive={false}
-            className="h-10 w-20"
-            strokeWidth={1.75}
-          />
-        </div>
-        <div className="mt-3 flex items-baseline gap-2">
-          <span className="text-foreground text-lg font-bold">$0.4587</span>
-          <span className="text-destructive text-sm font-semibold">-4.21%</span>
-        </div>
+          </>
+        ) : (
+          <p className="text-muted-foreground mt-3 text-sm">No data</p>
+        )}
       </div>
 
       <div className="border-primary/20 rounded-lg border bg-gradient-to-br from-blue-50 to-sky-50 p-4 dark:from-blue-950/40 dark:to-slate-900">
