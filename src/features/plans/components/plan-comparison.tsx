@@ -9,7 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { planIcon } from '@/features/plans/lib/plan-icons';
+import { PlanIcon } from '@/features/plans/lib/plan-icons';
 import type { Plan, PlanComparisonRow } from '@/features/plans/types';
 import { cn } from '@/lib/utils';
 
@@ -35,29 +35,26 @@ export function PlanComparison({
                   <TableHead className="text-muted-foreground h-auto px-4 py-4 sm:px-5">
                     Features
                   </TableHead>
-                  {plans.map((plan) => {
-                    const Icon = planIcon(plan.icon);
-                    return (
-                      <TableHead
-                        key={plan.key}
-                        className="h-auto px-3 py-4 text-center"
-                      >
-                        <div className="flex flex-col items-center gap-2">
-                          <span className="bg-primary/10 text-primary flex size-9 items-center justify-center rounded-xl">
-                            <Icon className="size-4" />
-                          </span>
-                          <span className="text-foreground text-xs font-semibold whitespace-normal sm:text-sm">
-                            {plan.name}
-                          </span>
-                          {plan.is_popular ? (
-                            <Badge className="border-0 px-2 py-0 text-[10px]">
-                              Most Popular
-                            </Badge>
-                          ) : null}
-                        </div>
-                      </TableHead>
-                    );
-                  })}
+                  {plans.map((plan) => (
+                    <TableHead
+                      key={plan.key}
+                      className="h-auto px-3 py-4 text-center"
+                    >
+                      <div className="flex flex-col items-center gap-2">
+                        <span className="bg-primary/10 text-primary flex size-9 items-center justify-center rounded-xl">
+                          <PlanIcon name={plan.icon} className="size-4" />
+                        </span>
+                        <span className="text-foreground text-xs font-semibold whitespace-normal sm:text-sm">
+                          {plan.name}
+                        </span>
+                        {plan.is_popular ? (
+                          <Badge className="border-0 px-2 py-0 text-[10px]">
+                            Most Popular
+                          </Badge>
+                        ) : null}
+                      </div>
+                    </TableHead>
+                  ))}
                 </TableRow>
               </TableHeader>
               <TableBody>

@@ -8,12 +8,11 @@ import {
 } from '@/components/ui/card';
 import { PlanFeaturesList } from '@/features/plans/components/plan-features';
 import { SubscribePlanButton } from '@/features/plans/components/subscribe-plan-button';
-import { planIcon } from '@/features/plans/lib/plan-icons';
+import { PlanIcon } from '@/features/plans/lib/plan-icons';
 import type { Plan } from '@/features/plans/types';
 import { cn } from '@/lib/utils';
 
 function PlanCard({ plan }: { plan: Plan }) {
-  const Icon = planIcon(plan.icon);
   const isHighlighted = plan.is_current || plan.is_popular;
   const href = `/profile/plans/${encodeURIComponent(plan.key)}`;
 
@@ -43,7 +42,7 @@ function PlanCard({ plan }: { plan: Plan }) {
                   : 'bg-primary/10 text-primary',
               )}
             >
-              <Icon className="size-5" />
+              <PlanIcon name={plan.icon} className="size-5" />
             </div>
             {plan.is_current ? (
               <span className="border-primary/20 bg-primary/10 text-primary rounded-md border px-2 py-0.5 text-[11px] font-semibold">

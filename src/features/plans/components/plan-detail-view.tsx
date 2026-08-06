@@ -5,12 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PlanFeaturesList } from '@/features/plans/components/plan-features';
 import { SubscribePlanButton } from '@/features/plans/components/subscribe-plan-button';
-import { planIcon } from '@/features/plans/lib/plan-icons';
+import { PlanIcon } from '@/features/plans/lib/plan-icons';
 import type { Plan } from '@/features/plans/types';
 import { cn } from '@/lib/utils';
 
 export function PlanDetailView({ plan }: { plan: Plan }) {
-  const Icon = planIcon(plan.icon);
   const isHighlighted = plan.is_current || plan.is_popular;
 
   return (
@@ -67,7 +66,7 @@ export function PlanDetailView({ plan }: { plan: Plan }) {
                     : 'bg-primary/10 text-primary',
                 )}
               >
-                <Icon className="size-6" />
+                <PlanIcon name={plan.icon} className="size-6" />
               </div>
               <div className="flex flex-wrap justify-end gap-1.5">
                 {plan.is_current ? (
