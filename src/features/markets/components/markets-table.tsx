@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useTransition } from 'react';
 import Link from 'next/link';
 import {
   ArrowLeftRight,
@@ -12,6 +12,7 @@ import {
   Sparkles,
   Star,
 } from 'lucide-react';
+import { toast } from 'sonner';
 import { Sparkline } from '@/shared/components/sparkline';
 import { Button } from '@/components/ui/button';
 import {
@@ -26,6 +27,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { toggleWatchlistAction } from '@/features/watchlist/actions/watchlist';
 import { cn } from '@/lib/utils';
 type Currency = 'USD' | 'EUR' | 'SAR';
 type ChangePeriod = '24h' | '7d' | '30d';
@@ -242,6 +244,7 @@ export function MarketsTable({
   const [gainersOnly, setGainersOnly] = useState(false);
   const [losersOnly, setLosersOnly] = useState(false);
   const [copied, setCopied] = useState<string | null>(null);
+  const [, startToggle] = useTransition();
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -275,7 +278,25 @@ export function MarketsTable({
   ]);
 
   function toggleStar(symbol: string) {
-    setStarred((prev) => ({ ...prev, [symbol]: !prev[symbol] }));
+    const previous = !!starred[symbol];
+    setStarred((prev) => ({ ...prev, [symbol]: !previous }));
+
+    startToggle(async () => {
+      const result = await toggleWatchlistAction(symbol);
+      if (!result.ok) {
+        setStarred((prev) => ({ ...prev, [symbol]: previous }));
+        toast.error(result.message);
+        return;
+      }
+
+      const watching = result.data.watching ?? result.data.in_watchlist;
+      if (typeof watching === 'boolean') {
+        setStarred((prev) => ({
+          ...prev,
+          [symbol]: watching,
+        }));
+      }
+    });
   }
 
   async function copySymbol(symbol: string) {

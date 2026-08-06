@@ -1,62 +1,50 @@
 'use client';
 
-import { useState } from 'react';
-import { Star } from 'lucide-react';
+import { useState, useTransition } from 'react';
+import Link from 'next/link';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { PageHeader } from '@/shared/components/page-header';
-import { Sparkline } from '@/shared/components/sparkline';
-import { ChangeIndicator } from '@/shared/components/change-indicator';
-import { cn } from '@/lib/utils';
-import Link from 'next/link';
-const seed = [
-  {
-    symbol: 'BTC/USDT',
-    name: 'Bitcoin',
-    price: '$67,432.10',
-    change: '+2.45%',
-    positive: true,
-    data: [30, 35, 32, 40, 48, 52, 58],
-  },
-  {
-    symbol: 'ETH/USDT',
-    name: 'Ethereum',
-    price: '$3,456.78',
-    change: '+1.82%',
-    positive: true,
-    data: [28, 32, 30, 36, 40, 44, 48],
-  },
-  {
-    symbol: 'AAPL',
-    name: 'Apple Inc.',
-    price: '$178.25',
-    change: '+1.30%',
-    positive: true,
-    data: [40, 42, 41, 45, 44, 48, 50],
-  },
-  {
-    symbol: 'TSLA',
-    name: 'Tesla Inc.',
-    price: '$248.50',
-    change: '-1.28%',
-    positive: false,
-    data: [60, 55, 52, 48, 45, 42, 40],
-  },
-  {
-    symbol: 'XAU/USD',
-    name: 'Gold',
-    price: '$2,345.80',
-    change: '+0.68%',
-    positive: true,
-    data: [42, 44, 43, 46, 47, 48, 50],
-  },
-];
+import { removeFromWatchlistAction } from '@/features/watchlist/actions/watchlist';
+import { WatchlistRow } from '@/features/watchlist/components/watchlist-row';
+import { WatchlistSummaryCards } from '@/features/watchlist/components/watchlist-summary';
+import type { WatchlistData, WatchlistItem } from '@/features/watchlist/types';
 
-export function WatchlistView() {
-  const [items, setItems] = useState(seed);
+function summaryFromItems(items: WatchlistItem[]) {
+  const gainers = items.filter((item) => item.is_positive).length;
+  return {
+    total: items.length,
+    gainers,
+    losers: items.length - gainers,
+  };
+}
 
-  function remove(symbol: string) {
-    setItems((prev) => prev.filter((item) => item.symbol !== symbol));
+export function WatchlistView({ initialData }: { initialData: WatchlistData }) {
+  const [items, setItems] = useState(initialData.items);
+  const [summary, setSummary] = useState(initialData.summary);
+  const [removingId, setRemovingId] = useState<number | null>(null);
+  const [pending, startTransition] = useTransition();
+
+  function onRemove(item: WatchlistItem) {
+    setRemovingId(item.id);
+    startTransition(async () => {
+      const result = await removeFromWatchlistAction(item.symbol);
+
+      if (!result.ok) {
+        setRemovingId(null);
+        toast.error(result.message);
+        return;
+      }
+
+      setItems((prev) => {
+        const next = prev.filter((row) => row.id !== item.id);
+        setSummary(summaryFromItems(next));
+        return next;
+      });
+      setRemovingId(null);
+      toast.success('Removed from watchlist.');
+    });
   }
 
   return (
@@ -75,7 +63,9 @@ export function WatchlistView() {
         }
       />
 
-      <Card className="">
+      <WatchlistSummaryCards summary={summary} />
+
+      <Card>
         <CardContent className="p-0">
           {items.length === 0 ? (
             <p className="text-muted-foreground px-5 py-10 text-center text-sm">
@@ -84,42 +74,12 @@ export function WatchlistView() {
           ) : (
             <ul className="divide-border divide-y">
               {items.map((item) => (
-                <li
-                  key={item.symbol}
-                  className="flex items-center gap-3 px-4 py-3.5 sm:px-5"
-                >
-                  <div className="min-w-0 flex-1">
-                    <p className="text-foreground text-sm font-semibold">
-                      {item.symbol}
-                    </p>
-                    <p className="text-muted-foreground text-xs">{item.name}</p>
-                  </div>
-                  <Sparkline
-                    data={item.data}
-                    positive={item.positive}
-                    className="hidden h-8 w-20 sm:block"
-                  />
-                  <div className="min-w-[88px] text-right">
-                    <p className="text-foreground text-sm font-semibold">
-                      {item.price}
-                    </p>
-                    <ChangeIndicator
-                      value={item.change}
-                      positive={item.positive}
-                      className="text-xs"
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => remove(item.symbol)}
-                    className={cn(
-                      'text-primary transition-colors hover:opacity-80',
-                    )}
-                    aria-label={`Remove ${item.symbol}`}
-                  >
-                    <Star className="size-4" fill="currentColor" />
-                  </button>
-                </li>
+                <WatchlistRow
+                  key={item.id}
+                  item={item}
+                  onRemove={() => onRemove(item)}
+                  removing={pending && removingId === item.id}
+                />
               ))}
             </ul>
           )}

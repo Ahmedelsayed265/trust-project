@@ -1,39 +1,25 @@
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
+'use client';
+
 import { PageHeader } from '@/shared/components/page-header';
+import { NewsFilters } from '@/features/news/components/news-filters';
+import { NewsList } from '@/features/news/components/news-list';
+import { NewsPaginationBar } from '@/features/news/components/news-pagination';
+import { useNewsList } from '@/features/news/hooks/use-news-list';
+import type { NewsListData } from '@/features/news/types';
 
-const articles = [
-  {
-    tag: 'Crypto',
-    title: 'Bitcoin holds above $67K as ETF inflows stabilize',
-    summary:
-      'Spot ETF demand remains steady while traders watch Fed signals for the next move.',
-    time: '12 min ago',
-  },
-  {
-    tag: 'Markets',
-    title: 'Gold edges higher amid softer dollar tone',
-    summary:
-      'XAU/USD climbs as investors reassess rate-cut expectations into next week.',
-    time: '28 min ago',
-  },
-  {
-    tag: 'AI',
-    title: 'TrustAI launches stronger confidence scoring for crypto pairs',
-    summary:
-      'Updated model weights improve signal calibration on high-volatility sessions.',
-    time: '1h ago',
-  },
-  {
-    tag: 'Stocks',
-    title: 'Apple suppliers signal solid demand into spring quarter',
-    summary:
-      'Component makers report healthier order books, supporting AAPL near recent highs.',
-    time: '3h ago',
-  },
-];
+export function NewsView({ initialData }: { initialData: NewsListData }) {
+  const {
+    tag,
+    changeTag,
+    searchDraft,
+    setSearchDraft,
+    applySearch,
+    setPage,
+    items,
+    tags,
+    pagination,
+  } = useNewsList(initialData);
 
-export function NewsView() {
   return (
     <div className="flex w-full min-w-0 flex-col gap-4 sm:gap-5">
       <PageHeader
@@ -41,31 +27,18 @@ export function NewsView() {
         description="Market headlines curated for active traders."
       />
 
-      <div className="grid gap-3">
-        {articles.map((article) => (
-          <Card
-            key={article.title}
-            className="hover:bg-muted/20 transition-colors"
-          >
-            <CardContent className="space-y-2">
-              <div className="flex flex-wrap items-center gap-2">
-                <Badge variant="secondary" className="border-0">
-                  {article.tag}
-                </Badge>
-                <span className="text-muted-foreground text-xs">
-                  {article.time}
-                </span>
-              </div>
-              <h2 className="text-foreground text-base font-semibold">
-                {article.title}
-              </h2>
-              <p className="text-muted-foreground text-sm leading-relaxed">
-                {article.summary}
-              </p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      <NewsFilters
+        tag={tag}
+        tags={tags}
+        searchDraft={searchDraft}
+        onTagChange={changeTag}
+        onSearchDraftChange={setSearchDraft}
+        onSearchSubmit={applySearch}
+      />
+
+      <NewsList items={items} />
+
+      <NewsPaginationBar pagination={pagination} onPageChange={setPage} />
     </div>
   );
 }
