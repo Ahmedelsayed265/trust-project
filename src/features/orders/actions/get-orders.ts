@@ -151,7 +151,10 @@ export async function previewOrderSummaryAction(
       input.type === 'limit' &&
       !(input.limit_price != null && input.limit_price > 0)
     ) {
-      return { ok: false, message: 'Limit price is required for limit orders.' };
+      return {
+        ok: false,
+        message: 'Limit price is required for limit orders.',
+      };
     }
 
     const token = await requireAuth();
@@ -194,7 +197,10 @@ export async function placeOrderAction(
       input.type === 'limit' &&
       !(input.limit_price != null && input.limit_price > 0)
     ) {
-      return { ok: false, message: 'Limit price is required for limit orders.' };
+      return {
+        ok: false,
+        message: 'Limit price is required for limit orders.',
+      };
     }
 
     const token = await requireAuth();

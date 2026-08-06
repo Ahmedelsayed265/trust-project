@@ -20,11 +20,7 @@ import { cn } from '@/lib/utils';
 const percents = [25, 50, 75, 100] as const;
 const priceData = [40, 42, 38, 45, 48, 46, 52, 55, 58, 62, 65];
 
-export function OrderEntry({
-  preview,
-}: {
-  preview: OrderSummaryPreviewState;
-}) {
+export function OrderEntry({ preview }: { preview: OrderSummaryPreviewState }) {
   const form = useFormContext<OrderFormValues>();
   const { snapshot, activeProvider, supports } = useTrading();
   const { summary } = preview;
