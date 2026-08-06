@@ -83,7 +83,7 @@ export function ContactView() {
     },
   });
 
-  function onSubmit(_values: ContactFormValues) {
+  function onSubmit() {
     setSent(true);
     form.reset({
       name: user.name,
@@ -219,7 +219,7 @@ export function ContactView() {
                   {sent && (
                     <p className="text-success inline-flex items-center gap-1.5 text-sm font-medium">
                       <Check className="size-4" />
-                      Message sent — we'll reply by email
+                      Message sent — we&apos;ll reply by email
                     </p>
                   )}
                 </div>

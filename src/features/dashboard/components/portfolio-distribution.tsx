@@ -99,30 +99,38 @@ function DonutChart({
   const stroke = 28;
   const radius = (size - stroke) / 2;
   const circumference = 2 * Math.PI * radius;
-  let offset = 0;
+  const chartSegments = segments.reduce<
+    { label: string; color: string; length: number; dashOffset: number }[]
+  >((acc, segment) => {
+    const length = (segment.percent / 100) * circumference;
+    const prevEnd = acc.at(-1);
+    const start = prevEnd ? -prevEnd.dashOffset + prevEnd.length : 0;
+    acc.push({
+      label: segment.label,
+      color: segment.color,
+      length,
+      dashOffset: -start,
+    });
+    return acc;
+  }, []);
 
   return (
     <div className="relative size-40 shrink-0">
       <svg viewBox={`0 0 ${size} ${size}`} className="size-full -rotate-90">
-        {segments.map((segment) => {
-          const length = (segment.percent / 100) * circumference;
-          const dashOffset = -offset;
-          offset += length;
-          return (
-            <circle
-              key={segment.label}
-              cx={size / 2}
-              cy={size / 2}
-              r={radius}
-              fill="none"
-              stroke={segment.color}
-              strokeWidth={stroke}
-              strokeDasharray={`${length} ${circumference - length}`}
-              strokeDashoffset={dashOffset}
-              strokeLinecap="butt"
-            />
-          );
-        })}
+        {chartSegments.map((segment) => (
+          <circle
+            key={segment.label}
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            fill="none"
+            stroke={segment.color}
+            strokeWidth={stroke}
+            strokeDasharray={`${segment.length} ${circumference - segment.length}`}
+            strokeDashoffset={segment.dashOffset}
+            strokeLinecap="butt"
+          />
+        ))}
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <p className="text-muted-foreground text-[10px]">Equity</p>

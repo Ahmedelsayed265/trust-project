@@ -110,7 +110,7 @@ export function SecurityView() {
               <div>
                 <CardTitle>Change password</CardTitle>
                 <p className="text-muted-foreground mt-1 text-sm">
-                  Use a strong password you don't reuse elsewhere.
+                  Use a strong password you don&apos;t reuse elsewhere.
                 </p>
               </div>
             </div>

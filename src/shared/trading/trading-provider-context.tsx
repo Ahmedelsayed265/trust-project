@@ -120,6 +120,8 @@ export function TradingProviderContext({ children }: { children: ReactNode }) {
   }, [activeProviderId]);
 
   useEffect(() => {
+    // Initial provider sync — refresh updates loading/snapshot state.
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- mount fetch
     void refresh();
   }, [refresh]);
 

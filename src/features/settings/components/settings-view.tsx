@@ -83,7 +83,7 @@ export function SettingsView() {
     },
   });
 
-  function onSubmit(_values: SettingsFormValues) {
+  function onSubmit() {
     setSaved(true);
     window.setTimeout(() => setSaved(false), 2000);
   }

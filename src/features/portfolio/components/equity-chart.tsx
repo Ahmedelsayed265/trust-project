@@ -175,12 +175,12 @@ export function EquityChart({
         )}
       </div>
 
-      <div className="text-muted-foreground mt-2 flex items-center justify-between text-xs">
-        <span>{formatDate(points[0]?.timestamp ?? Date.now())}</span>
-        <span>
-          {formatDate(points[points.length - 1]?.timestamp ?? Date.now())}
-        </span>
-      </div>
+      {points.length > 0 && (
+        <div className="text-muted-foreground mt-2 flex items-center justify-between text-xs">
+          <span>{formatDate(points[0].timestamp)}</span>
+          <span>{formatDate(points[points.length - 1].timestamp)}</span>
+        </div>
+      )}
     </div>
   );
 }

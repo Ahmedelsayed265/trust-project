@@ -67,7 +67,7 @@ export function AiChatView() {
     if (!trimmed || pending) return;
 
     const userMessage: ChatMessage = {
-      id: `user-${Date.now()}`,
+      id: `user-${crypto.randomUUID()}`,
       role: 'user',
       content: trimmed,
     };
@@ -80,7 +80,7 @@ export function AiChatView() {
       setMessages((prev) => [
         ...prev,
         {
-          id: `assistant-${Date.now()}`,
+          id: `assistant-${crypto.randomUUID()}`,
           role: 'assistant',
           content: buildReply(trimmed),
         },
