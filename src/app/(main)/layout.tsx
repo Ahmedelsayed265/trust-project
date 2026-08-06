@@ -1,5 +1,6 @@
 import { requireAuth } from '@/features/auth/session';
 import { getCurrentUser } from '@/features/auth/get-current-user';
+import { getMarketsTickerAction } from '@/features/markets/actions/get-markets';
 import { UserProvider } from '@/shared/providers/user-provider';
 import { SidebarProvider } from '@/shared/providers/sidebar-provider';
 import { AppSidebar } from '@/shared/layouts/app-sidebar';
@@ -13,7 +14,10 @@ export default async function MainLayout({
   children: React.ReactNode;
 }) {
   await requireAuth();
-  const user = await getCurrentUser();
+  const [user, tickerResult] = await Promise.all([
+    getCurrentUser(),
+    getMarketsTickerAction(),
+  ]);
 
   return (
     <UserProvider user={user}>
@@ -28,7 +32,9 @@ export default async function MainLayout({
               <div className="mx-auto w-full max-w-350 min-w-0">{children}</div>
             </main>
 
-            <HomeBottomTicker />
+            <HomeBottomTicker
+              items={tickerResult.ok ? tickerResult.data : []}
+            />
 
             <MobileBottomNav />
           </div>

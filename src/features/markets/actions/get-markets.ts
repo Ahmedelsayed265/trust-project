@@ -7,6 +7,7 @@ import type {
   GetMarketsInput,
   MarketCategory,
   MarketSymbolDetail,
+  MarketTickerItem,
   MarketsListData,
   MarketsSummary,
 } from '@/features/markets/types';
@@ -83,6 +84,19 @@ export async function getMarketsSummaryAction(): Promise<
     return { ok: true, data: response.data };
   } catch (error) {
     return mapError(error, 'Failed to load market summary.');
+  }
+}
+
+export async function getMarketsTickerAction(): Promise<
+  ActionResult<MarketTickerItem[]>
+> {
+  try {
+    const response =
+      await api.get<ApiSuccessResponse<MarketTickerItem[]>>('/markets/ticker');
+
+    return { ok: true, data: response.data };
+  } catch (error) {
+    return mapError(error, 'Failed to load market ticker.');
   }
 }
 

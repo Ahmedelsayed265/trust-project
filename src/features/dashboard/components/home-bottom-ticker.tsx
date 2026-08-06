@@ -2,9 +2,10 @@
 
 import { usePathname } from 'next/navigation';
 import { BottomTicker } from './bottom-ticker';
+import type { MarketTickerItem } from '@/features/markets/types';
 
-export function HomeBottomTicker() {
+export function HomeBottomTicker({ items }: { items: MarketTickerItem[] }) {
   const pathname = usePathname();
   if (pathname !== '/') return null;
-  return <BottomTicker />;
+  return <BottomTicker items={items} />;
 }

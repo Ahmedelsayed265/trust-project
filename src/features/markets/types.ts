@@ -89,3 +89,12 @@ export type MarketSymbolDetail = MarketSymbol & {
   active_signals: number;
   related: MarketSymbol[];
 };
+
+export type MarketTickerItem = {
+  symbol: string;
+  display_symbol: string;
+  name: string;
+  price: number;
+  change_24h_pct: number;
+  is_positive: boolean;
+};
