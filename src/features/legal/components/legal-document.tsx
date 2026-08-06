@@ -16,12 +16,14 @@ export function LegalDocument({
 }) {
   return (
     <article className="space-y-8">
-      <header className="space-y-3 border-b border-border pb-8">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">
+      <header className="border-border space-y-3 border-b pb-8">
+        <h1 className="text-foreground text-3xl font-bold tracking-tight">
           {title}
         </h1>
-        <p className="text-sm text-muted-foreground">Last updated {updatedAt}</p>
-        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+        <p className="text-muted-foreground text-sm">
+          Last updated {updatedAt}
+        </p>
+        <p className="text-muted-foreground max-w-2xl text-sm leading-relaxed">
           {intro}
         </p>
       </header>
@@ -29,13 +31,13 @@ export function LegalDocument({
       <div className="space-y-8">
         {sections.map((section) => (
           <section key={section.title} className="space-y-3">
-            <h2 className="text-lg font-semibold tracking-tight text-foreground">
+            <h2 className="text-foreground text-lg font-semibold tracking-tight">
               {section.title}
             </h2>
             {section.paragraphs.map((paragraph) => (
               <p
                 key={paragraph}
-                className="text-sm leading-relaxed text-muted-foreground"
+                className="text-muted-foreground text-sm leading-relaxed"
               >
                 {paragraph}
               </p>
@@ -44,11 +46,11 @@ export function LegalDocument({
         ))}
       </div>
 
-      <p className="border-t border-border pt-6 text-sm text-muted-foreground">
-        Questions? Email{" "}
+      <p className="border-border text-muted-foreground border-t pt-6 text-sm">
+        Questions? Email{' '}
         <a
           href="mailto:support@trustai.app"
-          className="font-medium text-primary hover:underline"
+          className="text-primary font-medium hover:underline"
         >
           support@trustai.app
         </a>

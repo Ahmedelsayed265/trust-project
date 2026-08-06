@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useId } from "react";
-import { cn } from "@/lib/utils";
+import { useId } from 'react';
+import { cn } from '@/lib/utils';
 
 export function Sparkline({
   data,
@@ -32,16 +32,16 @@ export function Sparkline({
   });
 
   const linePath = coords
-    .map(({ x, y }, i) => `${i === 0 ? "M" : "L"}${x} ${y}`)
-    .join(" ");
+    .map(({ x, y }, i) => `${i === 0 ? 'M' : 'L'}${x} ${y}`)
+    .join(' ');
   const areaPath = `${linePath} L${width} ${height} L0 ${height} Z`;
-  const color = positive ? "var(--success)" : "var(--destructive)";
+  const color = positive ? 'var(--success)' : 'var(--destructive)';
   const last = coords[coords.length - 1];
 
   return (
     <svg
       viewBox={`0 0 ${width} ${height}`}
-      className={cn("overflow-visible", className)}
+      className={cn('overflow-visible', className)}
       preserveAspectRatio="none"
       aria-hidden
     >

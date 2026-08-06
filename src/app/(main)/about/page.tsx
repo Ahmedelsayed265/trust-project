@@ -1,7 +1,5 @@
-import { AboutView } from "@/features/about";
+import { AboutView } from '@/features/about';
 
 export default function AboutPage() {
-  return (
-    <AboutView />
-  );
+  return <AboutView />;
 }

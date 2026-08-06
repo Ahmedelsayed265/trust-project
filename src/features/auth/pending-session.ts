@@ -1,20 +1,20 @@
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
-const PENDING_TOKEN_COOKIE = "trustai_pending_token";
-const PENDING_EMAIL_COOKIE = "trustai_pending_email";
-const PENDING_REMEMBER_COOKIE = "trustai_pending_remember";
-const PENDING_RESET_EMAIL_COOKIE = "trustai_pending_reset_email";
-const PENDING_RESET_CODE_COOKIE = "trustai_pending_reset_code";
+const PENDING_TOKEN_COOKIE = 'trustai_pending_token';
+const PENDING_EMAIL_COOKIE = 'trustai_pending_email';
+const PENDING_REMEMBER_COOKIE = 'trustai_pending_remember';
+const PENDING_RESET_EMAIL_COOKIE = 'trustai_pending_reset_email';
+const PENDING_RESET_CODE_COOKIE = 'trustai_pending_reset_code';
 
 const PENDING_MAX_AGE = 60 * 30;
 
 function cookieOptions(maxAge: number) {
   return {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax" as const,
-    path: "/",
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax' as const,
+    path: '/',
     maxAge,
   };
 }
@@ -30,8 +30,8 @@ export async function setPendingVerification(input: {
   jar.set(PENDING_EMAIL_COOKIE, input.email, options);
   jar.set(
     PENDING_REMEMBER_COOKIE,
-    input.remember === false ? "0" : "1",
-    options
+    input.remember === false ? '0' : '1',
+    options,
   );
   jar.delete(PENDING_RESET_EMAIL_COOKIE);
   jar.delete(PENDING_RESET_CODE_COOKIE);
@@ -46,7 +46,7 @@ export async function getPendingVerification() {
   return {
     token,
     email,
-    remember: jar.get(PENDING_REMEMBER_COOKIE)?.value !== "0",
+    remember: jar.get(PENDING_REMEMBER_COOKIE)?.value !== '0',
   };
 }
 
@@ -95,33 +95,35 @@ export async function clearPendingPasswordReset() {
 
 export type PendingOtp =
   | {
-      purpose: "signup";
+      purpose: 'signup';
       email: string;
       token: string;
       remember: boolean;
     }
   | {
-      purpose: "reset";
+      purpose: 'reset';
       email: string;
     };
 
 export async function requirePendingOtp(): Promise<PendingOtp> {
   const signup = await getPendingVerification();
+
   if (signup) {
-    return { purpose: "signup", ...signup };
+    return { purpose: 'signup', ...signup };
   }
 
   const reset = await getPendingPasswordReset();
+
   if (reset?.email) {
-    return { purpose: "reset", email: reset.email };
+    return { purpose: 'reset', email: reset.email };
   }
 
-  redirect("/login");
+  redirect('/login');
 }
 
 export async function requireVerifiedPasswordReset() {
   const pending = await getPendingPasswordReset();
-  if (!pending?.email) redirect("/forgot-password");
-  if (!pending.code) redirect("/verify-email");
+  if (!pending?.email) redirect('/forgot-password');
+  if (!pending.code) redirect('/verify-email');
   return { email: pending.email, code: pending.code };
 }

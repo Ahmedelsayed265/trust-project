@@ -1,72 +1,72 @@
-import Link from "next/link";
-import { MessageCircle } from "lucide-react";
+import Link from 'next/link';
+import { MessageCircle } from 'lucide-react';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PageHeader } from "@/shared/components/page-header";
+} from '@/components/ui/accordion';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { PageHeader } from '@/shared/components/page-header';
 const faqSections = [
   {
-    title: "Getting started",
+    title: 'Getting started',
     items: [
       {
-        question: "How do I fund my trading account?",
+        question: 'How do I fund my trading account?',
         answer:
-          "TrustAI does not hold an internal wallet. Fund your Binance Spot or Alpaca account on the provider’s site, then connect API keys under Accounts so balances sync here.",
+          'TrustAI does not hold an internal wallet. Fund your Binance Spot or Alpaca account on the provider’s site, then connect API keys under Accounts so balances sync here.',
       },
       {
-        question: "How do I place my first trade?",
+        question: 'How do I place my first trade?',
         answer:
-          "Connect a provider, go to Trade, select a market, choose buy or sell, enter size, and confirm. Orders are sent to the provider API — not an in-app ledger.",
+          'Connect a provider, go to Trade, select a market, choose buy or sell, enter size, and confirm. Orders are sent to the provider API — not an in-app ledger.',
       },
       {
-        question: "What is included with Premium?",
+        question: 'What is included with Premium?',
         answer:
-          "Premium unlocks stronger AI signal coverage, priority support, and advanced portfolio tools. Review tiers anytime on the Plans page.",
+          'Premium unlocks stronger AI signal coverage, priority support, and advanced portfolio tools. Review tiers anytime on the Plans page.',
       },
     ],
   },
   {
-    title: "Trading & AI signals",
+    title: 'Trading & AI signals',
     items: [
       {
-        question: "How do AI signal confidence scores work?",
+        question: 'How do AI signal confidence scores work?',
         answer:
-          "Confidence reflects model agreement across momentum, volatility, and sentiment inputs. Strong setups usually score above 75%.",
+          'Confidence reflects model agreement across momentum, volatility, and sentiment inputs. Strong setups usually score above 75%.',
       },
       {
-        question: "Can I customize risk on trades?",
+        question: 'Can I customize risk on trades?',
         answer:
-          "Yes. Set default size, leverage preferences, and risk limits in Settings, then adjust per order on the Trade screen.",
+          'Yes. Set default size, leverage preferences, and risk limits in Settings, then adjust per order on the Trade screen.',
       },
       {
-        question: "Where can I find order history?",
+        question: 'Where can I find order history?',
         answer:
-          "Open Orders to review open, filled, and canceled activity from your connected provider.",
+          'Open Orders to review open, filled, and canceled activity from your connected provider.',
       },
     ],
   },
   {
-    title: "Account & security",
+    title: 'Account & security',
     items: [
       {
-        question: "How do I enable 2FA?",
+        question: 'How do I enable 2FA?',
         answer:
-          "Open Profile → Security, turn on two-factor authentication, and link an authenticator app. Keep recovery codes somewhere safe.",
+          'Open Profile → Security, turn on two-factor authentication, and link an authenticator app. Keep recovery codes somewhere safe.',
       },
       {
-        question: "What does Verified mean?",
+        question: 'What does Verified mean?',
         answer:
-          "Verified means your KYC documents were approved. You can check status and resubmit documents from Profile → Verification.",
+          'Verified means your KYC documents were approved. You can check status and resubmit documents from Profile → Verification.',
       },
       {
-        question: "How do withdrawals work?",
+        question: 'How do withdrawals work?',
         answer:
-          "Withdrawals are handled by your broker/exchange (Binance or Alpaca). TrustAI never custodied funds and does not run in-app withdrawals.",
+          'Withdrawals are handled by your broker/exchange (Binance or Alpaca). TrustAI never custodied funds and does not run in-app withdrawals.',
       },
     ],
   },
@@ -93,7 +93,7 @@ export function FaqView() {
       <div className="grid gap-4">
         {faqSections.map((section) => (
           <Card key={section.title}>
-            <CardHeader className="border-b border-border">
+            <CardHeader className="border-border border-b">
               <CardTitle>{section.title}</CardTitle>
             </CardHeader>
             <CardContent className="pt-1">
@@ -103,7 +103,7 @@ export function FaqView() {
                     <AccordionTrigger className="text-left text-sm font-semibold hover:no-underline">
                       {item.question}
                     </AccordionTrigger>
-                    <AccordionContent className="text-sm leading-relaxed text-muted-foreground">
+                    <AccordionContent className="text-muted-foreground text-sm leading-relaxed">
                       {item.answer}
                     </AccordionContent>
                   </AccordionItem>
@@ -117,10 +117,10 @@ export function FaqView() {
       <Card className="border-primary/20 bg-gradient-to-br from-blue-50 to-sky-50 dark:from-blue-950/30 dark:to-slate-900">
         <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-base font-semibold text-foreground">
+            <p className="text-foreground text-base font-semibold">
               Still need help?
             </p>
-            <p className="mt-1 text-sm text-muted-foreground">
+            <p className="text-muted-foreground mt-1 text-sm">
               Browse guides in Help Center or send us a message.
             </p>
           </div>

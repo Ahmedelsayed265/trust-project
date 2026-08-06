@@ -9,7 +9,7 @@ import type {
   ProviderId,
   ProviderOrder,
   ProviderPosition,
-} from "@/shared/trading/types";
+} from '@/shared/trading/types';
 
 /**
  * Unified trading provider contract.
@@ -26,7 +26,9 @@ export interface TradingProvider {
   getAccounts(): Promise<ProviderAccount[]>;
   getBalances(): Promise<ProviderBalance[]>;
   getPositions(): Promise<ProviderPosition[]>;
-  getOrders(params?: { status?: "open" | "closed" | "all" }): Promise<ProviderOrder[]>;
+  getOrders(params?: {
+    status?: 'open' | 'closed' | 'all';
+  }): Promise<ProviderOrder[]>;
   getFills(): Promise<ProviderFill[]>;
   getMarketData(symbols: string[]): Promise<MarketTicker[]>;
   getPortfolioSnapshot(): Promise<PortfolioSnapshot>;

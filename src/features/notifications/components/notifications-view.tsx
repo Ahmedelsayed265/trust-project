@@ -1,23 +1,20 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { PageHeader } from "@/shared/components/page-header";
-import { NotificationItem } from "@/features/notifications/components/notification-item";
-import {
-  notifications as initialNotifications,
-} from "@/features/notifications/data/notifications";
-import { cn } from "@/lib/utils";
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { PageHeader } from '@/shared/components/page-header';
+import { NotificationItem } from '@/features/notifications/components/notification-item';
+import { notifications as initialNotifications } from '@/features/notifications/data/notifications';
+import { cn } from '@/lib/utils';
 
-type Filter = "all" | "unread";
+type Filter = 'all' | 'unread';
 
 export function NotificationsView() {
-  const [filter, setFilter] = useState<Filter>("all");
+  const [filter, setFilter] = useState<Filter>('all');
   const [items, setItems] = useState(initialNotifications);
 
   const unreadCount = items.filter((n) => !n.read).length;
-  const visible =
-    filter === "unread" ? items.filter((n) => !n.read) : items;
+  const visible = filter === 'unread' ? items.filter((n) => !n.read) : items;
 
   return (
     <div className="flex w-full min-w-0 flex-col gap-4 sm:gap-5">
@@ -43,8 +40,8 @@ export function NotificationsView() {
       <div className="flex items-center gap-2">
         {(
           [
-            { id: "all", label: "All" },
-            { id: "unread", label: `Unread (${unreadCount})` },
+            { id: 'all', label: 'All' },
+            { id: 'unread', label: `Unread (${unreadCount})` },
           ] as const
         ).map((tab) => (
           <button
@@ -52,10 +49,10 @@ export function NotificationsView() {
             type="button"
             onClick={() => setFilter(tab.id)}
             className={cn(
-              "rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors",
+              'rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors',
               filter === tab.id
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted text-muted-foreground hover:text-foreground"
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-muted text-muted-foreground hover:text-foreground',
             )}
           >
             {tab.label}
@@ -65,11 +62,11 @@ export function NotificationsView() {
 
       <div className="grid gap-3">
         {visible.length === 0 ? (
-          <div className="rounded-lg border border-border bg-card px-4 py-10 text-center">
-            <p className="text-sm font-medium text-foreground">
+          <div className="border-border bg-card rounded-lg border px-4 py-10 text-center">
+            <p className="text-foreground text-sm font-medium">
               You&apos;re all caught up
             </p>
-            <p className="mt-1 text-sm text-muted-foreground">
+            <p className="text-muted-foreground mt-1 text-sm">
               No unread notifications right now.
             </p>
           </div>

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   BadgeCheck,
@@ -7,31 +7,31 @@ import {
   Clock3,
   FileCheck2,
   IdCard,
-} from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PageHeader } from "@/shared/components/page-header";
-import { useCurrentUser } from "@/shared/providers/user-provider";
-import { cn } from "@/lib/utils";
+} from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { PageHeader } from '@/shared/components/page-header';
+import { useCurrentUser } from '@/shared/providers/user-provider';
+import { cn } from '@/lib/utils';
 
 const steps = [
   {
-    title: "Personal details",
-    description: "Legal name, date of birth, and contact information.",
-    status: "complete" as const,
+    title: 'Personal details',
+    description: 'Legal name, date of birth, and contact information.',
+    status: 'complete' as const,
     icon: IdCard,
   },
   {
-    title: "Identity document",
-    description: "Passport or national ID uploaded and reviewed.",
-    status: "complete" as const,
+    title: 'Identity document',
+    description: 'Passport or national ID uploaded and reviewed.',
+    status: 'complete' as const,
     icon: FileCheck2,
   },
   {
-    title: "Address verification",
-    description: "Proof of residence confirmed against submitted documents.",
-    status: "complete" as const,
+    title: 'Address verification',
+    description: 'Proof of residence confirmed against submitted documents.',
+    status: 'complete' as const,
     icon: Building,
   },
 ];
@@ -45,8 +45,8 @@ export function VerificationView() {
         title="Verification"
         description="Identity and KYC status for your TrustAI account."
         actions={
-          <Badge className="border-0 bg-emerald-50 text-success hover:bg-emerald-50 dark:bg-emerald-950/40">
-            {user.kyc_verified ? "Verified" : "Pending"}
+          <Badge className="text-success border-0 bg-emerald-50 hover:bg-emerald-50 dark:bg-emerald-950/40">
+            {user.kyc_verified ? 'Verified' : 'Pending'}
           </Badge>
         }
       />
@@ -54,15 +54,17 @@ export function VerificationView() {
       <Card>
         <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-start gap-3">
-            <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-success dark:bg-emerald-950/40">
+            <div className="text-success flex size-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 dark:bg-emerald-950/40">
               <BadgeCheck className="size-6" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">KYC status</p>
-              <p className="mt-1 text-2xl font-bold tracking-tight text-foreground">
-                {user.kyc_verified ? "Fully verified" : (user.kyc_status ?? "Unverified")}
+              <p className="text-muted-foreground text-sm">KYC status</p>
+              <p className="text-foreground mt-1 text-2xl font-bold tracking-tight">
+                {user.kyc_verified
+                  ? 'Fully verified'
+                  : (user.kyc_status ?? 'Unverified')}
               </p>
-              <p className="mt-1 text-sm text-muted-foreground">
+              <p className="text-muted-foreground mt-1 text-sm">
                 {user.name}
                 {user.member_since_label
                   ? ` · Member since ${user.member_since_label}`
@@ -70,10 +72,10 @@ export function VerificationView() {
               </p>
             </div>
           </div>
-          <div className="rounded-xl border border-border bg-muted/40 px-3 py-2 text-sm">
+          <div className="border-border bg-muted/40 rounded-xl border px-3 py-2 text-sm">
             <p className="text-muted-foreground">Review level</p>
-            <p className="mt-0.5 font-semibold text-foreground">
-              {user.kyc_level ?? "—"}
+            <p className="text-foreground mt-0.5 font-semibold">
+              {user.kyc_level ?? '—'}
             </p>
           </div>
         </CardContent>
@@ -85,10 +87,10 @@ export function VerificationView() {
             <CardHeader className="flex-row items-start gap-3 space-y-0">
               <div
                 className={cn(
-                  "flex size-10 shrink-0 items-center justify-center rounded-xl",
-                  status === "complete"
-                    ? "bg-emerald-50 text-success dark:bg-emerald-950/40"
-                    : "bg-muted text-muted-foreground"
+                  'flex size-10 shrink-0 items-center justify-center rounded-xl',
+                  status === 'complete'
+                    ? 'text-success bg-emerald-50 dark:bg-emerald-950/40'
+                    : 'bg-muted text-muted-foreground',
                 )}
               >
                 <Icon className="size-5" />
@@ -96,11 +98,11 @@ export function VerificationView() {
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
                   <CardTitle className="text-base">{title}</CardTitle>
-                  {status === "complete" && (
-                    <CheckCircle2 className="size-4 text-success" />
+                  {status === 'complete' && (
+                    <CheckCircle2 className="text-success size-4" />
                   )}
                 </div>
-                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                <p className="text-muted-foreground mt-1 text-sm leading-relaxed">
                   {description}
                 </p>
               </div>
@@ -110,14 +112,14 @@ export function VerificationView() {
       </div>
 
       <Card>
-        <CardHeader className="border-b border-border">
+        <CardHeader className="border-border border-b">
           <div className="flex items-start gap-3">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-muted text-foreground">
+            <div className="bg-muted text-foreground flex size-10 shrink-0 items-center justify-center rounded-xl">
               <Clock3 className="size-5" />
             </div>
             <div>
               <CardTitle>Need to update documents?</CardTitle>
-              <p className="mt-1 text-sm text-muted-foreground">
+              <p className="text-muted-foreground mt-1 text-sm">
                 If your ID expired or your address changed, submit updated
                 documents for re-review.
               </p>
@@ -125,7 +127,7 @@ export function VerificationView() {
           </div>
         </CardHeader>
         <CardContent className="flex flex-wrap items-center justify-between gap-3">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             Average review time is under 24 hours for Premium members.
           </p>
           <Button type="button" variant="outline" className="rounded-xl">

@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import { useTransition } from "react";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
-import { FormTextField } from "@/shared/components/form-text-field";
-import { SubmitButton } from "@/shared/components/submit-button";
-import { forgotPasswordAction } from "@/features/auth/actions/forgot-password";
+import { useTransition } from 'react';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { toast } from 'sonner';
+import { FormTextField } from '@/shared/components/form-text-field';
+import { SubmitButton } from '@/shared/components/submit-button';
+import { forgotPasswordAction } from '@/features/auth/actions/forgot-password';
 import {
   forgotPasswordSchema,
   type ForgotPasswordFormValues,
-} from "@/features/auth/schemas/auth";
+} from '@/features/auth/schemas/auth';
 
 export function ForgotPasswordForm() {
   const router = useRouter();
@@ -19,7 +19,7 @@ export function ForgotPasswordForm() {
 
   const form = useForm<ForgotPasswordFormValues>({
     resolver: zodResolver(forgotPasswordSchema),
-    defaultValues: { email: "" },
+    defaultValues: { email: '' },
   });
 
   function onSubmit(values: ForgotPasswordFormValues) {
@@ -30,7 +30,7 @@ export function ForgotPasswordForm() {
         if (result.errors) {
           for (const [field, messages] of Object.entries(result.errors)) {
             form.setError(field as keyof ForgotPasswordFormValues, {
-              type: "server",
+              type: 'server',
               message: messages[0],
             });
           }
@@ -39,18 +39,18 @@ export function ForgotPasswordForm() {
         return;
       }
 
-      toast.success("Reset code sent. Check your email.");
-      router.push("/verify-email");
+      toast.success('Reset code sent. Check your email.');
+      router.push('/verify-email');
     });
   }
 
   return (
     <>
       <div className="mb-8 space-y-2">
-        <h2 className="text-2xl font-bold tracking-tight text-foreground">
+        <h2 className="text-foreground text-2xl font-bold tracking-tight">
           Reset password
         </h2>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-muted-foreground text-sm">
           Enter your email and we&apos;ll send you a 6-digit code
         </p>
       </div>

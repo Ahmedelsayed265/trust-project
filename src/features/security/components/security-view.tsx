@@ -1,19 +1,14 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import {
-  KeyRound,
-  ShieldCheck,
-  Smartphone,
-  Check,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { PageHeader } from "@/shared/components/page-header";
-import { cn } from "@/lib/utils";
+import { useState } from 'react';
+import { KeyRound, ShieldCheck, Smartphone, Check } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { PageHeader } from '@/shared/components/page-header';
+import { cn } from '@/lib/utils';
 
 export function SecurityView() {
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(true);
@@ -37,30 +32,30 @@ export function SecurityView() {
           <div className="flex items-start gap-3">
             <div
               className={cn(
-                "flex size-12 shrink-0 items-center justify-center rounded-2xl",
+                'flex size-12 shrink-0 items-center justify-center rounded-2xl',
                 twoFactorEnabled
-                  ? "bg-emerald-50 text-success dark:bg-emerald-950/40"
-                  : "bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-300"
+                  ? 'text-success bg-emerald-50 dark:bg-emerald-950/40'
+                  : 'bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-300',
               )}
             >
               <ShieldCheck className="size-6" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">2FA status</p>
-              <p className="mt-1 text-2xl font-bold tracking-tight text-foreground">
-                {twoFactorEnabled ? "Enabled" : "Disabled"}
+              <p className="text-muted-foreground text-sm">2FA status</p>
+              <p className="text-foreground mt-1 text-2xl font-bold tracking-tight">
+                {twoFactorEnabled ? 'Enabled' : 'Disabled'}
               </p>
-              <p className="mt-1 text-sm text-muted-foreground">
+              <p className="text-muted-foreground mt-1 text-sm">
                 Authenticator app · Last verified 2 days ago
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-3 rounded-xl border border-border bg-background px-3 py-2.5">
+          <div className="border-border bg-background flex items-center gap-3 rounded-xl border px-3 py-2.5">
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-foreground">
+              <p className="text-foreground text-sm font-semibold">
                 Two-factor authentication
               </p>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-muted-foreground text-xs">
                 Require a code at login
               </p>
             </div>
@@ -75,23 +70,23 @@ export function SecurityView() {
 
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
-          <CardHeader className="border-b border-border">
+          <CardHeader className="border-border border-b">
             <div className="flex items-start gap-3">
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <div className="bg-primary/10 text-primary flex size-10 shrink-0 items-center justify-center rounded-xl">
                 <Smartphone className="size-5" />
               </div>
               <div>
                 <CardTitle>Authenticator app</CardTitle>
-                <p className="mt-1 text-sm text-muted-foreground">
+                <p className="text-muted-foreground mt-1 text-sm">
                   Use Google Authenticator, Authy, or 1Password.
                 </p>
               </div>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="rounded-xl border border-border bg-muted/40 px-3 py-3 text-sm">
+            <div className="border-border bg-muted/40 rounded-xl border px-3 py-3 text-sm">
               <p className="text-muted-foreground">Primary device</p>
-              <p className="mt-1 font-semibold text-foreground">
+              <p className="text-foreground mt-1 font-semibold">
                 iPhone 15 · Authenticator
               </p>
             </div>
@@ -107,14 +102,14 @@ export function SecurityView() {
         </Card>
 
         <Card>
-          <CardHeader className="border-b border-border">
+          <CardHeader className="border-border border-b">
             <div className="flex items-start gap-3">
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-muted text-foreground">
+              <div className="bg-muted text-foreground flex size-10 shrink-0 items-center justify-center rounded-xl">
                 <KeyRound className="size-5" />
               </div>
               <div>
                 <CardTitle>Change password</CardTitle>
-                <p className="mt-1 text-sm text-muted-foreground">
+                <p className="text-muted-foreground mt-1 text-sm">
                   Use a strong password you don't reuse elsewhere.
                 </p>
               </div>
@@ -128,7 +123,7 @@ export function SecurityView() {
                   id="current-password"
                   type="password"
                   autoComplete="current-password"
-                  className="h-12 rounded-xl bg-background px-2.5"
+                  className="bg-background h-12 rounded-xl px-2.5"
                   required
                 />
               </div>
@@ -138,7 +133,7 @@ export function SecurityView() {
                   id="new-password"
                   type="password"
                   autoComplete="new-password"
-                  className="h-12 rounded-xl bg-background px-2.5"
+                  className="bg-background h-12 rounded-xl px-2.5"
                   required
                 />
               </div>
@@ -148,14 +143,14 @@ export function SecurityView() {
                   id="confirm-password"
                   type="password"
                   autoComplete="new-password"
-                  className="h-12 rounded-xl bg-background px-2.5"
+                  className="bg-background h-12 rounded-xl px-2.5"
                   required
                 />
               </div>
               <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
                 <div className="min-h-5">
                   {saved && (
-                    <p className="inline-flex items-center gap-1.5 text-sm font-medium text-success">
+                    <p className="text-success inline-flex items-center gap-1.5 text-sm font-medium">
                       <Check className="size-4" />
                       Password updated
                     </p>

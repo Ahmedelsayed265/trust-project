@@ -1,25 +1,25 @@
-import { BadgeCheck, Building2, FileText, Scale } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { PageHeader } from "@/shared/components/page-header";
+import { BadgeCheck, Building2, FileText, Scale } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { PageHeader } from '@/shared/components/page-header';
 
 const highlights = [
   {
-    title: "AI-first trading",
+    title: 'AI-first trading',
     description:
-      "TrustAI combines market data with model-driven signals to help you act with more confidence.",
+      'TrustAI combines market data with model-driven signals to help you act with more confidence.',
     icon: BadgeCheck,
   },
   {
-    title: "Built for active traders",
+    title: 'Built for active traders',
     description:
-      "Portfolio tracking, provider balances, and order history stay in one place so you can move faster.",
+      'Portfolio tracking, provider balances, and order history stay in one place so you can move faster.',
     icon: Building2,
   },
   {
-    title: "Transparent product updates",
+    title: 'Transparent product updates',
     description:
-      "We ship improvements continuously and document major changes in Help Center release notes.",
+      'We ship improvements continuously and document major changes in Help Center release notes.',
     icon: FileText,
   },
 ];
@@ -35,15 +35,15 @@ export function AboutView() {
       <Card>
         <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-sm text-muted-foreground">Current version</p>
-            <p className="mt-1 text-2xl font-bold tracking-tight text-foreground">
+            <p className="text-muted-foreground text-sm">Current version</p>
+            <p className="text-foreground mt-1 text-2xl font-bold tracking-tight">
               TrustAI 1.0.0
             </p>
-            <p className="mt-1 text-sm text-muted-foreground">
+            <p className="text-muted-foreground mt-1 text-sm">
               AI Trading Platform · Released March 2026
             </p>
           </div>
-          <Badge className="w-fit border-0 bg-primary/10 text-primary hover:bg-primary/10">
+          <Badge className="bg-primary/10 text-primary hover:bg-primary/10 w-fit border-0">
             Stable
           </Badge>
         </CardContent>
@@ -53,12 +53,12 @@ export function AboutView() {
         {highlights.map(({ title, description, icon: Icon }) => (
           <Card key={title}>
             <CardHeader className="flex-row items-start gap-3 space-y-0">
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <div className="bg-primary/10 text-primary flex size-10 shrink-0 items-center justify-center rounded-xl">
                 <Icon className="size-5" />
               </div>
               <div>
                 <CardTitle className="text-base">{title}</CardTitle>
-                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                <p className="text-muted-foreground mt-1 text-sm leading-relaxed">
                   {description}
                 </p>
               </div>
@@ -68,14 +68,14 @@ export function AboutView() {
       </div>
 
       <Card>
-        <CardHeader className="border-b border-border">
+        <CardHeader className="border-border border-b">
           <div className="flex items-start gap-3">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-muted text-foreground">
+            <div className="bg-muted text-foreground flex size-10 shrink-0 items-center justify-center rounded-xl">
               <Scale className="size-5" />
             </div>
             <div>
               <CardTitle>Legal & compliance</CardTitle>
-              <p className="mt-1 text-sm text-muted-foreground">
+              <p className="text-muted-foreground mt-1 text-sm">
                 TrustAI provides market tools and AI insights. Trading involves
                 risk and past performance is not a guarantee of future results.
               </p>
@@ -84,16 +84,18 @@ export function AboutView() {
         </CardHeader>
         <CardContent className="grid gap-3 sm:grid-cols-3">
           {[
-            ["Company", "TrustAI Markets Ltd."],
-            ["Support", "support@trustai.app"],
-            ["Website", "trustai.app"],
+            ['Company', 'TrustAI Markets Ltd.'],
+            ['Support', 'support@trustai.app'],
+            ['Website', 'trustai.app'],
           ].map(([label, value]) => (
             <div
               key={label}
-              className="rounded-xl border border-border bg-background px-3 py-3"
+              className="border-border bg-background rounded-xl border px-3 py-3"
             >
-              <p className="text-xs text-muted-foreground">{label}</p>
-              <p className="mt-1 text-sm font-semibold text-foreground">{value}</p>
+              <p className="text-muted-foreground text-xs">{label}</p>
+              <p className="text-foreground mt-1 text-sm font-semibold">
+                {value}
+              </p>
             </div>
           ))}
         </CardContent>

@@ -1,4 +1,4 @@
-export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
 export type ApiErrorBody = {
   message?: string;
@@ -18,7 +18,7 @@ export class ApiError extends Error {
     body: ApiErrorBody | null = null,
   ) {
     super(message);
-    this.name = "ApiError";
+    this.name = 'ApiError';
     this.status = status;
     this.body = body;
     this.errors = normalizeFieldErrors(body?.errors);
@@ -47,9 +47,9 @@ export type ActionResult<T = unknown> =
     };
 
 function normalizeFieldErrors(
-  errors: ApiErrorBody["errors"],
+  errors: ApiErrorBody['errors'],
 ): Record<string, string[]> | undefined {
-  if (!errors || typeof errors !== "object") return undefined;
+  if (!errors || typeof errors !== 'object') return undefined;
 
   const out: Record<string, string[]> = {};
   for (const [key, value] of Object.entries(errors)) {

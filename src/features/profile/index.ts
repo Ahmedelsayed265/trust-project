@@ -1,1 +1,1 @@
-export { ProfileView } from "./components/profile-view";
+export { ProfileView } from './components/profile-view';

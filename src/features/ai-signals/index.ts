@@ -1,1 +1,1 @@
-export { AiSignalsView } from "./components/ai-signals-view";
+export { AiSignalsView } from './components/ai-signals-view';

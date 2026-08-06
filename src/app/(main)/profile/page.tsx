@@ -1,7 +1,5 @@
-import { ProfileView } from "@/features/profile";
+import { ProfileView } from '@/features/profile';
 
 export default function ProfilePage() {
-  return (
-    <ProfileView />
-  );
+  return <ProfileView />;
 }

@@ -1,24 +1,24 @@
-import Link from "next/link";
-import { ChevronRight, Info, Lock } from "lucide-react";
-import { CurrentPlanCard } from "@/features/plans/components/current-plan-card";
-import { PlanCards } from "@/features/plans/components/plan-cards";
-import { PlanComparison } from "@/features/plans/components/plan-comparison";
+import Link from 'next/link';
+import { ChevronRight, Info, Lock } from 'lucide-react';
+import { CurrentPlanCard } from '@/features/plans/components/current-plan-card';
+import { PlanCards } from '@/features/plans/components/plan-cards';
+import { PlanComparison } from '@/features/plans/components/plan-comparison';
 export function PlansView() {
   return (
     <div className="flex w-full min-w-0 flex-col gap-5 sm:gap-6">
       <div>
-        <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
+        <h1 className="text-foreground text-xl font-bold tracking-tight sm:text-2xl">
           Manage Plans
         </h1>
         <nav
-          className="mt-1.5 flex items-center gap-1 text-sm text-muted-foreground"
+          className="text-muted-foreground mt-1.5 flex items-center gap-1 text-sm"
           aria-label="Breadcrumb"
         >
           <Link href="/profile" className="hover:text-foreground">
             Profile
           </Link>
           <ChevronRight className="size-3.5" />
-          <span className="font-medium text-foreground">Manage Plans</span>
+          <span className="text-foreground font-medium">Manage Plans</span>
         </nav>
       </div>
 
@@ -26,7 +26,7 @@ export function PlansView() {
       <PlanCards />
       <PlanComparison />
 
-      <div className="flex flex-col gap-3 border-t border-border pt-4 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+      <div className="border-border text-muted-foreground flex flex-col gap-3 border-t pt-4 text-xs sm:flex-row sm:items-center sm:justify-between">
         <p className="flex items-start gap-1.5 sm:items-center">
           <Info className="mt-0.5 size-3.5 shrink-0 sm:mt-0" />
           All plans include market data access and portfolio tracking.

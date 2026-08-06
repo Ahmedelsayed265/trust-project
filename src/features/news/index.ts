@@ -1,1 +1,1 @@
-export { NewsView } from "./components/news-view";
+export { NewsView } from './components/news-view';

@@ -1,7 +1,5 @@
-import { TradesView } from "@/features/trades";
+import { TradesView } from '@/features/trades';
 
 export default function TradesPage() {
-  return (
-    <TradesView />
-  );
+  return <TradesView />;
 }

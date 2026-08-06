@@ -1,7 +1,5 @@
-import { AiSignalsView } from "@/features/ai-signals";
+import { AiSignalsView } from '@/features/ai-signals';
 
 export default function AiSignalsPage() {
-  return (
-    <AiSignalsView />
-  );
+  return <AiSignalsView />;
 }

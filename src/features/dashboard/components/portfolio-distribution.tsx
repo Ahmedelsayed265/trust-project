@@ -1,15 +1,12 @@
-"use client";
+'use client';
 
-import {
-  formatMoney,
-  useTrading,
-} from "@/shared/trading";
+import { formatMoney, useTrading } from '@/shared/trading';
 
-const palette = ["#2563eb", "#14b8a6", "#8b5cf6", "#f59e0b", "#64748b"];
+const palette = ['#2563eb', '#14b8a6', '#8b5cf6', '#f59e0b', '#64748b'];
 
 export function PortfolioDistribution() {
   const { snapshot, positions, loading } = useTrading();
-  const currency = snapshot?.currency ?? "USD";
+  const currency = snapshot?.currency ?? 'USD';
   const equity = snapshot?.equity ?? 0;
 
   const segments =
@@ -23,13 +20,12 @@ export function PortfolioDistribution() {
       : [];
 
   const cashBalance = snapshot?.balances.find(
-    (b) => b.asset === "USDT" || b.asset === "USD"
+    (b) => b.asset === 'USDT' || b.asset === 'USD',
   );
   if (cashBalance && (cashBalance.usdValue ?? 0) > 0) {
     segments.push({
       label: `${cashBalance.asset} free`,
-      percent:
-        equity > 0 ? ((cashBalance.usdValue ?? 0) / equity) * 100 : 0,
+      percent: equity > 0 ? ((cashBalance.usdValue ?? 0) / equity) * 100 : 0,
       amount: formatMoney(cashBalance.usdValue ?? 0, currency),
       color: palette[segments.length % palette.length],
     });
@@ -45,16 +41,16 @@ export function PortfolioDistribution() {
       : segments;
 
   return (
-    <div className="rounded-lg border border-border bg-card p-5">
-      <h2 className="mb-4 text-base font-semibold text-foreground">
+    <div className="border-border bg-card rounded-lg border p-5">
+      <h2 className="text-foreground mb-4 text-base font-semibold">
         Portfolio Distribution
       </h2>
 
       {loading || !snapshot || normalized.length === 0 ? (
-        <p className="text-sm text-muted-foreground">
+        <p className="text-muted-foreground text-sm">
           {loading
-            ? "Loading provider balances…"
-            : "Connect a provider to see allocation."}
+            ? 'Loading provider balances…'
+            : 'Connect a provider to see allocation.'}
         </p>
       ) : (
         <div className="flex flex-col items-center gap-5 sm:flex-row sm:items-center">
@@ -72,14 +68,14 @@ export function PortfolioDistribution() {
                 />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-sm font-medium text-foreground">
+                    <span className="text-foreground text-sm font-medium">
                       {segment.label}
                     </span>
-                    <span className="text-sm font-semibold text-foreground">
+                    <span className="text-foreground text-sm font-semibold">
                       {segment.percent.toFixed(1)}%
                     </span>
                   </div>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-muted-foreground text-xs">
                     {segment.amount}
                   </p>
                 </div>
@@ -129,8 +125,8 @@ function DonutChart({
         })}
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <p className="text-[10px] text-muted-foreground">Equity</p>
-        <p className="text-sm font-bold text-foreground">{total}</p>
+        <p className="text-muted-foreground text-[10px]">Equity</p>
+        <p className="text-foreground text-sm font-bold">{total}</p>
       </div>
     </div>
   );

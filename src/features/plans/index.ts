@@ -1,1 +1,1 @@
-export { PlansView } from "./components/plans-view";
+export { PlansView } from './components/plans-view';

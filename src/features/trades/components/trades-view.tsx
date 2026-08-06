@@ -1,35 +1,35 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { History, Plus, ChevronDown } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { useState } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { History, Plus, ChevronDown } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import {
   orderSchema,
   type OrderFormValues,
-} from "@/features/trades/schemas/order";
-import { AccountSummary } from "@/features/trades/components/account-summary";
-import { OrderEntry } from "@/features/trades/components/order-entry";
-import { OrderSummary } from "@/features/trades/components/order-summary";
-import { TradeAiSignal } from "@/features/trades/components/trade-ai-signal";
-import { OpenPositions } from "@/features/trades/components/open-positions";
+} from '@/features/trades/schemas/order';
+import { AccountSummary } from '@/features/trades/components/account-summary';
+import { OrderEntry } from '@/features/trades/components/order-entry';
+import { OrderSummary } from '@/features/trades/components/order-summary';
+import { TradeAiSignal } from '@/features/trades/components/trade-ai-signal';
+import { OpenPositions } from '@/features/trades/components/open-positions';
 
 export function TradesView() {
-  const [tab, setTab] = useState<"trade" | "positions">("trade");
+  const [tab, setTab] = useState<'trade' | 'positions'>('trade');
   const [reviewed, setReviewed] = useState(false);
 
   const form = useForm<OrderFormValues>({
     resolver: zodResolver(orderSchema),
     defaultValues: {
-      pair: "BTC/USDT",
-      orderType: "market",
-      side: "buy",
-      amount: "1000",
-      currency: "USDT",
+      pair: 'BTC/USDT',
+      orderType: 'market',
+      side: 'buy',
+      amount: '1000',
+      currency: 'USDT',
       percent: 0,
-      limitPrice: "",
+      limitPrice: '',
     },
   });
 
@@ -37,10 +37,10 @@ export function TradesView() {
     <div className="flex flex-col gap-4 sm:gap-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
+          <h1 className="text-foreground text-xl font-bold tracking-tight sm:text-2xl">
             Trades
           </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="text-muted-foreground mt-1 text-sm">
             Place new trades and manage your positions.
           </p>
         </div>
@@ -53,17 +53,17 @@ export function TradesView() {
       <AccountSummary />
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-1 rounded-xl bg-muted p-1">
-          {(["trade", "positions"] as const).map((item) => (
+        <div className="bg-muted flex items-center gap-1 rounded-xl p-1">
+          {(['trade', 'positions'] as const).map((item) => (
             <button
               key={item}
               type="button"
               onClick={() => setTab(item)}
               className={cn(
-                "rounded-lg px-3.5 py-1.5 text-sm font-semibold capitalize transition-colors",
+                'rounded-lg px-3.5 py-1.5 text-sm font-semibold capitalize transition-colors',
                 tab === item
-                  ? "bg-card text-foreground"
-                  : "text-muted-foreground hover:text-foreground"
+                  ? 'bg-card text-foreground'
+                  : 'text-muted-foreground hover:text-foreground',
               )}
             >
               {item}
@@ -83,8 +83,8 @@ export function TradesView() {
       </div>
 
       <FormProvider {...form}>
-        {tab === "trade" ? (
-          <div className="grid gap-4 xl:grid-cols-3 lg:gap-5">
+        {tab === 'trade' ? (
+          <div className="grid gap-4 lg:gap-5 xl:grid-cols-3">
             <OrderEntry
               onReview={() => {
                 setReviewed(true);
@@ -95,7 +95,7 @@ export function TradesView() {
               <OrderSummary />
               <TradeAiSignal />
               {reviewed && (
-                <p className="rounded-xl border border-success/30 bg-emerald-50 px-3 py-2 text-sm font-medium text-success dark:bg-emerald-950/30">
+                <p className="border-success/30 text-success rounded-xl border bg-emerald-50 px-3 py-2 text-sm font-medium dark:bg-emerald-950/30">
                   Order ready for review — estimated total updated.
                 </p>
               )}

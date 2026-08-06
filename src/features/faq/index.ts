@@ -1,1 +1,1 @@
-export { FaqView } from "./components/faq-view";
+export { FaqView } from './components/faq-view';

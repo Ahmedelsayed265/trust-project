@@ -1,1 +1,1 @@
-export { OrdersView } from "./components/orders-view";
+export { OrdersView } from './components/orders-view';

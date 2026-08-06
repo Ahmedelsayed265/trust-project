@@ -1,23 +1,23 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useTransition } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
-import { Checkbox } from "@/components/ui/checkbox";
-import { FieldSeparator } from "@/components/ui/field";
-import { FormTextField } from "@/shared/components/form-text-field";
-import { FormPasswordField } from "@/shared/components/form-password-field";
-import { SubmitButton } from "@/shared/components/submit-button";
-import { OAuthButtons } from "@/features/auth/components/oauth-buttons";
-import { loginAction } from "@/features/auth/actions/login";
-import { startEmailVerificationAction } from "@/features/auth/actions/send-verification-code";
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useTransition } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { toast } from 'sonner';
+import { Checkbox } from '@/components/ui/checkbox';
+import { FieldSeparator } from '@/components/ui/field';
+import { FormTextField } from '@/shared/components/form-text-field';
+import { FormPasswordField } from '@/shared/components/form-password-field';
+import { SubmitButton } from '@/shared/components/submit-button';
+import { OAuthButtons } from '@/features/auth/components/oauth-buttons';
+import { loginAction } from '@/features/auth/actions/login';
+import { startEmailVerificationAction } from '@/features/auth/actions/send-verification-code';
 import {
   loginSchema,
   type LoginFormValues,
-} from "@/features/auth/schemas/auth";
+} from '@/features/auth/schemas/auth';
 
 export function LoginForm() {
   const router = useRouter();
@@ -26,8 +26,8 @@ export function LoginForm() {
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: '',
+      password: '',
       remember: false,
     },
   });
@@ -40,7 +40,7 @@ export function LoginForm() {
         if (result.errors) {
           for (const [field, messages] of Object.entries(result.errors)) {
             form.setError(field as keyof LoginFormValues, {
-              type: "server",
+              type: 'server',
               message: messages[0],
             });
           }
@@ -61,12 +61,12 @@ export function LoginForm() {
           return;
         }
 
-        toast.message("Verify your email to continue.");
-        router.push("/verify-email");
+        toast.message('Verify your email to continue.');
+        router.push('/verify-email');
         return;
       }
 
-      router.push("/");
+      router.push('/');
       router.refresh();
     });
   }
@@ -74,10 +74,10 @@ export function LoginForm() {
   return (
     <>
       <div className="mb-8 space-y-2">
-        <h2 className="text-2xl font-bold tracking-tight text-foreground">
+        <h2 className="text-foreground text-2xl font-bold tracking-tight">
           Welcome back
         </h2>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-muted-foreground text-sm">
           Sign in to your TrustAI account
         </p>
       </div>
@@ -107,7 +107,7 @@ export function LoginForm() {
             control={form.control}
             name="remember"
             render={({ field }) => (
-              <label className="flex items-center gap-2 text-sm text-muted-foreground">
+              <label className="text-muted-foreground flex items-center gap-2 text-sm">
                 <Checkbox
                   checked={field.value}
                   onCheckedChange={(checked) =>
@@ -120,7 +120,7 @@ export function LoginForm() {
           />
           <Link
             href="/forgot-password"
-            className="text-sm font-medium text-primary hover:underline"
+            className="text-primary text-sm font-medium hover:underline"
           >
             Forgot password?
           </Link>
@@ -141,11 +141,11 @@ export function LoginForm() {
         </div>
       </form>
 
-      <p className="mt-6 text-center text-sm text-muted-foreground">
-        Don&apos;t have an account?{" "}
+      <p className="text-muted-foreground mt-6 text-center text-sm">
+        Don&apos;t have an account?{' '}
         <Link
           href="/register"
-          className="font-semibold text-primary hover:underline"
+          className="text-primary font-semibold hover:underline"
         >
           Create account
         </Link>

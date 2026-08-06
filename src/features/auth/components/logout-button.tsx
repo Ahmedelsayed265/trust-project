@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useTransition } from "react";
-import type { LucideIcon } from "lucide-react";
-import { Loader2, LogOut } from "lucide-react";
-import { logoutAction } from "@/features/auth/actions/logout";
-import { cn } from "@/lib/utils";
+import { useTransition } from 'react';
+import type { LucideIcon } from 'lucide-react';
+import { Loader2, LogOut } from 'lucide-react';
+import { logoutAction } from '@/features/auth/actions/logout';
+import { cn } from '@/lib/utils';
 
 type LogoutButtonProps = {
   className?: string;
@@ -19,7 +19,7 @@ export function LogoutButton({
   className,
   collapsed,
   icon: Icon = LogOut,
-  label = "Log Out",
+  label = 'Log Out',
   onComplete,
   children,
 }: LogoutButtonProps) {
@@ -51,9 +51,9 @@ export function LogoutButton({
       onClick={handleLogout}
       disabled={pending}
       className={cn(
-        "flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-medium text-sidebar-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-60",
-        collapsed && "justify-center px-2",
-        className
+        'text-sidebar-foreground hover:bg-muted hover:text-foreground flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-medium transition-colors disabled:opacity-60',
+        collapsed && 'justify-center px-2',
+        className,
       )}
     >
       {pending ? (

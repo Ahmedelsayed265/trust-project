@@ -1,6 +1,6 @@
-import { Shield, Star, Gem, type LucideIcon } from "lucide-react";
+import { Shield, Star, Gem, type LucideIcon } from 'lucide-react';
 
-export type PlanId = "signal-guard" | "signal-guard-plus" | "market-intel-pro";
+export type PlanId = 'signal-guard' | 'signal-guard-plus' | 'market-intel-pro';
 
 export type Plan = {
   id: PlanId;
@@ -10,35 +10,35 @@ export type Plan = {
   icon: LucideIcon;
   popular?: boolean;
   current?: boolean;
-  action: "downgrade" | "current" | "upgrade";
+  action: 'downgrade' | 'current' | 'upgrade';
 };
 
 export const plans: Plan[] = [
   {
-    id: "signal-guard",
-    name: "Signal Guard",
-    tagline: "Essential AI alerts for focused day trading.",
+    id: 'signal-guard',
+    name: 'Signal Guard',
+    tagline: 'Essential AI alerts for focused day trading.',
     price: 29,
     icon: Shield,
-    action: "downgrade",
+    action: 'downgrade',
   },
   {
-    id: "signal-guard-plus",
-    name: "Signal Guard Plus",
-    tagline: "Advanced signals with smart risk controls.",
+    id: 'signal-guard-plus',
+    name: 'Signal Guard Plus',
+    tagline: 'Advanced signals with smart risk controls.',
     price: 59,
     icon: Star,
     popular: true,
     current: true,
-    action: "current",
+    action: 'current',
   },
   {
-    id: "market-intel-pro",
-    name: "Market Intelligence Pro",
-    tagline: "Full intelligence suite for serious traders.",
+    id: 'market-intel-pro',
+    name: 'Market Intelligence Pro',
+    tagline: 'Full intelligence suite for serious traders.',
     price: 99,
     icon: Gem,
-    action: "upgrade",
+    action: 'upgrade',
   },
 ];
 
@@ -47,59 +47,59 @@ export const comparisonRows: {
   values: Record<PlanId, boolean>;
 }[] = [
   {
-    feature: "AI Signal",
+    feature: 'AI Signal',
     values: {
-      "signal-guard": true,
-      "signal-guard-plus": true,
-      "market-intel-pro": true,
+      'signal-guard': true,
+      'signal-guard-plus': true,
+      'market-intel-pro': true,
     },
   },
   {
-    feature: "Deterministic Risk Rules",
+    feature: 'Deterministic Risk Rules',
     values: {
-      "signal-guard": false,
-      "signal-guard-plus": true,
-      "market-intel-pro": true,
+      'signal-guard': false,
+      'signal-guard-plus': true,
+      'market-intel-pro': true,
     },
   },
   {
-    feature: "Chatbot Assistant",
+    feature: 'Chatbot Assistant',
     values: {
-      "signal-guard": false,
-      "signal-guard-plus": true,
-      "market-intel-pro": true,
+      'signal-guard': false,
+      'signal-guard-plus': true,
+      'market-intel-pro': true,
     },
   },
   {
-    feature: "User Memory",
+    feature: 'User Memory',
     values: {
-      "signal-guard": false,
-      "signal-guard-plus": true,
-      "market-intel-pro": true,
+      'signal-guard': false,
+      'signal-guard-plus': true,
+      'market-intel-pro': true,
     },
   },
   {
-    feature: "Priority Support",
+    feature: 'Priority Support',
     values: {
-      "signal-guard": false,
-      "signal-guard-plus": false,
-      "market-intel-pro": true,
+      'signal-guard': false,
+      'signal-guard-plus': false,
+      'market-intel-pro': true,
     },
   },
   {
-    feature: "Real-time News Feed",
+    feature: 'Real-time News Feed',
     values: {
-      "signal-guard": false,
-      "signal-guard-plus": true,
-      "market-intel-pro": true,
+      'signal-guard': false,
+      'signal-guard-plus': true,
+      'market-intel-pro': true,
     },
   },
   {
-    feature: "Multi-account Sync",
+    feature: 'Multi-account Sync',
     values: {
-      "signal-guard": false,
-      "signal-guard-plus": false,
-      "market-intel-pro": true,
+      'signal-guard': false,
+      'signal-guard-plus': false,
+      'market-intel-pro': true,
     },
   },
 ];
@@ -112,10 +112,10 @@ export function getPlanFeatures(planId: PlanId) {
 }
 
 export const currentPlanMeta = {
-  name: "Premium Plan",
-  planId: "signal-guard-plus" as PlanId,
-  renewalDate: "May 15, 2026",
-  nextBillingDate: "May 15, 2026",
+  name: 'Premium Plan',
+  planId: 'signal-guard-plus' as PlanId,
+  renewalDate: 'May 15, 2026',
+  nextBillingDate: 'May 15, 2026',
   description:
-    "Full access to Signal Guard Plus — advanced AI signals, risk rules, and chatbot support.",
+    'Full access to Signal Guard Plus — advanced AI signals, risk rules, and chatbot support.',
 };

@@ -1,1 +1,1 @@
-export { InviteFriendsView } from "./components/invite-friends-view";
+export { InviteFriendsView } from './components/invite-friends-view';

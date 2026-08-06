@@ -1,22 +1,22 @@
 /** Shared trading domain types — always sourced from a connected provider. */
 
-export type ProviderId = "binance-spot" | "alpaca";
+export type ProviderId = 'binance-spot' | 'alpaca';
 
 export type ProviderCapability =
-  | "spotTrading"
-  | "stockTrading"
-  | "paperTrading"
-  | "marketOrders"
-  | "limitOrders"
-  | "cancelOrders"
-  | "readBalances"
-  | "readPositions"
-  | "readOrders"
-  | "readFills"
-  | "marketData"
+  | 'spotTrading'
+  | 'stockTrading'
+  | 'paperTrading'
+  | 'marketOrders'
+  | 'limitOrders'
+  | 'cancelOrders'
+  | 'readBalances'
+  | 'readPositions'
+  | 'readOrders'
+  | 'readFills'
+  | 'marketData'
   /** In-app deposit/withdraw only if the provider exposes it officially. */
-  | "inAppDeposit"
-  | "inAppWithdraw";
+  | 'inAppDeposit'
+  | 'inAppWithdraw';
 
 export type ProviderAccount = {
   id: string;
@@ -24,7 +24,7 @@ export type ProviderAccount = {
   label: string;
   /** e.g. Binance Spot, Alpaca Paper */
   environment: string;
-  status: "connected" | "disconnected" | "error" | "pending";
+  status: 'connected' | 'disconnected' | 'error' | 'pending';
   permissions: string[];
   lastSyncedAt: string | null;
   errorMessage?: string;
@@ -41,7 +41,7 @@ export type ProviderBalance = {
 export type ProviderPosition = {
   id: string;
   symbol: string;
-  side: "long" | "short" | "flat";
+  side: 'long' | 'short' | 'flat';
   qty: number;
   avgEntryPrice: number;
   markPrice: number;
@@ -50,19 +50,14 @@ export type ProviderPosition = {
 };
 
 export type ProviderOrderStatus =
-  | "new"
-  | "partially_filled"
-  | "filled"
-  | "canceled"
-  | "rejected"
-  | "expired";
+  'new' | 'partially_filled' | 'filled' | 'canceled' | 'rejected' | 'expired';
 
 export type ProviderOrder = {
   id: string;
   clientOrderId?: string;
   symbol: string;
-  side: "buy" | "sell";
-  type: "market" | "limit";
+  side: 'buy' | 'sell';
+  type: 'market' | 'limit';
   qty: number;
   filledQty: number;
   limitPrice: number | null;
@@ -76,7 +71,7 @@ export type ProviderFill = {
   id: string;
   orderId: string;
   symbol: string;
-  side: "buy" | "sell";
+  side: 'buy' | 'sell';
   qty: number;
   price: number;
   fee: number;
@@ -95,29 +90,29 @@ export type MarketTicker = {
 
 export type PlaceOrderInput = {
   symbol: string;
-  side: "buy" | "sell";
-  type: "market" | "limit";
+  side: 'buy' | 'sell';
+  type: 'market' | 'limit';
   qty: number;
   limitPrice?: number;
 };
 
 export type ProviderErrorCode =
-  | "not_connected"
-  | "insufficient_balance"
-  | "unsupported"
-  | "permission_denied"
-  | "rate_limited"
-  | "invalid_request"
-  | "provider_error";
+  | 'not_connected'
+  | 'insufficient_balance'
+  | 'unsupported'
+  | 'permission_denied'
+  | 'rate_limited'
+  | 'invalid_request'
+  | 'provider_error';
 
 export class ProviderError extends Error {
   constructor(
     public readonly code: ProviderErrorCode,
     message: string,
-    public readonly providerId?: ProviderId
+    public readonly providerId?: ProviderId,
   ) {
     super(message);
-    this.name = "ProviderError";
+    this.name = 'ProviderError';
   }
 }
 

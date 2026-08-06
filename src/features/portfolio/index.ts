@@ -1,1 +1,1 @@
-export { PortfolioView } from "./components/portfolio-view";
+export { PortfolioView } from './components/portfolio-view';

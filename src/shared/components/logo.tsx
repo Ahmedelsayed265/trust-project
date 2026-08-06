@@ -1,11 +1,11 @@
-import Link from "next/link";
-import { cn } from "@/lib/utils";
+import Link from 'next/link';
+import { cn } from '@/lib/utils';
 type LogoProps = {
   className?: string;
   showTagline?: boolean;
   iconOnly?: boolean;
-  size?: "sm" | "lg";
-  variant?: "default" | "onDark";
+  size?: 'sm' | 'lg';
+  variant?: 'default' | 'onDark';
   href?: string | null;
 };
 
@@ -13,23 +13,23 @@ export function Logo({
   className,
   showTagline = true,
   iconOnly = false,
-  size = "sm",
-  variant = "default",
-  href = "/",
+  size = 'sm',
+  variant = 'default',
+  href = '/',
 }: LogoProps) {
-  const markSize = size === "lg" ? "size-11" : "size-8";
-  const iconSize = size === "lg" ? "size-6" : "size-5";
-  const onDark = variant === "onDark";
+  const markSize = size === 'lg' ? 'size-11' : 'size-8';
+  const iconSize = size === 'lg' ? 'size-6' : 'size-5';
+  const onDark = variant === 'onDark';
 
   const content = (
-    <div className={cn("flex items-center gap-2.5", className)}>
+    <div className={cn('flex items-center gap-2.5', className)}>
       <div
         className={cn(
-          "flex shrink-0 items-center justify-center rounded-lg",
+          'flex shrink-0 items-center justify-center rounded-lg',
           markSize,
           onDark
-            ? "bg-white text-primary"
-            : "bg-primary text-primary-foreground"
+            ? 'text-primary bg-white'
+            : 'bg-primary text-primary-foreground',
         )}
       >
         <svg
@@ -55,9 +55,9 @@ export function Logo({
         <div className="min-w-0 leading-tight">
           <p
             className={cn(
-              "truncate font-bold tracking-tight",
-              size === "lg" ? "text-xl" : "text-sm",
-              onDark ? "text-white" : "text-foreground"
+              'truncate font-bold tracking-tight',
+              size === 'lg' ? 'text-xl' : 'text-sm',
+              onDark ? 'text-white' : 'text-foreground',
             )}
           >
             TrustAI
@@ -65,9 +65,9 @@ export function Logo({
           {showTagline && (
             <p
               className={cn(
-                "truncate",
-                size === "lg" ? "text-xs" : "text-[11px]",
-                onDark ? "text-white/70" : "text-muted-foreground"
+                'truncate',
+                size === 'lg' ? 'text-xs' : 'text-[11px]',
+                onDark ? 'text-white/70' : 'text-muted-foreground',
               )}
             >
               AI Trading Platform

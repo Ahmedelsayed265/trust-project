@@ -1,6 +1,6 @@
-import { ForgotPasswordForm } from "@/features/auth";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ForgotPasswordForm } from '@/features/auth';
+import { ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 
 export default function ForgotPasswordPage() {
   return (
@@ -10,7 +10,7 @@ export default function ForgotPasswordPage() {
       <p className="mt-6 text-center text-sm">
         <Link
           href="/login"
-          className="inline-flex items-center gap-1.5 font-medium text-primary hover:underline"
+          className="text-primary inline-flex items-center gap-1.5 font-medium hover:underline"
         >
           <ArrowLeft className="size-4" />
           Back to sign in

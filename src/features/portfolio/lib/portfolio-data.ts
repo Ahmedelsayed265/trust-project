@@ -1,10 +1,10 @@
-import type { PortfolioSnapshot, ProviderPosition } from "@/shared/trading";
+import type { PortfolioSnapshot, ProviderPosition } from '@/shared/trading';
 
-const QUOTE_ASSETS = ["USDT", "USDC", "BUSD", "FDUSD", "USD", "EUR"];
+const QUOTE_ASSETS = ['USDT', 'USDC', 'BUSD', 'FDUSD', 'USD', 'EUR'];
 
 export function baseAsset(symbol: string) {
   const quote = QUOTE_ASSETS.find(
-    (asset) => symbol.length > asset.length && symbol.endsWith(asset)
+    (asset) => symbol.length > asset.length && symbol.endsWith(asset),
   );
   return quote ? symbol.slice(0, -quote.length) : symbol;
 }
@@ -13,7 +13,7 @@ export type Holding = {
   id: string;
   symbol: string;
   asset: string;
-  kind: "position" | "cash";
+  kind: 'position' | 'cash';
   qty: number;
   avgEntryPrice: number | null;
   markPrice: number | null;
@@ -62,7 +62,7 @@ export function seededSeries(seed: string, points: number, changePct: number) {
 
 export function buildHoldings(
   snapshot: PortfolioSnapshot | null,
-  positions: ProviderPosition[]
+  positions: ProviderPosition[],
 ): Holding[] {
   if (!snapshot) return [];
 
@@ -77,7 +77,7 @@ export function buildHoldings(
       id: position.id,
       symbol: position.symbol,
       asset: baseAsset(position.symbol),
-      kind: "position",
+      kind: 'position',
       qty: position.qty,
       avgEntryPrice: position.avgEntryPrice,
       markPrice: position.markPrice,
@@ -93,7 +93,7 @@ export function buildHoldings(
 
   const fromBalances: Holding[] = snapshot.balances
     .filter(
-      (balance) => (balance.usdValue ?? 0) > 0 && !invested.has(balance.asset)
+      (balance) => (balance.usdValue ?? 0) > 0 && !invested.has(balance.asset),
     )
     .map((balance) => {
       const value = balance.usdValue ?? 0;
@@ -102,7 +102,7 @@ export function buildHoldings(
         id: `cash-${balance.asset}`,
         symbol: balance.asset,
         asset: balance.asset,
-        kind: "cash",
+        kind: 'cash',
         qty: balance.free + balance.locked,
         avgEntryPrice: null,
         markPrice: null,
@@ -118,14 +118,14 @@ export function buildHoldings(
 }
 
 export const PERFORMANCE_RANGES = [
-  { id: "1W", days: 7, points: 8, dayFactor: 3.2 },
-  { id: "1M", days: 30, points: 22, dayFactor: 6.4 },
-  { id: "3M", days: 90, points: 34, dayFactor: 11 },
-  { id: "1Y", days: 365, points: 40, dayFactor: 22 },
+  { id: '1W', days: 7, points: 8, dayFactor: 3.2 },
+  { id: '1M', days: 30, points: 22, dayFactor: 6.4 },
+  { id: '3M', days: 90, points: 34, dayFactor: 11 },
+  { id: '1Y', days: 365, points: 40, dayFactor: 22 },
 ] as const;
 
 export type PerformanceRange = (typeof PERFORMANCE_RANGES)[number];
-export type PerformanceRangeId = PerformanceRange["id"];
+export type PerformanceRangeId = PerformanceRange['id'];
 
 export type EquityPoint = { timestamp: number; value: number };
 
@@ -149,7 +149,7 @@ export function buildEquityCurve({
   const points: EquityPoint[] = seededSeries(
     `${seed}-${range.id}`,
     range.points,
-    changePct
+    changePct,
   ).map((normalized, index) => ({
     timestamp: now - (range.points - 1 - index) * stepMs,
     value: (normalized / 100) * startValue,
@@ -159,11 +159,11 @@ export function buildEquityCurve({
 }
 
 const ASSET_TONES = [
-  "bg-chart-1/12 text-chart-1",
-  "bg-chart-2/12 text-chart-2",
-  "bg-chart-3/12 text-chart-3",
-  "bg-chart-4/12 text-chart-4",
-  "bg-chart-5/12 text-chart-5",
+  'bg-chart-1/12 text-chart-1',
+  'bg-chart-2/12 text-chart-2',
+  'bg-chart-3/12 text-chart-3',
+  'bg-chart-4/12 text-chart-4',
+  'bg-chart-5/12 text-chart-5',
 ];
 
 export function assetTone(asset: string) {
@@ -175,7 +175,7 @@ export function assetTone(asset: string) {
 }
 
 export function formatQty(value: number) {
-  return value.toLocaleString("en-US", {
+  return value.toLocaleString('en-US', {
     minimumFractionDigits: 0,
     maximumFractionDigits: value >= 1000 ? 0 : 6,
   });
@@ -185,8 +185,8 @@ export function formatRelativeTime(iso: string, now = Date.now()) {
   const diffMs = now - new Date(iso).getTime();
   const minutes = Math.round(diffMs / 60_000);
 
-  if (!Number.isFinite(minutes)) return "—";
-  if (minutes < 1) return "just now";
+  if (!Number.isFinite(minutes)) return '—';
+  if (minutes < 1) return 'just now';
   if (minutes < 60) return `${minutes}m ago`;
 
   const hours = Math.round(minutes / 60);

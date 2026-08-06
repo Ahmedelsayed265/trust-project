@@ -1,35 +1,35 @@
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { PageHeader } from "@/shared/components/page-header";
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import { PageHeader } from '@/shared/components/page-header';
 
 const articles = [
   {
-    tag: "Crypto",
-    title: "Bitcoin holds above $67K as ETF inflows stabilize",
+    tag: 'Crypto',
+    title: 'Bitcoin holds above $67K as ETF inflows stabilize',
     summary:
-      "Spot ETF demand remains steady while traders watch Fed signals for the next move.",
-    time: "12 min ago",
+      'Spot ETF demand remains steady while traders watch Fed signals for the next move.',
+    time: '12 min ago',
   },
   {
-    tag: "Markets",
-    title: "Gold edges higher amid softer dollar tone",
+    tag: 'Markets',
+    title: 'Gold edges higher amid softer dollar tone',
     summary:
-      "XAU/USD climbs as investors reassess rate-cut expectations into next week.",
-    time: "28 min ago",
+      'XAU/USD climbs as investors reassess rate-cut expectations into next week.',
+    time: '28 min ago',
   },
   {
-    tag: "AI",
-    title: "TrustAI launches stronger confidence scoring for crypto pairs",
+    tag: 'AI',
+    title: 'TrustAI launches stronger confidence scoring for crypto pairs',
     summary:
-      "Updated model weights improve signal calibration on high-volatility sessions.",
-    time: "1h ago",
+      'Updated model weights improve signal calibration on high-volatility sessions.',
+    time: '1h ago',
   },
   {
-    tag: "Stocks",
-    title: "Apple suppliers signal solid demand into spring quarter",
+    tag: 'Stocks',
+    title: 'Apple suppliers signal solid demand into spring quarter',
     summary:
-      "Component makers report healthier order books, supporting AAPL near recent highs.",
-    time: "3h ago",
+      'Component makers report healthier order books, supporting AAPL near recent highs.',
+    time: '3h ago',
   },
 ];
 
@@ -43,20 +43,23 @@ export function NewsView() {
 
       <div className="grid gap-3">
         {articles.map((article) => (
-          <Card key={article.title} className=" transition-colors hover:bg-muted/20">
+          <Card
+            key={article.title}
+            className="hover:bg-muted/20 transition-colors"
+          >
             <CardContent className="space-y-2">
               <div className="flex flex-wrap items-center gap-2">
                 <Badge variant="secondary" className="border-0">
                   {article.tag}
                 </Badge>
-                <span className="text-xs text-muted-foreground">
+                <span className="text-muted-foreground text-xs">
                   {article.time}
                 </span>
               </div>
-              <h2 className="text-base font-semibold text-foreground">
+              <h2 className="text-foreground text-base font-semibold">
                 {article.title}
               </h2>
-              <p className="text-sm leading-relaxed text-muted-foreground">
+              <p className="text-muted-foreground text-sm leading-relaxed">
                 {article.summary}
               </p>
             </CardContent>

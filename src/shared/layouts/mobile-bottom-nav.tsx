@@ -1,23 +1,23 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import {
   ArrowLeftRight,
   ClipboardList,
   Home,
   LineChart,
   UserRound,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-import { useSidebar } from "@/shared/providers/sidebar-provider";
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { useSidebar } from '@/shared/providers/sidebar-provider';
 
 const items = [
-  { label: "Home", href: "/", icon: Home },
-  { label: "Markets", href: "/markets", icon: LineChart },
-  { label: "Trade", href: "/trades", icon: ArrowLeftRight },
-  { label: "Orders", href: "/orders", icon: ClipboardList },
-  { label: "Profile", href: "/profile", icon: UserRound },
+  { label: 'Home', href: '/', icon: Home },
+  { label: 'Markets', href: '/markets', icon: LineChart },
+  { label: 'Trade', href: '/trades', icon: ArrowLeftRight },
+  { label: 'Orders', href: '/orders', icon: ClipboardList },
+  { label: 'Profile', href: '/profile', icon: UserRound },
 ];
 
 export function MobileBottomNav() {
@@ -25,13 +25,13 @@ export function MobileBottomNav() {
   const { setMobileOpen } = useSidebar();
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 px-1 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1 backdrop-blur lg:hidden">
+    <nav className="border-border bg-card/95 fixed inset-x-0 bottom-0 z-40 border-t px-1 pt-1 pb-[max(0.5rem,env(safe-area-inset-bottom))] backdrop-blur lg:hidden">
       <ul className="mx-auto flex max-w-lg items-stretch justify-between gap-0">
         {items.map((item) => {
           const Icon = item.icon;
           const active =
-            item.href === "/"
-              ? pathname === "/"
+            item.href === '/'
+              ? pathname === '/'
               : pathname.startsWith(item.href);
 
           return (
@@ -40,10 +40,10 @@ export function MobileBottomNav() {
                 href={item.href}
                 onClick={() => setMobileOpen(false)}
                 className={cn(
-                  "flex w-full flex-col items-center gap-0.5 rounded-xl px-0.5 py-2 text-[10px] font-medium transition-colors",
+                  'flex w-full flex-col items-center gap-0.5 rounded-xl px-0.5 py-2 text-[10px] font-medium transition-colors',
                   active
-                    ? "text-primary"
-                    : "text-muted-foreground hover:text-foreground"
+                    ? 'text-primary'
+                    : 'text-muted-foreground hover:text-foreground',
                 )}
               >
                 <Icon className="size-5 shrink-0" />

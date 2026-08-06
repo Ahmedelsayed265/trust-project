@@ -1,6 +1,6 @@
-@import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -129,11 +129,11 @@
   }
 
   html {
-    @apply font-sans h-full overflow-hidden;
+    @apply h-full overflow-hidden font-sans;
   }
 
   body {
-    @apply h-full overflow-hidden bg-background text-foreground;
+    @apply bg-background text-foreground h-full overflow-hidden;
   }
 
   /* Modern thin scrollbars (Firefox) */

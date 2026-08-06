@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useMemo, useState } from "react";
-import Link from "next/link";
+import { useMemo, useState } from 'react';
+import Link from 'next/link';
 import {
   ArrowLeftRight,
   ChevronDown,
@@ -11,9 +11,9 @@ import {
   RefreshCw,
   Sparkles,
   Star,
-} from "lucide-react";
-import { Sparkline } from "@/shared/components/sparkline";
-import { Button } from "@/components/ui/button";
+} from 'lucide-react';
+import { Sparkline } from '@/shared/components/sparkline';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -25,10 +25,10 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
-type Currency = "USD" | "EUR" | "SAR";
-type ChangePeriod = "24h" | "7d" | "30d";
+} from '@/components/ui/dropdown-menu';
+import { cn } from '@/lib/utils';
+type Currency = 'USD' | 'EUR' | 'SAR';
+type ChangePeriod = '24h' | '7d' | '30d';
 
 type Asset = {
   symbol: string;
@@ -54,66 +54,66 @@ const FX: Record<Currency, number> = {
 
 const assets: Asset[] = [
   {
-    symbol: "BTC/USDT",
-    name: "Bitcoin",
-    category: "Crypto",
-    region: "All",
+    symbol: 'BTC/USDT',
+    name: 'Bitcoin',
+    category: 'Crypto',
+    region: 'All',
     priceUsd: 67432.1,
     changePct24h: 2.45,
     changePct7d: 5.12,
     changePct30d: 12.4,
     marketCapUsd: 1.33e12,
     data: [40, 42, 38, 45, 48, 52, 50, 55, 58, 62, 65],
-    iconBg: "bg-orange-100 text-orange-600",
-    iconLabel: "₿",
+    iconBg: 'bg-orange-100 text-orange-600',
+    iconLabel: '₿',
   },
   {
-    symbol: "ETH/USDT",
-    name: "Ethereum",
-    category: "Crypto",
-    region: "All",
+    symbol: 'ETH/USDT',
+    name: 'Ethereum',
+    category: 'Crypto',
+    region: 'All',
     priceUsd: 3456.78,
     changePct24h: 1.82,
     changePct7d: 3.4,
     changePct30d: 8.1,
     marketCapUsd: 415.2e9,
     data: [35, 38, 36, 40, 42, 45, 43, 48, 50, 52, 55],
-    iconBg: "bg-indigo-100 text-indigo-600",
-    iconLabel: "Ξ",
+    iconBg: 'bg-indigo-100 text-indigo-600',
+    iconLabel: 'Ξ',
   },
   {
-    symbol: "SOL/USDT",
-    name: "Solana",
-    category: "Crypto",
-    region: "All",
+    symbol: 'SOL/USDT',
+    name: 'Solana',
+    category: 'Crypto',
+    region: 'All',
     priceUsd: 175.32,
     changePct24h: 8.63,
     changePct7d: 14.2,
     changePct30d: 28.5,
     marketCapUsd: 78.5e9,
     data: [28, 30, 35, 32, 40, 45, 48, 52, 58, 62, 70],
-    iconBg: "bg-violet-100 text-violet-700",
-    iconLabel: "S",
+    iconBg: 'bg-violet-100 text-violet-700',
+    iconLabel: 'S',
   },
   {
-    symbol: "XAU/USD",
-    name: "Gold",
-    category: "Metals",
-    region: "All",
+    symbol: 'XAU/USD',
+    name: 'Gold',
+    category: 'Metals',
+    region: 'All',
     priceUsd: 2345.8,
     changePct24h: 0.68,
     changePct7d: 1.2,
     changePct30d: 3.5,
     marketCapUsd: null,
     data: [45, 44, 46, 45, 47, 48, 47, 49, 50, 51, 52],
-    iconBg: "bg-yellow-100 text-yellow-700",
-    iconLabel: "Au",
+    iconBg: 'bg-yellow-100 text-yellow-700',
+    iconLabel: 'Au',
   },
   {
-    symbol: "AAPL",
-    name: "Apple Inc.",
-    category: "Stocks",
-    region: "US",
+    symbol: 'AAPL',
+    name: 'Apple Inc.',
+    category: 'Stocks',
+    region: 'US',
     priceUsd: 178.25,
     changePct24h: 1.3,
     changePct7d: 2.1,
@@ -121,57 +121,57 @@ const assets: Asset[] = [
     marketCapUsd: 2.78e12,
     starred: true,
     data: [40, 42, 41, 44, 43, 46, 48, 47, 50, 52, 54],
-    iconBg: "bg-slate-100 text-slate-800",
-    iconLabel: "",
+    iconBg: 'bg-slate-100 text-slate-800',
+    iconLabel: '',
   },
   {
-    symbol: "TSLA",
-    name: "Tesla Inc.",
-    category: "Stocks",
-    region: "US",
+    symbol: 'TSLA',
+    name: 'Tesla Inc.',
+    category: 'Stocks',
+    region: 'US',
     priceUsd: 248.5,
     changePct24h: -1.28,
     changePct7d: -3.4,
     changePct30d: 6.2,
     marketCapUsd: 790.1e9,
     data: [60, 58, 55, 56, 52, 50, 48, 45, 44, 42, 40],
-    iconBg: "bg-red-100 text-red-600",
-    iconLabel: "T",
+    iconBg: 'bg-red-100 text-red-600',
+    iconLabel: 'T',
   },
   {
-    symbol: "2222.SR",
-    name: "Saudi Aramco",
-    category: "Stocks",
-    region: "MENA",
+    symbol: '2222.SR',
+    name: 'Saudi Aramco',
+    category: 'Stocks',
+    region: 'MENA',
     priceUsd: 7.58,
     changePct24h: 0.85,
     changePct7d: 1.1,
     changePct30d: 2.4,
     marketCapUsd: 1.98e12,
     data: [42, 43, 42, 44, 45, 44, 46, 47, 46, 48, 49],
-    iconBg: "bg-emerald-100 text-emerald-700",
-    iconLabel: "A",
+    iconBg: 'bg-emerald-100 text-emerald-700',
+    iconLabel: 'A',
   },
   {
-    symbol: "9988.HK",
-    name: "Alibaba",
-    category: "Stocks",
-    region: "Asia",
+    symbol: '9988.HK',
+    name: 'Alibaba',
+    category: 'Stocks',
+    region: 'Asia',
     priceUsd: 10.02,
     changePct24h: -0.95,
     changePct7d: -2.2,
     changePct30d: 1.8,
     marketCapUsd: 186.4e9,
     data: [55, 52, 53, 50, 48, 49, 46, 44, 43, 41, 40],
-    iconBg: "bg-orange-100 text-orange-700",
-    iconLabel: "阿",
+    iconBg: 'bg-orange-100 text-orange-700',
+    iconLabel: '阿',
   },
 ];
 
 function formatPrice(usd: number, currency: Currency) {
   const value = usd * FX[currency];
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
     currency,
     minimumFractionDigits: value >= 100 ? 2 : 4,
     maximumFractionDigits: value >= 100 ? 2 : 4,
@@ -179,7 +179,7 @@ function formatPrice(usd: number, currency: Currency) {
 }
 
 function formatMarketCap(usd: number | null, currency: Currency) {
-  if (usd == null) return "—";
+  if (usd == null) return '—';
   const value = usd * FX[currency];
   if (value >= 1e12) return `${(value / 1e12).toFixed(2)}T`;
   if (value >= 1e9) return `${(value / 1e9).toFixed(1)}B`;
@@ -188,24 +188,24 @@ function formatMarketCap(usd: number | null, currency: Currency) {
 }
 
 function changeFor(asset: Asset, period: ChangePeriod) {
-  if (period === "7d") return asset.changePct7d;
-  if (period === "30d") return asset.changePct30d;
+  if (period === '7d') return asset.changePct7d;
+  if (period === '30d') return asset.changePct30d;
   return asset.changePct24h;
 }
 
 function formatPct(value: number) {
-  const sign = value > 0 ? "+" : "";
+  const sign = value > 0 ? '+' : '';
   return `${sign}${value.toFixed(2)}%`;
 }
 
 function formatAbsChange(priceUsd: number, pct: number, currency: Currency) {
   const abs = (priceUsd * pct) / 100;
   const formatted = formatPrice(Math.abs(abs), currency);
-  return pct >= 0 ? `+${formatted}` : `-${formatted.replace("-", "")}`;
+  return pct >= 0 ? `+${formatted}` : `-${formatted.replace('-', '')}`;
 }
 
 function AssetIcon({ asset }: { asset: Asset }) {
-  if (asset.symbol === "AAPL") {
+  if (asset.symbol === 'AAPL') {
     return (
       <div
         className={`flex size-9 shrink-0 items-center justify-center rounded-full ${asset.iconBg}`}
@@ -227,18 +227,18 @@ function AssetIcon({ asset }: { asset: Asset }) {
 }
 
 export function MarketsTable({
-  category = "All",
-  search = "",
+  category = 'All',
+  search = '',
 }: {
   category?: string;
   search?: string;
 }) {
   const [starred, setStarred] = useState<Record<string, boolean>>(() =>
-    Object.fromEntries(assets.map((a) => [a.symbol, !!a.starred]))
+    Object.fromEntries(assets.map((a) => [a.symbol, !!a.starred])),
   );
   const [watchlistOnly, setWatchlistOnly] = useState(false);
-  const [currency, setCurrency] = useState<Currency>("USD");
-  const [changePeriod, setChangePeriod] = useState<ChangePeriod>("24h");
+  const [currency, setCurrency] = useState<Currency>('USD');
+  const [changePeriod, setChangePeriod] = useState<ChangePeriod>('24h');
   const [gainersOnly, setGainersOnly] = useState(false);
   const [losersOnly, setLosersOnly] = useState(false);
   const [copied, setCopied] = useState<string | null>(null);
@@ -254,15 +254,15 @@ export function MarketsTable({
       const pct = changeFor(asset, changePeriod);
       if (gainersOnly && pct <= 0) return false;
       if (losersOnly && pct >= 0) return false;
-      if (category === "All") return true;
-      if (["Crypto", "Stocks", "Metals"].includes(category)) {
+      if (category === 'All') return true;
+      if (['Crypto', 'Stocks', 'Metals'].includes(category)) {
         return asset.category === category;
       }
       return asset.region === category;
     });
 
     return [...rows].sort(
-      (a, b) => changeFor(b, changePeriod) - changeFor(a, changePeriod)
+      (a, b) => changeFor(b, changePeriod) - changeFor(a, changePeriod),
     );
   }, [
     category,
@@ -301,9 +301,9 @@ export function MarketsTable({
                 />
               }
             >
-              <Filter className="size-4 text-muted-foreground" />
+              <Filter className="text-muted-foreground size-4" />
               Filters
-              <ChevronDown className="size-3.5 text-muted-foreground" />
+              <ChevronDown className="text-muted-foreground size-3.5" />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="min-w-48">
               <DropdownMenuGroup>
@@ -352,15 +352,15 @@ export function MarketsTable({
             type="button"
             onClick={() => setWatchlistOnly((v) => !v)}
             className={cn(
-              "inline-flex items-center gap-1.5 rounded-xl border px-3 py-2 text-sm font-medium transition-colors",
+              'inline-flex items-center gap-1.5 rounded-xl border px-3 py-2 text-sm font-medium transition-colors',
               watchlistOnly
-                ? "border-primary/30 bg-accent text-primary"
-                : "border-border bg-card text-foreground hover:bg-muted"
+                ? 'border-primary/30 bg-accent text-primary'
+                : 'border-border bg-card text-foreground hover:bg-muted',
             )}
           >
             <Star
               className="size-4"
-              fill={watchlistOnly ? "currentColor" : "none"}
+              fill={watchlistOnly ? 'currentColor' : 'none'}
             />
             Watchlist
           </button>
@@ -377,7 +377,7 @@ export function MarketsTable({
               }
             >
               {currency}
-              <ChevronDown className="size-3.5 text-muted-foreground" />
+              <ChevronDown className="text-muted-foreground size-3.5" />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="min-w-36">
               <DropdownMenuRadioGroup
@@ -401,7 +401,7 @@ export function MarketsTable({
               }
             >
               {changePeriod} Change
-              <ChevronDown className="size-3.5 text-muted-foreground" />
+              <ChevronDown className="text-muted-foreground size-3.5" />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="min-w-40">
               <DropdownMenuRadioGroup
@@ -425,11 +425,11 @@ export function MarketsTable({
         </div>
       </div>
 
-      <div className="w-full min-w-0 overflow-hidden rounded-lg border border-border bg-card">
-        <div className="scrollbar-thin w-full max-w-full overflow-x-auto overscroll-x-contain">
+      <div className="border-border bg-card w-full min-w-0 overflow-hidden rounded-lg border">
+        <div className="w-full max-w-full scrollbar-thin overflow-x-auto overscroll-x-contain">
           <table className="w-full min-w-[720px] text-left md:min-w-[860px]">
             <thead>
-              <tr className="border-b border-border text-xs font-medium text-muted-foreground">
+              <tr className="border-border text-muted-foreground border-b text-xs font-medium">
                 <th className="px-4 py-3 font-medium">Asset</th>
                 <th className="px-4 py-3 font-medium">Price</th>
                 <th className="px-4 py-3 font-medium">{changePeriod} Change</th>
@@ -445,7 +445,7 @@ export function MarketsTable({
                 <tr>
                   <td
                     colSpan={6}
-                    className="px-4 py-10 text-center text-sm text-muted-foreground"
+                    className="text-muted-foreground px-4 py-10 text-center text-sm"
                   >
                     No markets match your search or filters.
                   </td>
@@ -457,24 +457,24 @@ export function MarketsTable({
                   return (
                     <tr
                       key={asset.symbol}
-                      className="border-b border-border/70 last:border-0 transition-colors hover:bg-muted/40"
+                      className="border-border/70 hover:bg-muted/40 border-b transition-colors last:border-0"
                     >
                       <td className="px-4 py-3.5">
                         <div className="flex items-center gap-3">
                           <AssetIcon asset={asset} />
                           <div className="min-w-0">
                             <div className="flex items-center gap-1.5">
-                              <span className="text-sm font-semibold text-foreground">
+                              <span className="text-foreground text-sm font-semibold">
                                 {asset.symbol}
                               </span>
                               <button
                                 type="button"
                                 onClick={() => toggleStar(asset.symbol)}
                                 className={cn(
-                                  "transition-colors",
+                                  'transition-colors',
                                   starred[asset.symbol]
-                                    ? "text-primary"
-                                    : "text-muted-foreground/50 hover:text-primary"
+                                    ? 'text-primary'
+                                    : 'text-muted-foreground/50 hover:text-primary',
                                 )}
                                 aria-label="Toggle watchlist"
                               >
@@ -482,51 +482,51 @@ export function MarketsTable({
                                   className="size-3.5"
                                   fill={
                                     starred[asset.symbol]
-                                      ? "currentColor"
-                                      : "none"
+                                      ? 'currentColor'
+                                      : 'none'
                                   }
                                 />
                               </button>
                             </div>
                             <div className="flex items-center gap-1.5">
-                              <span className="text-xs text-muted-foreground">
+                              <span className="text-muted-foreground text-xs">
                                 {asset.name}
                               </span>
-                              <span className="rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
-                                {asset.category === "Metals"
-                                  ? "Metal"
-                                  : asset.category === "Stocks"
-                                    ? "Stock"
+                              <span className="bg-muted text-muted-foreground rounded-full px-1.5 py-0.5 text-[10px] font-medium">
+                                {asset.category === 'Metals'
+                                  ? 'Metal'
+                                  : asset.category === 'Stocks'
+                                    ? 'Stock'
                                     : asset.category}
                               </span>
                             </div>
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-3.5 text-sm font-semibold text-foreground">
+                      <td className="text-foreground px-4 py-3.5 text-sm font-semibold">
                         {formatPrice(asset.priceUsd, currency)}
                       </td>
                       <td className="px-4 py-3.5">
                         <p
                           className={cn(
-                            "text-sm font-semibold",
-                            positive ? "text-success" : "text-destructive"
+                            'text-sm font-semibold',
+                            positive ? 'text-success' : 'text-destructive',
                           )}
                         >
                           {formatPct(pct)}
                         </p>
                         <p
                           className={cn(
-                            "text-xs",
+                            'text-xs',
                             positive
-                              ? "text-success/80"
-                              : "text-destructive/80"
+                              ? 'text-success/80'
+                              : 'text-destructive/80',
                           )}
                         >
                           {formatAbsChange(asset.priceUsd, pct, currency)}
                         </p>
                       </td>
-                      <td className="px-4 py-3.5 text-sm text-foreground">
+                      <td className="text-foreground px-4 py-3.5 text-sm">
                         {formatMarketCap(asset.marketCapUsd, currency)}
                       </td>
                       <td className="px-4 py-3.5">
@@ -543,7 +543,7 @@ export function MarketsTable({
                             render={
                               <button
                                 type="button"
-                                className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                                className="text-muted-foreground hover:bg-muted hover:text-foreground rounded-lg p-1.5 transition-colors"
                                 aria-label={`Actions for ${asset.symbol}`}
                               />
                             }
@@ -554,7 +554,7 @@ export function MarketsTable({
                             <DropdownMenuItem
                               render={
                                 <Link
-                                  href={`${"/trades"}?symbol=${encodeURIComponent(asset.symbol)}`}
+                                  href={`${'/trades'}?symbol=${encodeURIComponent(asset.symbol)}`}
                                 />
                               }
                             >
@@ -566,13 +566,13 @@ export function MarketsTable({
                             >
                               <Star className="size-4" />
                               {starred[asset.symbol]
-                                ? "Remove from watchlist"
-                                : "Add to watchlist"}
+                                ? 'Remove from watchlist'
+                                : 'Add to watchlist'}
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               render={
                                 <Link
-                                  href={`${"/ai-chat"}?q=${encodeURIComponent(`Analyze ${asset.symbol}`)}`}
+                                  href={`${'/ai-chat'}?q=${encodeURIComponent(`Analyze ${asset.symbol}`)}`}
                                 />
                               }
                             >
@@ -585,8 +585,8 @@ export function MarketsTable({
                             >
                               <Copy className="size-4" />
                               {copied === asset.symbol
-                                ? "Copied"
-                                : "Copy symbol"}
+                                ? 'Copied'
+                                : 'Copy symbol'}
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -600,7 +600,7 @@ export function MarketsTable({
         </div>
       </div>
 
-      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+      <div className="text-muted-foreground flex items-center gap-1.5 text-xs">
         <RefreshCw className="size-3.5" />
         Showing {filtered.length} markets · currency {currency} · {changePeriod}
       </div>

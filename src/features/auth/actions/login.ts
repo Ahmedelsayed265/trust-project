@@ -1,28 +1,28 @@
-"use server";
+'use server';
 
-import type { AuthUser, LoginApiResponse } from "@/features/auth/types";
-import type { LoginFormValues } from "@/features/auth/schemas/auth";
-import { api, ApiError, type ActionResult } from "@/shared/lib/api";
-import { setAuthToken } from "@/features/auth/session";
+import type { AuthUser, LoginApiResponse } from '@/features/auth/types';
+import type { LoginFormValues } from '@/features/auth/schemas/auth';
+import { api, ApiError, type ActionResult } from '@/shared/lib/api';
+import { setAuthToken } from '@/features/auth/session';
 
 export async function loginAction(
-  input: LoginFormValues
+  input: LoginFormValues,
 ): Promise<ActionResult<AuthUser>> {
   const { email, password, remember = false } = input;
 
   try {
-    const response = await api.post<LoginApiResponse>("/user/auth/login", {
+    const response = await api.post<LoginApiResponse>('/user/auth/login', {
       email,
       password,
       remember,
-      device_name: "web",
+      device_name: 'web',
     });
 
     const user = response.data;
     if (!user?.token) {
       return {
         ok: false,
-        message: "Login succeeded but no token was returned.",
+        message: 'Login succeeded but no token was returned.',
       };
     }
 
@@ -38,7 +38,7 @@ export async function loginAction(
     if (error instanceof ApiError) {
       return {
         ok: false,
-        message: error.message || "Invalid email or password.",
+        message: error.message || 'Invalid email or password.',
         errors: error.errors,
         status: error.status,
       };
@@ -49,7 +49,7 @@ export async function loginAction(
       message:
         error instanceof Error
           ? error.message
-          : "Something went wrong. Please try again.",
+          : 'Something went wrong. Please try again.',
     };
   }
 }

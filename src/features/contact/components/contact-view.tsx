@@ -1,66 +1,71 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Check,
   Clock3,
   Mail,
   MessageCircle,
   MessagesSquare,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Field, FieldContent, FieldError, FieldLabel } from "@/components/ui/field";
+} from '@/components/ui/card';
+import {
+  Field,
+  FieldContent,
+  FieldError,
+  FieldLabel,
+} from '@/components/ui/field';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { FormTextField } from "@/shared/components/form-text-field";
-import { PageHeader } from "@/shared/components/page-header";
-import { useCurrentUser } from "@/shared/providers/user-provider";
+} from '@/components/ui/select';
+import { FormTextField } from '@/shared/components/form-text-field';
+import { PageHeader } from '@/shared/components/page-header';
+import { useCurrentUser } from '@/shared/providers/user-provider';
 import {
   contactSchema,
   type ContactFormValues,
-} from "@/features/contact/schemas/contact";
-import { cn } from "@/lib/utils";
+} from '@/features/contact/schemas/contact';
+import { cn } from '@/lib/utils';
 
 const categories = [
-  { value: "account", label: "Account & verification" },
-  { value: "trading", label: "Trading & orders" },
-  { value: "billing", label: "Billing & plans" },
-  { value: "technical", label: "Technical issue" },
-  { value: "other", label: "Other" },
+  { value: 'account', label: 'Account & verification' },
+  { value: 'trading', label: 'Trading & orders' },
+  { value: 'billing', label: 'Billing & plans' },
+  { value: 'technical', label: 'Technical issue' },
+  { value: 'other', label: 'Other' },
 ] as const;
 
 const supportChannels = [
   {
-    title: "Email support",
-    description: "We typically reply within a few hours.",
+    title: 'Email support',
+    description: 'We typically reply within a few hours.',
     icon: Mail,
-    meta: "support@trustai.app",
+    meta: 'support@trustai.app',
   },
   {
-    title: "Live hours",
-    description: "Priority help for Premium members.",
+    title: 'Live hours',
+    description: 'Priority help for Premium members.',
     icon: Clock3,
-    meta: "Mon–Fri · 9:00–18:00 UTC",
+    meta: 'Mon–Fri · 9:00–18:00 UTC',
   },
   {
-    title: "Ticket updates",
-    description: "Track replies in your notifications.",
+    title: 'Ticket updates',
+    description: 'Track replies in your notifications.',
     icon: MessagesSquare,
-    meta: "In-app alerts enabled",
+    meta: 'In-app alerts enabled',
   },
 ];
 
@@ -72,9 +77,9 @@ export function ContactView() {
     defaultValues: {
       name: user.name,
       email: user.email,
-      category: "account",
-      subject: "",
-      message: "",
+      category: 'account',
+      subject: '',
+      message: '',
     },
   });
 
@@ -83,9 +88,9 @@ export function ContactView() {
     form.reset({
       name: user.name,
       email: user.email,
-      category: "account",
-      subject: "",
-      message: "",
+      category: 'account',
+      subject: '',
+      message: '',
     });
     window.setTimeout(() => setSent(false), 3000);
   }
@@ -99,9 +104,9 @@ export function ContactView() {
 
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
         <Card>
-          <CardHeader className="border-b border-border">
+          <CardHeader className="border-border border-b">
             <div className="flex items-start gap-3">
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <div className="bg-primary/10 text-primary flex size-10 shrink-0 items-center justify-center rounded-xl">
                 <MessageCircle className="size-5" />
               </div>
               <div className="min-w-0">
@@ -113,10 +118,7 @@ export function ContactView() {
             </div>
           </CardHeader>
           <CardContent className="pt-1">
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-5"
-            >
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
               <div className="grid gap-4 sm:grid-cols-2">
                 <FormTextField
                   control={form.control}
@@ -152,7 +154,7 @@ export function ContactView() {
                         >
                           <SelectTrigger
                             id="category"
-                            className="h-12 w-full min-w-0 rounded-xl bg-background px-2.5 py-3 data-[size=default]:h-12"
+                            className="bg-background h-12 w-full min-w-0 rounded-xl px-2.5 py-3 data-[size=default]:h-12"
                           >
                             <SelectValue />
                           </SelectTrigger>
@@ -201,7 +203,7 @@ export function ContactView() {
                         placeholder="Describe what happened, what you expected, and any order or asset details."
                         aria-invalid={fieldState.invalid}
                         className={cn(
-                          "w-full min-w-0 resize-y rounded-xl border border-input bg-background px-2.5 py-3 text-sm outline-none transition-colors placeholder:text-muted-foreground focus-visible:border-input focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:bg-input/30"
+                          'border-input bg-background placeholder:text-muted-foreground focus-visible:border-input aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:bg-input/30 w-full min-w-0 resize-y rounded-xl border px-2.5 py-3 text-sm transition-colors outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:ring-3',
                         )}
                       />
                       {fieldState.error && (
@@ -212,10 +214,10 @@ export function ContactView() {
                 )}
               />
 
-              <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
+              <div className="border-border flex flex-wrap items-center justify-between gap-3 border-t pt-4">
                 <div className="min-h-5">
                   {sent && (
-                    <p className="inline-flex items-center gap-1.5 text-sm font-medium text-success">
+                    <p className="text-success inline-flex items-center gap-1.5 text-sm font-medium">
                       <Check className="size-4" />
                       Message sent — we'll reply by email
                     </p>
@@ -237,15 +239,19 @@ export function ContactView() {
           {supportChannels.map(({ title, description, icon: Icon, meta }) => (
             <Card key={title}>
               <CardContent className="flex items-start gap-3 pt-1">
-                <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-muted text-foreground">
+                <div className="bg-muted text-foreground flex size-10 shrink-0 items-center justify-center rounded-xl">
                   <Icon className="size-5" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold text-foreground">{title}</p>
-                  <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
+                  <p className="text-foreground text-sm font-semibold">
+                    {title}
+                  </p>
+                  <p className="text-muted-foreground mt-0.5 text-xs leading-relaxed">
                     {description}
                   </p>
-                  <p className="mt-2 text-xs font-medium text-primary">{meta}</p>
+                  <p className="text-primary mt-2 text-xs font-medium">
+                    {meta}
+                  </p>
                 </div>
               </CardContent>
             </Card>

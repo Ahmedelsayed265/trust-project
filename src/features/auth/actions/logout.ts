@@ -1,9 +1,9 @@
-"use server";
+'use server';
 
-import type { ApiSuccessResponse } from "@/features/auth/types";
-import { redirect } from "next/navigation";
-import { api } from "@/shared/lib/api";
-import { clearAuthToken, getAuthToken } from "@/features/auth/session";
+import type { ApiSuccessResponse } from '@/features/auth/types';
+import { redirect } from 'next/navigation';
+import { api } from '@/shared/lib/api';
+import { clearAuthToken, getAuthToken } from '@/features/auth/session';
 
 export type LogoutApiResponse = ApiSuccessResponse<null>;
 
@@ -12,14 +12,14 @@ export async function logoutAction() {
 
   try {
     if (token) {
-      await api.post<LogoutApiResponse>("/user/auth/logout", undefined, {
+      await api.post<LogoutApiResponse>('/user/auth/logout', undefined, {
         token,
       });
     }
   } catch {
-    throw new Error("Failed to logout");
+    throw new Error('Failed to logout');
   }
 
   await clearAuthToken();
-  redirect("/login");
+  redirect('/login');
 }

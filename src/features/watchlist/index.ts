@@ -1,1 +1,1 @@
-export { WatchlistView } from "./components/watchlist-view";
+export { WatchlistView } from './components/watchlist-view';

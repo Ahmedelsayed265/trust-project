@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   AssetIcon,
   SideBadge,
   StatusBadge,
-} from "@/features/orders/components/order-badges";
-import type { Order } from "@/features/orders/data/orders";
+} from '@/features/orders/components/order-badges';
+import type { Order } from '@/features/orders/data/orders';
 
 export function OrderCard({
   order,
@@ -17,16 +17,14 @@ export function OrderCard({
   onCancel?: (id: string) => void;
 }) {
   const canCancel =
-    order.status === "pending" || order.status === "partially_filled";
+    order.status === 'pending' || order.status === 'partially_filled';
 
   const details = [
-    { label: "Order Type", value: order.orderType },
-    { label: "Amount", value: order.amount },
-    ...(order.filled
-      ? [{ label: "Filled", value: order.filled }]
-      : []),
-    { label: "Price", value: order.price },
-    { label: order.totalLabel ?? "Total", value: order.total },
+    { label: 'Order Type', value: order.orderType },
+    { label: 'Amount', value: order.amount },
+    ...(order.filled ? [{ label: 'Filled', value: order.filled }] : []),
+    { label: 'Price', value: order.price },
+    { label: order.totalLabel ?? 'Total', value: order.total },
   ];
 
   return (
@@ -41,12 +39,12 @@ export function OrderCard({
             />
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
-                <p className="text-sm font-semibold text-foreground">
+                <p className="text-foreground text-sm font-semibold">
                   {order.symbol}
                 </p>
                 <SideBadge side={order.side} />
               </div>
-              <p className="text-xs text-muted-foreground">{order.name}</p>
+              <p className="text-muted-foreground text-xs">{order.name}</p>
             </div>
           </div>
           <StatusBadge status={order.status} />
@@ -55,14 +53,14 @@ export function OrderCard({
         <div
           className={`grid gap-3 text-sm ${
             details.length > 4
-              ? "grid-cols-2 sm:grid-cols-5"
-              : "grid-cols-2 sm:grid-cols-4"
+              ? 'grid-cols-2 sm:grid-cols-5'
+              : 'grid-cols-2 sm:grid-cols-4'
           }`}
         >
           {details.map((detail) => (
             <div key={detail.label}>
-              <p className="text-xs text-muted-foreground">{detail.label}</p>
-              <p className="font-semibold capitalize text-foreground">
+              <p className="text-muted-foreground text-xs">{detail.label}</p>
+              <p className="text-foreground font-semibold capitalize">
                 {detail.value}
               </p>
             </div>
@@ -74,7 +72,7 @@ export function OrderCard({
             <Button
               type="button"
               variant="outline"
-              className="h-10 w-full rounded-xl border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive sm:w-auto"
+              className="border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive h-10 w-full rounded-xl sm:w-auto"
               onClick={() => onCancel?.(order.id)}
             >
               Cancel Order
@@ -83,7 +81,7 @@ export function OrderCard({
         )}
 
         {order.createdAt && (
-          <p className="text-xs text-muted-foreground">{order.createdAt}</p>
+          <p className="text-muted-foreground text-xs">{order.createdAt}</p>
         )}
       </CardContent>
     </Card>

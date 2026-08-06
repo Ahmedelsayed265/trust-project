@@ -6,9 +6,9 @@ export function getApiBaseUrl() {
 
   if (!base) {
     throw new Error(
-      "Missing API_URL. Set API_URL=https://admin.trust-ai.cloud/api in .env"
+      'Missing API_URL. Set API_URL=https://admin.trust-ai.cloud/api in .env',
     );
   }
 
-  return base.replace(/\/$/, "");
+  return base.replace(/\/$/, '');
 }

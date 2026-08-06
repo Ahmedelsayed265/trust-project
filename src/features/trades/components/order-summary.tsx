@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useFormContext } from "react-hook-form";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { cn } from "@/lib/utils";
+import { useFormContext } from 'react-hook-form';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import { cn } from '@/lib/utils';
 import {
   BTC_PRICE,
   estimateQuantity,
@@ -11,7 +11,7 @@ import {
   formatUsd,
   parseAmount,
   type OrderFormValues,
-} from "@/features/trades/schemas/order";
+} from '@/features/trades/schemas/order';
 
 export function OrderSummary() {
   const form = useFormContext<OrderFormValues>();
@@ -21,28 +21,27 @@ export function OrderSummary() {
   const total = amount;
 
   const rows = [
-    { label: "Pair", value: values.pair },
+    { label: 'Pair', value: values.pair },
     {
-      label: "Order Type",
-      value: values.orderType === "market" ? "Market" : "Limit",
+      label: 'Order Type',
+      value: values.orderType === 'market' ? 'Market' : 'Limit',
     },
     {
-      label: "Side",
+      label: 'Side',
       value: values.side.toUpperCase(),
-      className:
-        values.side === "buy" ? "text-success" : "text-destructive",
+      className: values.side === 'buy' ? 'text-success' : 'text-destructive',
     },
     {
-      label: "Amount",
-      value: `${amount.toLocaleString("en-US", { minimumFractionDigits: 2 })} ${values.currency}`,
+      label: 'Amount',
+      value: `${amount.toLocaleString('en-US', { minimumFractionDigits: 2 })} ${values.currency}`,
     },
-    { label: "Est. Quantity", value: `${formatQty(qty)} BTC` },
+    { label: 'Est. Quantity', value: `${formatQty(qty)} BTC` },
     {
-      label: "Est. Price",
+      label: 'Est. Price',
       value: formatUsd(BTC_PRICE),
     },
     {
-      label: "Est. Total",
+      label: 'Est. Total',
       value: formatUsd(total),
       bold: true,
     },
@@ -61,9 +60,9 @@ export function OrderSummary() {
               <span className="text-muted-foreground">{row.label}</span>
               <span
                 className={cn(
-                  "font-medium text-foreground",
-                  row.bold && "text-base font-bold",
-                  row.className
+                  'text-foreground font-medium',
+                  row.bold && 'text-base font-bold',
+                  row.className,
                 )}
               >
                 {row.value}

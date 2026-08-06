@@ -1,7 +1,5 @@
-import { CalendarView } from "@/features/calendar";
+import { CalendarView } from '@/features/calendar';
 
 export default function CalendarPage() {
-  return (
-    <CalendarView />
-  );
+  return <CalendarView />;
 }

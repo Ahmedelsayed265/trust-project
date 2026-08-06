@@ -1,23 +1,23 @@
-"use client";
+'use client';
 
-import { useTransition } from "react";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft } from "lucide-react";
-import { toast } from "sonner";
-import { FormPasswordField } from "@/shared/components/form-password-field";
-import { SubmitButton } from "@/shared/components/submit-button";
+import { useTransition } from 'react';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { ArrowLeft } from 'lucide-react';
+import { toast } from 'sonner';
+import { FormPasswordField } from '@/shared/components/form-password-field';
+import { SubmitButton } from '@/shared/components/submit-button';
 import {
   backToResetCodeAction,
   resetPasswordAction,
-} from "@/features/auth/actions/forgot-password";
+} from '@/features/auth/actions/forgot-password';
 import {
   resetPasswordSchema,
   type ResetPasswordFormValues,
-} from "@/features/auth/schemas/auth";
+} from '@/features/auth/schemas/auth';
 
-const authInputClassName = "h-12 rounded-[12px]! bg-card px-3";
+const authInputClassName = 'h-12 rounded-[12px]! bg-card px-3';
 
 export function ResetPasswordForm({ email }: { email: string }) {
   const router = useRouter();
@@ -26,8 +26,8 @@ export function ResetPasswordForm({ email }: { email: string }) {
   const form = useForm<ResetPasswordFormValues>({
     resolver: zodResolver(resetPasswordSchema),
     defaultValues: {
-      password: "",
-      password_confirmation: "",
+      password: '',
+      password_confirmation: '',
     },
   });
 
@@ -39,7 +39,7 @@ export function ResetPasswordForm({ email }: { email: string }) {
         if (result.errors) {
           for (const [field, messages] of Object.entries(result.errors)) {
             form.setError(field as keyof ResetPasswordFormValues, {
-              type: "server",
+              type: 'server',
               message: messages[0],
             });
           }
@@ -48,8 +48,8 @@ export function ResetPasswordForm({ email }: { email: string }) {
         return;
       }
 
-      toast.success("Password updated. You can sign in now.");
-      router.push("/login");
+      toast.success('Password updated. You can sign in now.');
+      router.push('/login');
       router.refresh();
     });
   }
@@ -57,7 +57,7 @@ export function ResetPasswordForm({ email }: { email: string }) {
   function onBack() {
     startTransition(async () => {
       await backToResetCodeAction();
-      router.push("/verify-email");
+      router.push('/verify-email');
       router.refresh();
     });
   }
@@ -68,19 +68,19 @@ export function ResetPasswordForm({ email }: { email: string }) {
         type="button"
         onClick={onBack}
         disabled={pending}
-        className="mb-6 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground disabled:opacity-60"
+        className="text-muted-foreground hover:text-foreground mb-6 inline-flex items-center gap-1.5 text-sm font-medium disabled:opacity-60"
       >
         <ArrowLeft className="size-4" />
         Back
       </button>
 
       <div className="mb-8 space-y-2">
-        <h2 className="text-2xl font-bold tracking-tight text-foreground">
+        <h2 className="text-foreground text-2xl font-bold tracking-tight">
           Choose a new password
         </h2>
-        <p className="text-sm text-muted-foreground">
-          Create a new password for{" "}
-          <span className="font-medium text-foreground">{email}</span>
+        <p className="text-muted-foreground text-sm">
+          Create a new password for{' '}
+          <span className="text-foreground font-medium">{email}</span>
         </p>
       </div>
 

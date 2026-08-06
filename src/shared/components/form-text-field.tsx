@@ -1,20 +1,20 @@
-"use client";
+'use client';
 
 import {
   Controller,
   type Control,
   type FieldPath,
   type FieldValues,
-} from "react-hook-form";
+} from 'react-hook-form';
 import {
   Field,
   FieldContent,
   FieldDescription,
   FieldError,
   FieldLabel,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
+} from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 
 type FormTextFieldProps<T extends FieldValues> = {
   control: Control<T>;
@@ -33,7 +33,7 @@ export function FormTextField<T extends FieldValues>({
   name,
   label,
   description,
-  type = "text",
+  type = 'text',
   placeholder,
   autoComplete,
   className,
@@ -58,10 +58,7 @@ export function FormTextField<T extends FieldValues>({
               placeholder={placeholder}
               autoComplete={autoComplete}
               aria-invalid={fieldState.invalid}
-              className={cn(
-                "h-12 bg-card py-3 text-sm",
-                inputClassName,
-              )}
+              className={cn('bg-card h-12 py-3 text-sm', inputClassName)}
             />
 
             {description && !fieldState.error && (

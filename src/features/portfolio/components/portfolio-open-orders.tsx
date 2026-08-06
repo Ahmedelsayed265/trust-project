@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
-import { formatMoney, type ProviderOrder } from "@/shared/trading";
+import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils';
+import { formatMoney, type ProviderOrder } from '@/shared/trading';
 import {
   formatQty,
   formatRelativeTime,
-} from "@/features/portfolio/lib/portfolio-data";
+} from '@/features/portfolio/lib/portfolio-data';
 
 export function PortfolioOpenOrders({
   orders,
@@ -27,7 +27,7 @@ export function PortfolioOpenOrders({
         <CardTitle>Open orders</CardTitle>
         <Link
           href="/orders"
-          className="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-primary hover:underline"
+          className="text-primary inline-flex shrink-0 items-center gap-1 text-xs font-medium hover:underline"
         >
           View all
           <ArrowRight className="size-3.5" />
@@ -36,47 +36,49 @@ export function PortfolioOpenOrders({
 
       <CardContent className="space-y-2.5">
         {loading ? (
-          [0, 1].map((index) => <Skeleton key={index} className="h-16 w-full" />)
+          [0, 1].map((index) => (
+            <Skeleton key={index} className="h-16 w-full" />
+          ))
         ) : orders.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             No working orders at the provider.
           </p>
         ) : (
           orders.map((order) => (
             <div
               key={order.id}
-              className="flex items-center justify-between gap-3 rounded-[12px] border border-border px-3 py-2.5"
+              className="border-border flex items-center justify-between gap-3 rounded-[12px] border px-3 py-2.5"
             >
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
                   <Badge
                     variant="secondary"
                     className={cn(
-                      "border-0 uppercase",
-                      order.side === "buy"
-                        ? "bg-success/12 text-success"
-                        : "bg-destructive/12 text-destructive"
+                      'border-0 uppercase',
+                      order.side === 'buy'
+                        ? 'bg-success/12 text-success'
+                        : 'bg-destructive/12 text-destructive',
                     )}
                   >
                     {order.side}
                   </Badge>
-                  <p className="truncate text-sm font-semibold text-foreground">
+                  <p className="text-foreground truncate text-sm font-semibold">
                     {order.symbol}
                   </p>
                 </div>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  {order.type === "limit" && order.limitPrice != null
+                <p className="text-muted-foreground mt-1 text-xs">
+                  {order.type === 'limit' && order.limitPrice != null
                     ? `Limit ${formatMoney(order.limitPrice, currency)}`
-                    : "Market"}{" "}
+                    : 'Market'}{' '}
                   · {formatRelativeTime(order.createdAt)}
                 </p>
               </div>
 
               <div className="shrink-0 text-right">
-                <p className="text-sm font-semibold text-foreground">
+                <p className="text-foreground text-sm font-semibold">
                   {formatQty(order.qty)}
                 </p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-muted-foreground text-xs">
                   {formatQty(order.filledQty)} filled
                 </p>
               </div>

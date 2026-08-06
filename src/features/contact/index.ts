@@ -1,1 +1,1 @@
-export { ContactView } from "./components/contact-view";
+export { ContactView } from './components/contact-view';

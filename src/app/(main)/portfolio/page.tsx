@@ -1,7 +1,5 @@
-import { PortfolioView } from "@/features/portfolio";
+import { PortfolioView } from '@/features/portfolio';
 
 export default function PortfolioPage() {
-  return (
-    <PortfolioView />
-  );
+  return <PortfolioView />;
 }

@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 
 export function ChangeIndicator({
   value,
@@ -12,9 +12,9 @@ export function ChangeIndicator({
   return (
     <span
       className={cn(
-        "font-semibold",
-        positive === false ? "text-destructive" : "text-success",
-        className
+        'font-semibold',
+        positive === false ? 'text-destructive' : 'text-success',
+        className,
       )}
     >
       {value}

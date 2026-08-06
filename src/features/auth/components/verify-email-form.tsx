@@ -1,32 +1,32 @@
-"use client";
+'use client';
 
-import { useEffect, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
-import { toast } from "sonner";
+import { useEffect, useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
+import { ArrowLeft } from 'lucide-react';
+import { toast } from 'sonner';
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
-} from "@/components/ui/input-otp";
-import { SubmitButton } from "@/shared/components/submit-button";
-import { sendVerificationCodeAction } from "@/features/auth/actions/send-verification-code";
+} from '@/components/ui/input-otp';
+import { SubmitButton } from '@/shared/components/submit-button';
+import { sendVerificationCodeAction } from '@/features/auth/actions/send-verification-code';
 import {
   cancelEmailVerificationAction,
   verifyEmailAction,
-} from "@/features/auth/actions/verify-email";
+} from '@/features/auth/actions/verify-email';
 import {
   cancelPasswordResetAction,
   resendPasswordResetCodeAction,
   verifyResetCodeAction,
-} from "@/features/auth/actions/forgot-password";
+} from '@/features/auth/actions/forgot-password';
 
 const RESEND_SECONDS = 3 * 60;
 
 function formatTimer(totalSeconds: number) {
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;
-  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+  return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 }
 
 export function VerifyEmailForm({
@@ -34,15 +34,15 @@ export function VerifyEmailForm({
   purpose,
 }: {
   email: string;
-  purpose: "signup" | "reset";
+  purpose: 'signup' | 'reset';
 }) {
   const router = useRouter();
-  const [code, setCode] = useState("");
+  const [code, setCode] = useState('');
   const [secondsLeft, setSecondsLeft] = useState(RESEND_SECONDS);
   const [pending, startTransition] = useTransition();
   const [resending, startResend] = useTransition();
 
-  const isReset = purpose === "reset";
+  const isReset = purpose === 'reset';
 
   useEffect(() => {
     if (secondsLeft <= 0) return;
@@ -54,7 +54,7 @@ export function VerifyEmailForm({
 
   function onVerify(nextCode = code) {
     if (nextCode.length !== 6) {
-      toast.error("Enter the 6-digit code.");
+      toast.error('Enter the 6-digit code.');
       return;
     }
 
@@ -69,7 +69,7 @@ export function VerifyEmailForm({
       }
 
       toast.success(
-        isReset ? "Code verified. Set your new password." : "Email verified."
+        isReset ? 'Code verified. Set your new password.' : 'Email verified.',
       );
       router.push(result.data.next);
       router.refresh();
@@ -89,9 +89,9 @@ export function VerifyEmailForm({
         return;
       }
 
-      setCode("");
+      setCode('');
       setSecondsLeft(RESEND_SECONDS);
-      toast.success("A new code was sent to your email.");
+      toast.success('A new code was sent to your email.');
     });
   }
 
@@ -99,10 +99,10 @@ export function VerifyEmailForm({
     startTransition(async () => {
       if (isReset) {
         await cancelPasswordResetAction();
-        router.push("/forgot-password");
+        router.push('/forgot-password');
       } else {
         await cancelEmailVerificationAction();
-        router.push("/login");
+        router.push('/login');
       }
       router.refresh();
     });
@@ -114,20 +114,20 @@ export function VerifyEmailForm({
         type="button"
         onClick={onBack}
         disabled={pending}
-        className="mb-6 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground disabled:opacity-60"
+        className="text-muted-foreground hover:text-foreground mb-6 inline-flex items-center gap-1.5 text-sm font-medium disabled:opacity-60"
       >
         <ArrowLeft className="size-4" />
         Back
       </button>
 
       <div className="mb-8 space-y-2">
-        <h2 className="text-2xl font-bold tracking-tight text-foreground">
-          {isReset ? "Enter reset code" : "Verify your email"}
+        <h2 className="text-foreground text-2xl font-bold tracking-tight">
+          {isReset ? 'Enter reset code' : 'Verify your email'}
         </h2>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-muted-foreground text-sm">
           {isReset
-            ? "Enter the 6-digit code we sent to reset your password"
-            : "Enter the code we sent to finish signing in"}
+            ? 'Enter the 6-digit code we sent to reset your password'
+            : 'Enter the code we sent to finish signing in'}
         </p>
       </div>
 
@@ -138,9 +138,9 @@ export function VerifyEmailForm({
           onVerify();
         }}
       >
-        <p className="text-sm leading-relaxed text-muted-foreground">
-          We sent a 6-digit code to{" "}
-          <span className="font-medium text-foreground">{email}</span>. Enter it
+        <p className="text-muted-foreground text-sm leading-relaxed">
+          We sent a 6-digit code to{' '}
+          <span className="text-foreground font-medium">{email}</span>. Enter it
           below to continue.
         </p>
 
@@ -158,7 +158,7 @@ export function VerifyEmailForm({
                 <InputOTPSlot
                   key={index}
                   index={index}
-                  className="size-12 rounded-[12px]! border border-neutral-300 bg-card text-base font-semibold shadow-none first:rounded-[12px]! first:border-l last:rounded-[12px]! data-[active=true]:border-primary data-[active=true]:ring-3 data-[active=true]:ring-primary/20 dark:border-neutral-600"
+                  className="bg-card data-[active=true]:border-primary data-[active=true]:ring-primary/20 size-12 rounded-[12px]! border border-neutral-300 text-base font-semibold shadow-none first:rounded-[12px]! first:border-l last:rounded-[12px]! data-[active=true]:ring-3 dark:border-neutral-600"
                 />
               ))}
             </InputOTPGroup>
@@ -173,7 +173,7 @@ export function VerifyEmailForm({
           Continue
         </SubmitButton>
 
-        <p className="text-center text-sm text-muted-foreground">
+        <p className="text-muted-foreground text-center text-sm">
           {secondsLeft > 0 ? (
             <>Resend code in {formatTimer(secondsLeft)}</>
           ) : (
@@ -181,9 +181,9 @@ export function VerifyEmailForm({
               type="button"
               onClick={onResend}
               disabled={resending}
-              className="font-medium text-primary hover:underline disabled:opacity-60"
+              className="text-primary font-medium hover:underline disabled:opacity-60"
             >
-              {resending ? "Sending..." : "Resend code"}
+              {resending ? 'Sending...' : 'Resend code'}
             </button>
           )}
         </p>

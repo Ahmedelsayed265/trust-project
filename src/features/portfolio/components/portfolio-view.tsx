@@ -1,22 +1,22 @@
-"use client";
+'use client';
 
-import { useMemo } from "react";
-import Link from "next/link";
-import { AlertTriangle, RefreshCw } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { PageHeader } from "@/shared/components/page-header";
-import { cn } from "@/lib/utils";
-import { useTrading } from "@/shared/trading";
-import { PortfolioAccount } from "@/features/portfolio/components/portfolio-account";
-import { PortfolioAllocation } from "@/features/portfolio/components/portfolio-allocation";
-import { PortfolioHoldings } from "@/features/portfolio/components/portfolio-holdings";
-import { PortfolioOpenOrders } from "@/features/portfolio/components/portfolio-open-orders";
-import { PortfolioPerformance } from "@/features/portfolio/components/portfolio-performance";
-import { PortfolioStats } from "@/features/portfolio/components/portfolio-stats";
+import { useMemo } from 'react';
+import Link from 'next/link';
+import { AlertTriangle, RefreshCw } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { PageHeader } from '@/shared/components/page-header';
+import { cn } from '@/lib/utils';
+import { useTrading } from '@/shared/trading';
+import { PortfolioAccount } from '@/features/portfolio/components/portfolio-account';
+import { PortfolioAllocation } from '@/features/portfolio/components/portfolio-allocation';
+import { PortfolioHoldings } from '@/features/portfolio/components/portfolio-holdings';
+import { PortfolioOpenOrders } from '@/features/portfolio/components/portfolio-open-orders';
+import { PortfolioPerformance } from '@/features/portfolio/components/portfolio-performance';
+import { PortfolioStats } from '@/features/portfolio/components/portfolio-stats';
 import {
   buildHoldings,
   formatRelativeTime,
-} from "@/features/portfolio/lib/portfolio-data";
+} from '@/features/portfolio/lib/portfolio-data';
 
 export function PortfolioView() {
   const {
@@ -33,9 +33,9 @@ export function PortfolioView() {
 
   const holdings = useMemo(
     () => buildHoldings(snapshot, positions),
-    [snapshot, positions]
+    [snapshot, positions],
   );
-  const currency = snapshot?.currency ?? "USD";
+  const currency = snapshot?.currency ?? 'USD';
   const account = accounts.find((item) => item.providerId === activeProviderId);
 
   return (
@@ -46,8 +46,8 @@ export function PortfolioView() {
         actions={
           <>
             {snapshot && (
-              <span className="mr-1 hidden items-center gap-1.5 text-xs text-muted-foreground sm:inline-flex">
-                <span className="size-1.5 rounded-full bg-success" />
+              <span className="text-muted-foreground mr-1 hidden items-center gap-1.5 text-xs sm:inline-flex">
+                <span className="bg-success size-1.5 rounded-full" />
                 Synced {formatRelativeTime(snapshot.asOf)}
               </span>
             )}
@@ -59,7 +59,7 @@ export function PortfolioView() {
               disabled={loading}
               onClick={() => void refresh()}
             >
-              <RefreshCw className={cn("size-4", loading && "animate-spin")} />
+              <RefreshCw className={cn('size-4', loading && 'animate-spin')} />
             </Button>
             <Button
               variant="outline"
@@ -81,11 +81,12 @@ export function PortfolioView() {
       />
 
       {(error || (!loading && !snapshot)) && (
-        <div className="flex flex-col gap-3 rounded-[12px] border border-border bg-card px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="border-border bg-card flex flex-col gap-3 rounded-[12px] border px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-start gap-2.5">
-            <AlertTriangle className="mt-0.5 size-4 shrink-0 text-chart-4" />
-            <p className="text-sm text-muted-foreground">
-              {error ?? "Connect a trading provider to load portfolio balances."}
+            <AlertTriangle className="text-chart-4 mt-0.5 size-4 shrink-0" />
+            <p className="text-muted-foreground text-sm">
+              {error ??
+                'Connect a trading provider to load portfolio balances.'}
             </p>
           </div>
           <Button
@@ -98,7 +99,11 @@ export function PortfolioView() {
         </div>
       )}
 
-      <PortfolioStats snapshot={snapshot} holdings={holdings} loading={loading} />
+      <PortfolioStats
+        snapshot={snapshot}
+        holdings={holdings}
+        loading={loading}
+      />
 
       <div className="grid gap-4 lg:grid-cols-[1.5fr_1fr]">
         <PortfolioPerformance snapshot={snapshot} loading={loading} />

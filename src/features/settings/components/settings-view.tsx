@@ -1,71 +1,64 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Bell,
-  Check,
-  Globe2,
-  Mail,
-  Sparkles,
-  UserRound,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Bell, Check, Globe2, Mail, Sparkles, UserRound } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Field, FieldContent, FieldLabel } from "@/components/ui/field";
+} from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Field, FieldContent, FieldLabel } from '@/components/ui/field';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { FormTextField } from "@/shared/components/form-text-field";
-import { PageHeader } from "@/shared/components/page-header";
-import { useCurrentUser } from "@/shared/providers/user-provider";
+} from '@/components/ui/select';
+import { FormTextField } from '@/shared/components/form-text-field';
+import { PageHeader } from '@/shared/components/page-header';
+import { useCurrentUser } from '@/shared/providers/user-provider';
 import {
   settingsSchema,
   type SettingsFormValues,
-} from "@/features/settings/schemas/settings";
-import { cn } from "@/lib/utils";
+} from '@/features/settings/schemas/settings';
+import { cn } from '@/lib/utils';
 
 const languages = [
-  { value: "en", label: "English" },
-  { value: "ar", label: "Arabic" },
-  { value: "es", label: "Spanish" },
+  { value: 'en', label: 'English' },
+  { value: 'ar', label: 'Arabic' },
+  { value: 'es', label: 'Spanish' },
 ] as const;
 
 const currencies = [
-  { value: "USD", label: "USD — US Dollar" },
-  { value: "EUR", label: "EUR — Euro" },
-  { value: "SAR", label: "SAR — Saudi Riyal" },
+  { value: 'USD', label: 'USD — US Dollar' },
+  { value: 'EUR', label: 'EUR — Euro' },
+  { value: 'SAR', label: 'SAR — Saudi Riyal' },
 ] as const;
 
 const notificationOptions = [
   {
-    name: "emailAlerts" as const,
-    title: "Email alerts",
-    description: "Get notified about fills and provider account sync events.",
+    name: 'emailAlerts' as const,
+    title: 'Email alerts',
+    description: 'Get notified about fills and provider account sync events.',
     icon: Mail,
   },
   {
-    name: "pushAlerts" as const,
-    title: "Push alerts for AI signals",
-    description: "Receive push notifications when strong signals fire.",
+    name: 'pushAlerts' as const,
+    title: 'Push alerts for AI signals',
+    description: 'Receive push notifications when strong signals fire.',
     icon: Bell,
   },
   {
-    name: "aiDigest" as const,
-    title: "Daily AI market digest",
-    description: "A morning summary of setups and market movers.",
+    name: 'aiDigest' as const,
+    title: 'Daily AI market digest',
+    description: 'A morning summary of setups and market movers.',
     icon: Sparkles,
   },
 ];
@@ -78,12 +71,12 @@ export function SettingsView() {
     defaultValues: {
       displayName: user.name,
       email: user.email,
-      language: (["en", "ar", "es"].includes(user.language)
+      language: (['en', 'ar', 'es'].includes(user.language)
         ? user.language
-        : "en") as SettingsFormValues["language"],
-      currency: (["USD", "EUR", "SAR"].includes(user.currency)
+        : 'en') as SettingsFormValues['language'],
+      currency: (['USD', 'EUR', 'SAR'].includes(user.currency)
         ? user.currency
-        : "USD") as SettingsFormValues["currency"],
+        : 'USD') as SettingsFormValues['currency'],
       emailAlerts: user.email_alerts,
       pushAlerts: user.push_alerts,
       aiDigest: user.ai_digest,
@@ -102,14 +95,11 @@ export function SettingsView() {
         description="Manage account defaults and notification preferences."
       />
 
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="grid gap-4"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
         <Card>
-          <CardHeader className="border-b border-border">
+          <CardHeader className="border-border border-b">
             <div className="flex items-start gap-3">
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <div className="bg-primary/10 text-primary flex size-10 shrink-0 items-center justify-center rounded-xl">
                 <UserRound className="size-5" />
               </div>
               <div className="min-w-0">
@@ -154,7 +144,7 @@ export function SettingsView() {
                       >
                         <SelectTrigger
                           id="language"
-                          className="h-12 w-full min-w-0 rounded-xl bg-background px-2.5 py-3 data-[size=default]:h-12"
+                          className="bg-background h-12 w-full min-w-0 rounded-xl px-2.5 py-3 data-[size=default]:h-12"
                         >
                           <SelectValue />
                         </SelectTrigger>
@@ -193,7 +183,7 @@ export function SettingsView() {
                       >
                         <SelectTrigger
                           id="currency"
-                          className="h-12 w-full min-w-0 rounded-xl bg-background px-2.5 py-3 data-[size=default]:h-12"
+                          className="bg-background h-12 w-full min-w-0 rounded-xl px-2.5 py-3 data-[size=default]:h-12"
                         >
                           <SelectValue />
                         </SelectTrigger>
@@ -220,7 +210,7 @@ export function SettingsView() {
         </Card>
 
         <Card>
-          <CardHeader className="border-b border-border">
+          <CardHeader className="border-border border-b">
             <div className="flex items-start gap-3">
               <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-600 dark:bg-violet-950/40 dark:text-violet-300">
                 <Globe2 className="size-5" />
@@ -243,18 +233,18 @@ export function SettingsView() {
                   render={({ field }) => (
                     <label
                       className={cn(
-                        "flex cursor-pointer items-start gap-3 rounded-xl border border-border bg-background p-3.5 transition-colors hover:bg-muted/40",
-                        field.value && "border-primary/25 bg-primary/3"
+                        'border-border bg-background hover:bg-muted/40 flex cursor-pointer items-start gap-3 rounded-xl border p-3.5 transition-colors',
+                        field.value && 'border-primary/25 bg-primary/3',
                       )}
                     >
-                      <div className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+                      <div className="bg-muted text-muted-foreground mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg">
                         <Icon className="size-4" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm font-semibold text-foreground">
+                        <p className="text-foreground text-sm font-semibold">
                           {title}
                         </p>
-                        <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
+                        <p className="text-muted-foreground mt-0.5 text-xs leading-relaxed">
                           {description}
                         </p>
                       </div>
@@ -268,15 +258,15 @@ export function SettingsView() {
                     </label>
                   )}
                 />
-              )
+              ),
             )}
           </CardContent>
         </Card>
 
-        <div className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card px-4 py-3">
+        <div className="border-border bg-card flex items-center justify-between gap-3 rounded-xl border px-4 py-3">
           <div className="min-h-5">
             {saved && (
-              <p className="inline-flex items-center gap-1.5 text-sm font-medium text-success">
+              <p className="text-success inline-flex items-center gap-1.5 text-sm font-medium">
                 <Check className="size-4" />
                 Settings saved
               </p>

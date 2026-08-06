@@ -1,7 +1,5 @@
-import { VerificationView } from "@/features/verification";
+import { VerificationView } from '@/features/verification';
 
 export default function VerificationPage() {
-  return (
-    <VerificationView />
-  );
+  return <VerificationView />;
 }

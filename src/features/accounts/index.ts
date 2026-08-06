@@ -1,1 +1,1 @@
-export { AccountsView } from "@/features/accounts/components/accounts-view";
+export { AccountsView } from '@/features/accounts/components/accounts-view';

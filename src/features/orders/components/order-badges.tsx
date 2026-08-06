@@ -1,21 +1,21 @@
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 import {
   statusLabel,
   type OrderSide,
   type OrderStatus,
-} from "@/features/orders/data/orders";
+} from '@/features/orders/data/orders';
 
 export function SideBadge({ side }: { side: OrderSide }) {
   return (
     <span
       className={cn(
-        "inline-flex rounded-md px-1.5 py-0.5 text-[11px] font-semibold",
-        side === "buy"
-          ? "bg-emerald-50 text-success dark:bg-emerald-950/40"
-          : "bg-red-50 text-destructive dark:bg-red-950/40"
+        'inline-flex rounded-md px-1.5 py-0.5 text-[11px] font-semibold',
+        side === 'buy'
+          ? 'text-success bg-emerald-50 dark:bg-emerald-950/40'
+          : 'text-destructive bg-red-50 dark:bg-red-950/40',
       )}
     >
-      {side === "buy" ? "Buy" : "Sell"}
+      {side === 'buy' ? 'Buy' : 'Sell'}
     </span>
   );
 }
@@ -24,15 +24,14 @@ export function StatusBadge({ status }: { status: OrderStatus }) {
   return (
     <span
       className={cn(
-        "inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-semibold",
-        status === "pending" &&
-          "bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-300",
-        status === "partially_filled" &&
-          "bg-sky-50 text-sky-600 dark:bg-sky-950/40 dark:text-sky-300",
-        status === "filled" &&
-          "bg-emerald-50 text-success dark:bg-emerald-950/40",
-        status === "cancelled" &&
-          "bg-muted text-muted-foreground"
+        'inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-semibold',
+        status === 'pending' &&
+          'bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-300',
+        status === 'partially_filled' &&
+          'bg-sky-50 text-sky-600 dark:bg-sky-950/40 dark:text-sky-300',
+        status === 'filled' &&
+          'text-success bg-emerald-50 dark:bg-emerald-950/40',
+        status === 'cancelled' && 'bg-muted text-muted-foreground',
       )}
     >
       {statusLabel(status)}
@@ -49,7 +48,7 @@ export function AssetIcon({
   iconBg: string;
   iconLabel: string;
 }) {
-  if (symbol === "AAPL") {
+  if (symbol === 'AAPL') {
     return (
       <div
         className={`flex size-10 shrink-0 items-center justify-center rounded-full ${iconBg}`}

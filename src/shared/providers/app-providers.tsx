@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { ThemeProvider } from "@/shared/providers/theme-provider";
-import { TradingProviderContext } from "@/shared/trading";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { Toaster } from "@/components/ui/sonner";
+import { ThemeProvider } from '@/shared/providers/theme-provider';
+import { TradingProviderContext } from '@/shared/trading';
+import { TooltipProvider } from '@/components/ui/tooltip';
+import { Toaster } from '@/components/ui/sonner';
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
   return (

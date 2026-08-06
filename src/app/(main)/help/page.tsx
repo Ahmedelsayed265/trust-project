@@ -1,7 +1,5 @@
-import { HelpView } from "@/features/help";
+import { HelpView } from '@/features/help';
 
 export default function HelpPage() {
-  return (
-    <HelpView />
-  );
+  return <HelpView />;
 }

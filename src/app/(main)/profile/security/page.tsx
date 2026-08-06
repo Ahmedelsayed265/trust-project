@@ -1,7 +1,5 @@
-import { SecurityView } from "@/features/security";
+import { SecurityView } from '@/features/security';
 
 export default function SecurityPage() {
-  return (
-    <SecurityView />
-  );
+  return <SecurityView />;
 }

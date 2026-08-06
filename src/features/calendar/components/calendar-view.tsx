@@ -1,35 +1,35 @@
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PageHeader } from "@/shared/components/page-header";
-import { cn } from "@/lib/utils";
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { PageHeader } from '@/shared/components/page-header';
+import { cn } from '@/lib/utils';
 
-const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const dates = Array.from({ length: 28 }, (_, i) => i + 1);
 
 const events = [
   {
     day: 14,
-    title: "US CPI Release",
-    time: "15:30 UTC",
-    impact: "High",
+    title: 'US CPI Release',
+    time: '15:30 UTC',
+    impact: 'High',
   },
   {
     day: 16,
-    title: "FOMC Minutes",
-    time: "19:00 UTC",
-    impact: "High",
+    title: 'FOMC Minutes',
+    time: '19:00 UTC',
+    impact: 'High',
   },
   {
     day: 18,
-    title: "Ethereum Upgrade Window",
-    time: "All day",
-    impact: "Medium",
+    title: 'Ethereum Upgrade Window',
+    time: 'All day',
+    impact: 'Medium',
   },
   {
     day: 21,
-    title: "Earnings: NVDA",
-    time: "After close",
-    impact: "High",
+    title: 'Earnings: NVDA',
+    time: 'After close',
+    impact: 'High',
   },
 ];
 
@@ -49,7 +49,7 @@ export function CalendarView() {
             <CardTitle>July 2026</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="mb-2 grid grid-cols-7 gap-1 text-center text-xs font-medium text-muted-foreground">
+            <div className="text-muted-foreground mb-2 grid grid-cols-7 gap-1 text-center text-xs font-medium">
               {days.map((day) => (
                 <div key={day} className="py-2">
                   {day}
@@ -61,10 +61,10 @@ export function CalendarView() {
                 <div
                   key={date}
                   className={cn(
-                    "flex aspect-square items-center justify-center rounded-xl text-sm font-medium",
+                    'flex aspect-square items-center justify-center rounded-xl text-sm font-medium',
                     highlighted.has(date)
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted/40 text-foreground hover:bg-muted"
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted/40 text-foreground hover:bg-muted',
                   )}
                 >
                   {date}
@@ -82,24 +82,24 @@ export function CalendarView() {
             {events.map((event) => (
               <div
                 key={event.title}
-                className="rounded-xl border border-border p-3"
+                className="border-border rounded-xl border p-3"
               >
                 <div className="mb-1 flex items-center justify-between gap-2">
-                  <p className="text-sm font-semibold text-foreground">
+                  <p className="text-foreground text-sm font-semibold">
                     {event.title}
                   </p>
                   <Badge
                     className={cn(
-                      "border-0",
-                      event.impact === "High"
-                        ? "bg-red-50 text-destructive hover:bg-red-50 dark:bg-red-950/40"
-                        : "bg-amber-50 text-amber-600 hover:bg-amber-50 dark:bg-amber-950/40"
+                      'border-0',
+                      event.impact === 'High'
+                        ? 'text-destructive bg-red-50 hover:bg-red-50 dark:bg-red-950/40'
+                        : 'bg-amber-50 text-amber-600 hover:bg-amber-50 dark:bg-amber-950/40',
                     )}
                   >
                     {event.impact}
                   </Badge>
                 </div>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-muted-foreground text-xs">
                   Jul {event.day} · {event.time}
                 </p>
               </div>

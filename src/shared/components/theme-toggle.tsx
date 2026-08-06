@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { Moon, Sun } from "lucide-react";
-import { useTheme } from "next-themes";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { useEffect, useState } from 'react';
+import { Moon, Sun } from 'lucide-react';
+import { useTheme } from 'next-themes';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 export function ThemeToggle({
   collapsed = false,
@@ -22,15 +22,15 @@ export function ThemeToggle({
     return (
       <div
         className={cn(
-          "h-9 rounded-full bg-muted",
-          collapsed ? "w-9" : "w-full",
-          className
+          'bg-muted h-9 rounded-full',
+          collapsed ? 'w-9' : 'w-full',
+          className,
         )}
       />
     );
   }
 
-  const isDark = resolvedTheme === "dark";
+  const isDark = resolvedTheme === 'dark';
 
   if (collapsed) {
     return (
@@ -38,9 +38,9 @@ export function ThemeToggle({
         type="button"
         variant="outline"
         size="icon"
-        className={cn("rounded-full", className)}
-        onClick={() => setTheme(isDark ? "light" : "dark")}
-        aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+        className={cn('rounded-full', className)}
+        onClick={() => setTheme(isDark ? 'light' : 'dark')}
+        aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
       >
         {isDark ? <Sun /> : <Moon />}
       </Button>
@@ -48,15 +48,20 @@ export function ThemeToggle({
   }
 
   return (
-    <div className={cn("flex items-center rounded-full bg-muted p-1 w-full", className)}>
+    <div
+      className={cn(
+        'bg-muted flex w-full items-center rounded-full p-1',
+        className,
+      )}
+    >
       <button
         type="button"
-        onClick={() => setTheme("light")}
+        onClick={() => setTheme('light')}
         className={cn(
-          "flex flex-1 items-center justify-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors",
+          'flex flex-1 items-center justify-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors',
           !isDark
-            ? "bg-card text-foreground"
-            : "text-muted-foreground hover:text-foreground"
+            ? 'bg-card text-foreground'
+            : 'text-muted-foreground hover:text-foreground',
         )}
       >
         <Sun className="size-3.5" />
@@ -64,12 +69,12 @@ export function ThemeToggle({
       </button>
       <button
         type="button"
-        onClick={() => setTheme("dark")}
+        onClick={() => setTheme('dark')}
         className={cn(
-          "flex flex-1 items-center justify-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors",
+          'flex flex-1 items-center justify-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors',
           isDark
-            ? "bg-card text-foreground"
-            : "text-muted-foreground hover:text-foreground"
+            ? 'bg-card text-foreground'
+            : 'text-muted-foreground hover:text-foreground',
         )}
       >
         <Moon className="size-3.5" />

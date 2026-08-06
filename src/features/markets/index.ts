@@ -1,1 +1,1 @@
-export { MarketsView } from "./components/markets-view";
+export { MarketsView } from './components/markets-view';

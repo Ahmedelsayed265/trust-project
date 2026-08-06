@@ -1,7 +1,5 @@
-import { OrdersView } from "@/features/orders";
+import { OrdersView } from '@/features/orders';
 
 export default function OrdersPage() {
-  return (
-    <OrdersView />
-  );
+  return <OrdersView />;
 }

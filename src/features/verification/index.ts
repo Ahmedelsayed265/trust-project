@@ -1,1 +1,1 @@
-export { VerificationView } from "./components/verification-view";
+export { VerificationView } from './components/verification-view';

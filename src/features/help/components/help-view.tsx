@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from 'next/link';
 import {
   BookOpen,
   CircleHelp,
@@ -6,40 +6,42 @@ import {
   MessageCircle,
   Shield,
   Sparkles,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PageHeader } from "@/shared/components/page-header";
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { PageHeader } from '@/shared/components/page-header';
 const topics = [
   {
-    title: "Getting started",
-    description: "Connect Binance or Alpaca, sync balances, and place your first trade.",
+    title: 'Getting started',
+    description:
+      'Connect Binance or Alpaca, sync balances, and place your first trade.',
     icon: BookOpen,
-    href: "/accounts",
+    href: '/accounts',
   },
   {
-    title: "Security & verification",
-    description: "2FA, KYC status, and account recovery best practices.",
+    title: 'Security & verification',
+    description: '2FA, KYC status, and account recovery best practices.',
     icon: Shield,
-    href: "/profile/security",
+    href: '/profile/security',
   },
   {
-    title: "AI Signals explained",
-    description: "How confidence scores and strong/moderate labels work.",
+    title: 'AI Signals explained',
+    description: 'How confidence scores and strong/moderate labels work.',
     icon: Sparkles,
-    href: "/ai-signals",
+    href: '/ai-signals',
   },
   {
-    title: "Billing & plans",
-    description: "Upgrade, downgrade, invoices, and renewal dates.",
+    title: 'Billing & plans',
+    description: 'Upgrade, downgrade, invoices, and renewal dates.',
     icon: CircleHelp,
-    href: "/profile/plans",
+    href: '/profile/plans',
   },
   {
-    title: "FAQs",
-    description: "Quick answers about providers, trading, and account security.",
+    title: 'FAQs',
+    description:
+      'Quick answers about providers, trading, and account security.',
     icon: HelpCircle,
-    href: "/faq",
+    href: '/faq',
   },
 ];
 
@@ -66,14 +68,14 @@ export function HelpView() {
           const Icon = topic.icon;
           return (
             <Link key={topic.title} href={topic.href} className="group block">
-              <Card className="h-full transition-colors group-hover:border-primary/30 group-hover:bg-muted/20">
+              <Card className="group-hover:border-primary/30 group-hover:bg-muted/20 h-full transition-colors">
                 <CardHeader className="flex-row items-start gap-3 space-y-0">
-                  <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                  <div className="bg-primary/10 text-primary flex size-10 items-center justify-center rounded-xl">
                     <Icon className="size-5" />
                   </div>
                   <div>
                     <CardTitle className="text-base">{topic.title}</CardTitle>
-                    <p className="mt-1 text-sm text-muted-foreground">
+                    <p className="text-muted-foreground mt-1 text-sm">
                       {topic.description}
                     </p>
                   </div>
@@ -87,10 +89,10 @@ export function HelpView() {
       <Card className="border-primary/20 bg-gradient-to-br from-blue-50 to-sky-50 dark:from-blue-950/30 dark:to-slate-900">
         <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-base font-semibold text-foreground">
+            <p className="text-foreground text-base font-semibold">
               Need plan help?
             </p>
-            <p className="mt-1 text-sm text-muted-foreground">
+            <p className="text-muted-foreground mt-1 text-sm">
               Review tiers, billing dates, and upgrade options anytime.
             </p>
           </div>

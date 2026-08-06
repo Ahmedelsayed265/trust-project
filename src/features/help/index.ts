@@ -1,1 +1,1 @@
-export { HelpView } from "./components/help-view";
+export { HelpView } from './components/help-view';

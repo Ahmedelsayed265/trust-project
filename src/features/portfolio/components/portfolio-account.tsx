@@ -1,23 +1,23 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
+import Link from 'next/link';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils';
 import {
   formatMoney,
   type PortfolioSnapshot,
   type ProviderAccount,
-} from "@/shared/trading";
-import { formatRelativeTime } from "@/features/portfolio/lib/portfolio-data";
+} from '@/shared/trading';
+import { formatRelativeTime } from '@/features/portfolio/lib/portfolio-data';
 
-const STATUS_TONE: Record<ProviderAccount["status"], string> = {
-  connected: "bg-success/12 text-success",
-  pending: "bg-chart-4/12 text-chart-4",
-  disconnected: "bg-muted text-muted-foreground",
-  error: "bg-destructive/12 text-destructive",
+const STATUS_TONE: Record<ProviderAccount['status'], string> = {
+  connected: 'bg-success/12 text-success',
+  pending: 'bg-chart-4/12 text-chart-4',
+  disconnected: 'bg-muted text-muted-foreground',
+  error: 'bg-destructive/12 text-destructive',
 };
 
 export function PortfolioAccount({
@@ -31,7 +31,7 @@ export function PortfolioAccount({
   providerName: string;
   loading: boolean;
 }) {
-  const currency = snapshot?.currency ?? "USD";
+  const currency = snapshot?.currency ?? 'USD';
   const locked =
     snapshot?.balances.reduce((sum, balance) => {
       const total = balance.free + balance.locked;
@@ -40,18 +40,18 @@ export function PortfolioAccount({
     }, 0) ?? 0;
 
   const rows = [
-    { label: "Provider", value: providerName },
-    { label: "Environment", value: account?.environment ?? "—" },
-    { label: "Reporting currency", value: currency },
+    { label: 'Provider', value: providerName },
+    { label: 'Environment', value: account?.environment ?? '—' },
+    { label: 'Reporting currency', value: currency },
     {
-      label: "Locked in orders",
-      value: snapshot ? formatMoney(locked, currency) : "—",
+      label: 'Locked in orders',
+      value: snapshot ? formatMoney(locked, currency) : '—',
     },
     {
-      label: "Last sync",
+      label: 'Last sync',
       value: account?.lastSyncedAt
         ? formatRelativeTime(account.lastSyncedAt)
-        : "Never",
+        : 'Never',
     },
   ];
 
@@ -62,7 +62,7 @@ export function PortfolioAccount({
         {account && (
           <Badge
             variant="secondary"
-            className={cn("border-0 capitalize", STATUS_TONE[account.status])}
+            className={cn('border-0 capitalize', STATUS_TONE[account.status])}
           >
             {account.status}
           </Badge>
@@ -83,16 +83,16 @@ export function PortfolioAccount({
                   className="flex items-center justify-between gap-3 text-sm"
                 >
                   <dt className="text-muted-foreground">{row.label}</dt>
-                  <dd className="truncate font-medium text-foreground capitalize">
+                  <dd className="text-foreground truncate font-medium capitalize">
                     {row.value}
                   </dd>
                 </div>
               ))}
             </dl>
 
-            <p className="text-xs leading-relaxed text-muted-foreground">
-              Balances are read directly from {providerName}. TrustAI never holds
-              funds and cannot move them between accounts.
+            <p className="text-muted-foreground text-xs leading-relaxed">
+              Balances are read directly from {providerName}. TrustAI never
+              holds funds and cannot move them between accounts.
             </p>
 
             <Button

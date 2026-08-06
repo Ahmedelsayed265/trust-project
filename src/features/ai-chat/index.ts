@@ -1,1 +1,1 @@
-export { AiChatView } from "./components/ai-chat-view";
+export { AiChatView } from './components/ai-chat-view';

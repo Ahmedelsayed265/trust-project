@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { createContext, useContext } from "react";
-import type { UserProfile } from "@/features/auth/types";
+import { createContext, useContext } from 'react';
+import type { UserProfile } from '@/features/auth/types';
 
 const UserContext = createContext<UserProfile | null>(null);
 
@@ -18,7 +18,7 @@ export function UserProvider({
 export function useCurrentUser() {
   const user = useContext(UserContext);
   if (!user) {
-    throw new Error("useCurrentUser must be used within UserProvider");
+    throw new Error('useCurrentUser must be used within UserProvider');
   }
   return user;
 }

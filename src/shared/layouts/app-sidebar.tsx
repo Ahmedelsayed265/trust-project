@@ -1,31 +1,31 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Logo } from "@/shared/components/logo";
-import { ThemeToggle } from "@/shared/components/theme-toggle";
-import { LogoutButton } from "@/features/auth/components/logout-button";
-import { useSidebar } from "@/shared/providers/sidebar-provider";
-import { cn } from "@/lib/utils";
-import { Separator } from "@/components/ui/separator";
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { Logo } from '@/shared/components/logo';
+import { ThemeToggle } from '@/shared/components/theme-toggle';
+import { LogoutButton } from '@/features/auth/components/logout-button';
+import { useSidebar } from '@/shared/providers/sidebar-provider';
+import { cn } from '@/lib/utils';
+import { Separator } from '@/components/ui/separator';
 import {
   isNavActive,
   primaryNav,
   secondaryNav,
   systemNav,
   type NavItem,
-} from "@/shared/lib/navigation";
+} from '@/shared/lib/navigation';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from '@/components/ui/tooltip';
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
-} from "@/components/ui/sheet";
+} from '@/components/ui/sheet';
 
 function NavLink({
   item,
@@ -40,7 +40,7 @@ function NavLink({
   const active = isNavActive(pathname, item.href);
   const Icon = item.icon;
 
-  if (item.action === "logout") {
+  if (item.action === 'logout') {
     const button = (
       <LogoutButton
         collapsed={collapsed}
@@ -63,11 +63,11 @@ function NavLink({
   }
 
   const className = cn(
-    "flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-medium transition-colors",
-    collapsed && "justify-center px-2",
+    'flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-medium transition-colors',
+    collapsed && 'justify-center px-2',
     active
-      ? "bg-sidebar-accent text-sidebar-accent-foreground"
-      : "text-sidebar-foreground hover:bg-muted hover:text-foreground",
+      ? 'bg-sidebar-accent text-sidebar-accent-foreground'
+      : 'text-sidebar-foreground hover:bg-muted hover:text-foreground',
   );
 
   const link = (
@@ -107,16 +107,16 @@ function SidebarContent({
     <div className="flex h-full min-h-0 flex-col overflow-hidden">
       <div
         className={cn(
-          "flex items-center border-b border-sidebar-border h-16",
+          'border-sidebar-border flex h-16 items-center border-b',
           collapsed
-            ? "justify-center px-2 py-4"
-            : "justify-between gap-2 px-3 py-4",
+            ? 'justify-center px-2 py-4'
+            : 'justify-between gap-2 px-3 py-4',
         )}
       >
         <Logo iconOnly={collapsed} />
       </div>
 
-      <nav className="scrollbar-none flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto px-2.5 py-3">
+      <nav className="flex min-h-0 flex-1 scrollbar-none flex-col overflow-x-hidden overflow-y-auto px-2.5 py-3">
         <div className="space-y-0.5">
           {primaryNav.map((item) => (
             <NavLink
@@ -155,7 +155,7 @@ function SidebarContent({
         </div>
       </nav>
 
-      <div className="border-t border-sidebar-border p-2.5 flex items-center justify-center">
+      <div className="border-sidebar-border flex items-center justify-center border-t p-2.5">
         <ThemeToggle collapsed={collapsed} />
       </div>
     </div>
@@ -169,8 +169,8 @@ export function AppSidebar() {
     <>
       <aside
         className={cn(
-          "hidden h-full min-h-0 shrink-0 flex-col overflow-hidden border-r border-sidebar-border bg-sidebar transition-[width] duration-200 lg:flex",
-          collapsed ? "w-18" : "w-55",
+          'border-sidebar-border bg-sidebar hidden h-full min-h-0 shrink-0 flex-col overflow-hidden border-r transition-[width] duration-200 lg:flex',
+          collapsed ? 'w-18' : 'w-55',
         )}
       >
         <SidebarContent collapsed={collapsed} showCollapseControl />
@@ -179,7 +179,7 @@ export function AppSidebar() {
       <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
         <SheetContent
           side="left"
-          className="w-70 gap-0 border-sidebar-border bg-sidebar p-0"
+          className="border-sidebar-border bg-sidebar w-70 gap-0 p-0"
           showCloseButton={false}
         >
           <SheetHeader className="sr-only">

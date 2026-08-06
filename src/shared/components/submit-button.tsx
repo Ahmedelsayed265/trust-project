@@ -1,6 +1,6 @@
-import { Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 type SubmitButtonProps = {
   loading?: boolean;
@@ -22,7 +22,7 @@ export function SubmitButton({
       type="submit"
       disabled={disabled || loading}
       className={cn(
-        "h-12 w-full cursor-pointer gap-2 rounded-xl text-sm font-semibold",
+        'h-12 w-full cursor-pointer gap-2 rounded-xl text-sm font-semibold',
         className,
       )}
     >

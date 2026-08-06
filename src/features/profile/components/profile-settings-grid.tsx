@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   Bell,
@@ -17,14 +17,9 @@ import {
   Info,
   BadgeCheck,
   Sparkles,
-} from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { SettingsLink } from "@/features/profile/components/settings-link";
+} from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { SettingsLink } from '@/features/profile/components/settings-link';
 export function ProfileSettingsGrid() {
   return (
     <div className="grid gap-4 xl:grid-cols-3">
@@ -33,24 +28,24 @@ export function ProfileSettingsGrid() {
           title="Account"
           items={[
             {
-              label: "Personal Information",
-              description: "Name, email, phone",
+              label: 'Personal Information',
+              description: 'Name, email, phone',
               icon: User,
-              href: "/settings",
+              href: '/settings',
             },
             {
-              label: "Verification",
-              description: "Identity & KYC",
+              label: 'Verification',
+              description: 'Identity & KYC',
               icon: BadgeCheck,
-              badge: "Verified",
-              badgeTone: "success",
-              href: "/profile/verification",
+              badge: 'Verified',
+              badgeTone: 'success',
+              href: '/profile/verification',
             },
             {
-              label: "Security",
-              description: "Password, 2FA",
+              label: 'Security',
+              description: 'Password, 2FA',
               icon: Shield,
-              href: "/profile/security",
+              href: '/profile/security',
             },
           ]}
         />
@@ -58,22 +53,22 @@ export function ProfileSettingsGrid() {
           title="Trading"
           items={[
             {
-              label: "Connected Accounts",
-              description: "Binance Spot / Alpaca",
+              label: 'Connected Accounts',
+              description: 'Binance Spot / Alpaca',
               icon: Link2,
-              href: "/accounts",
+              href: '/accounts',
             },
             {
-              label: "Trading Preferences",
-              description: "Defaults & risk",
+              label: 'Trading Preferences',
+              description: 'Defaults & risk',
               icon: SlidersHorizontal,
-              href: "/settings",
+              href: '/settings',
             },
             {
-              label: "Order & Trade History",
-              description: "View past activity",
+              label: 'Order & Trade History',
+              description: 'View past activity',
               icon: History,
-              href: "/orders",
+              href: '/orders',
             },
           ]}
         />
@@ -84,22 +79,22 @@ export function ProfileSettingsGrid() {
           title="Preferences"
           items={[
             {
-              label: "Language",
-              description: "English",
+              label: 'Language',
+              description: 'English',
               icon: Languages,
-              href: "/settings",
+              href: '/settings',
             },
             {
-              label: "Appearance",
-              description: "Light Mode",
+              label: 'Appearance',
+              description: 'Light Mode',
               icon: Palette,
-              href: "/settings",
+              href: '/settings',
             },
             {
-              label: "Notifications",
-              description: "Emails & push",
+              label: 'Notifications',
+              description: 'Emails & push',
               icon: Bell,
-              href: "/settings",
+              href: '/settings',
             },
           ]}
         />
@@ -107,24 +102,24 @@ export function ProfileSettingsGrid() {
           title="Support"
           items={[
             {
-              label: "Help Center",
-              description: "Guides & FAQs",
+              label: 'Help Center',
+              description: 'Guides & FAQs',
               icon: CircleHelp,
-              href: "/help",
+              href: '/help',
             },
             {
-              label: "FAQs",
-              description: "Common questions",
+              label: 'FAQs',
+              description: 'Common questions',
               icon: HelpCircle,
-              href: "/faq",
+              href: '/faq',
             },
             {
-              label: "Chat with AI Assistant",
-              description: "Ask anything",
+              label: 'Chat with AI Assistant',
+              description: 'Ask anything',
               icon: Sparkles,
-              badge: "New",
-              badgeTone: "primary",
-              href: "/ai-chat",
+              badge: 'New',
+              badgeTone: 'primary',
+              href: '/ai-chat',
             },
           ]}
         />
@@ -135,24 +130,24 @@ export function ProfileSettingsGrid() {
           title="Other"
           items={[
             {
-              label: "Invite Friends",
-              description: "Earn rewards",
+              label: 'Invite Friends',
+              description: 'Earn rewards',
               icon: UserPlus,
-              badge: "Rewards",
-              badgeTone: "success",
-              href: "/invite",
+              badge: 'Rewards',
+              badgeTone: 'success',
+              href: '/invite',
             },
             {
-              label: "About TrustAI",
-              description: "Version 1.0.0",
+              label: 'About TrustAI',
+              description: 'Version 1.0.0',
               icon: Info,
-              href: "/about",
+              href: '/about',
             },
             {
-              label: "Log Out",
-              description: "Sign out of this device",
+              label: 'Log Out',
+              description: 'Sign out of this device',
               icon: LogOut,
-              action: "logout",
+              action: 'logout',
             },
           ]}
         />
@@ -164,8 +159,8 @@ export function ProfileSettingsGrid() {
           <CardContent>
             <SettingsLink
               item={{
-                label: "Delete Account",
-                description: "Permanently delete your data",
+                label: 'Delete Account',
+                description: 'Permanently delete your data',
                 icon: Trash2,
                 danger: true,
               }}
@@ -182,7 +177,7 @@ function SettingsCard({
   items,
 }: {
   title: string;
-  items: React.ComponentProps<typeof SettingsLink>["item"][];
+  items: React.ComponentProps<typeof SettingsLink>['item'][];
 }) {
   return (
     <Card className="">

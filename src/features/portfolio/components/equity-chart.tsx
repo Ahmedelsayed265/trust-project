@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useEffect, useId, useMemo, useRef, useState } from "react";
-import { cn } from "@/lib/utils";
-import type { EquityPoint } from "@/features/portfolio/lib/portfolio-data";
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
+import { cn } from '@/lib/utils';
+import type { EquityPoint } from '@/features/portfolio/lib/portfolio-data';
 
 const HEIGHT = 220;
 const PADDING_Y = 12;
@@ -18,7 +18,7 @@ function useMeasuredWidth<T extends HTMLElement>() {
 
     setWidth(element.clientWidth);
     const observer = new ResizeObserver(([entry]) =>
-      setWidth(entry.contentRect.width)
+      setWidth(entry.contentRect.width),
     );
     observer.observe(element);
     return () => observer.disconnect();
@@ -59,15 +59,22 @@ export function EquityChart({
     }));
 
     const line = coords
-      .map(({ x, y }, index) => `${index === 0 ? "M" : "L"}${x} ${y}`)
-      .join(" ");
+      .map(({ x, y }, index) => `${index === 0 ? 'M' : 'L'}${x} ${y}`)
+      .join(' ');
 
-    return { coords, line, area: `${line} L${width} ${HEIGHT} L0 ${HEIGHT} Z`, min, max };
+    return {
+      coords,
+      line,
+      area: `${line} L${width} ${HEIGHT} L0 ${HEIGHT} Z`,
+      min,
+      max,
+    };
   }, [points, width]);
 
-  const color = positive ? "var(--success)" : "var(--destructive)";
+  const color = positive ? 'var(--success)' : 'var(--destructive)';
   const active = activeIndex != null ? points[activeIndex] : null;
-  const activeCoord = activeIndex != null ? geometry?.coords[activeIndex] : null;
+  const activeCoord =
+    activeIndex != null ? geometry?.coords[activeIndex] : null;
 
   function handlePointerMove(event: React.PointerEvent<HTMLDivElement>) {
     const rect = event.currentTarget.getBoundingClientRect();
@@ -79,7 +86,7 @@ export function EquityChart({
   }
 
   return (
-    <div className={cn("w-full min-w-0", className)}>
+    <div className={cn('w-full min-w-0', className)}>
       <div
         ref={containerRef}
         className="relative w-full touch-pan-y"
@@ -97,7 +104,9 @@ export function EquityChart({
             </defs>
 
             {Array.from({ length: GRID_LINES }, (_, index) => {
-              const y = PADDING_Y + (index / (GRID_LINES - 1)) * (HEIGHT - PADDING_Y * 2);
+              const y =
+                PADDING_Y +
+                (index / (GRID_LINES - 1)) * (HEIGHT - PADDING_Y * 2);
               return (
                 <line
                   key={index}
@@ -148,22 +157,29 @@ export function EquityChart({
 
         {active && activeCoord && (
           <div
-            className="pointer-events-none absolute top-0 z-10 -translate-x-1/2 rounded-lg border border-border bg-popover px-2.5 py-1.5 text-xs shadow-sm"
+            className="border-border bg-popover pointer-events-none absolute top-0 z-10 -translate-x-1/2 rounded-lg border px-2.5 py-1.5 text-xs shadow-sm"
             style={{
-              left: Math.min(Math.max(activeCoord.x, 64), Math.max(width - 64, 64)),
+              left: Math.min(
+                Math.max(activeCoord.x, 64),
+                Math.max(width - 64, 64),
+              ),
             }}
           >
-            <p className="font-semibold text-foreground">
+            <p className="text-foreground font-semibold">
               {formatValue(active.value)}
             </p>
-            <p className="text-muted-foreground">{formatDate(active.timestamp)}</p>
+            <p className="text-muted-foreground">
+              {formatDate(active.timestamp)}
+            </p>
           </div>
         )}
       </div>
 
-      <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
+      <div className="text-muted-foreground mt-2 flex items-center justify-between text-xs">
         <span>{formatDate(points[0]?.timestamp ?? Date.now())}</span>
-        <span>{formatDate(points[points.length - 1]?.timestamp ?? Date.now())}</span>
+        <span>
+          {formatDate(points[points.length - 1]?.timestamp ?? Date.now())}
+        </span>
       </div>
     </div>
   );

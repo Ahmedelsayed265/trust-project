@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   createContext,
@@ -7,7 +7,7 @@ import {
   useEffect,
   useMemo,
   useState,
-} from "react";
+} from 'react';
 
 type SidebarContextValue = {
   collapsed: boolean;
@@ -21,11 +21,11 @@ type SidebarContextValue = {
 
 const SidebarContext = createContext<SidebarContextValue | null>(null);
 
-const COLLAPSED_KEY = "trustai-sidebar-collapsed";
+const COLLAPSED_KEY = 'trustai-sidebar-collapsed';
 
 function readCollapsedPreference() {
-  if (typeof window === "undefined") return false;
-  return localStorage.getItem(COLLAPSED_KEY) === "true";
+  if (typeof window === 'undefined') return false;
+  return localStorage.getItem(COLLAPSED_KEY) === 'true';
 }
 
 export function SidebarProvider({ children }: { children: React.ReactNode }) {
@@ -34,14 +34,14 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
   const [isDesktop, setIsDesktop] = useState(true);
 
   useEffect(() => {
-    const mq = window.matchMedia("(min-width: 1024px)");
+    const mq = window.matchMedia('(min-width: 1024px)');
     const update = () => {
       setIsDesktop(mq.matches);
       if (mq.matches) setMobileOpen(false);
     };
     update();
-    mq.addEventListener("change", update);
-    return () => mq.removeEventListener("change", update);
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
   }, []);
 
   const setCollapsed = useCallback((value: boolean) => {
@@ -74,7 +74,7 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
       toggleCollapsed,
       setCollapsed,
       toggleMobile,
-    ]
+    ],
   );
 
   return (
@@ -85,7 +85,7 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
 export function useSidebar() {
   const ctx = useContext(SidebarContext);
   if (!ctx) {
-    throw new Error("useSidebar must be used within SidebarProvider");
+    throw new Error('useSidebar must be used within SidebarProvider');
   }
   return ctx;
 }

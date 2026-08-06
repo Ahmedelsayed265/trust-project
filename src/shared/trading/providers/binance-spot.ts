@@ -1,5 +1,5 @@
-import type { TradingProvider } from "@/shared/trading/provider";
-import { PROVIDER_CAPABILITIES } from "@/shared/trading/capabilities";
+import type { TradingProvider } from '@/shared/trading/provider';
+import { PROVIDER_CAPABILITIES } from '@/shared/trading/capabilities';
 import {
   ProviderError,
   type PlaceOrderInput,
@@ -11,7 +11,7 @@ import {
   type ProviderOrder,
   type ProviderPosition,
   type MarketTicker,
-} from "@/shared/trading/types";
+} from '@/shared/trading/types';
 
 /**
  * Binance Spot provider adapter.
@@ -24,36 +24,36 @@ import {
  * (account, openOrders, order, ticker/price) via a secure backend.
  */
 export class BinanceSpotProvider implements TradingProvider {
-  readonly id = "binance-spot" as const;
-  readonly displayName = "Binance Spot";
+  readonly id = 'binance-spot' as const;
+  readonly displayName = 'Binance Spot';
   readonly description =
-    "Crypto spot trading via your Binance Spot account. Balances and orders come from Binance only.";
+    'Crypto spot trading via your Binance Spot account. Balances and orders come from Binance only.';
   readonly capabilities = new Set<ProviderCapability>(
-    PROVIDER_CAPABILITIES["binance-spot"]
+    PROVIDER_CAPABILITIES['binance-spot'],
   );
 
   private connected = true;
   private account: ProviderAccount = {
-    id: "binance-spot-main",
-    providerId: "binance-spot",
-    label: "Binance Spot",
-    environment: "live",
-    status: "connected",
-    permissions: ["spot.trade", "spot.read"],
+    id: 'binance-spot-main',
+    providerId: 'binance-spot',
+    label: 'Binance Spot',
+    environment: 'live',
+    status: 'connected',
+    permissions: ['spot.trade', 'spot.read'],
     lastSyncedAt: new Date().toISOString(),
   };
 
   private balances: ProviderBalance[] = [
-    { asset: "USDT", free: 8642.21, locked: 1200.0, usdValue: 9842.21 },
-    { asset: "BTC", free: 0.1842, locked: 0, usdValue: 12420.5 },
-    { asset: "ETH", free: 1.25, locked: 0.1, usdValue: 4267.74 },
+    { asset: 'USDT', free: 8642.21, locked: 1200.0, usdValue: 9842.21 },
+    { asset: 'BTC', free: 0.1842, locked: 0, usdValue: 12420.5 },
+    { asset: 'ETH', free: 1.25, locked: 0.1, usdValue: 4267.74 },
   ];
 
   private positions: ProviderPosition[] = [
     {
-      id: "btc-spot",
-      symbol: "BTCUSDT",
-      side: "long",
+      id: 'btc-spot',
+      symbol: 'BTCUSDT',
+      side: 'long',
       qty: 0.1842,
       avgEntryPrice: 64210.0,
       markPrice: 67432.1,
@@ -61,9 +61,9 @@ export class BinanceSpotProvider implements TradingProvider {
       marketValue: 12420.5,
     },
     {
-      id: "eth-spot",
-      symbol: "ETHUSDT",
-      side: "long",
+      id: 'eth-spot',
+      symbol: 'ETHUSDT',
+      side: 'long',
       qty: 1.35,
       avgEntryPrice: 3180.0,
       markPrice: 3412.2,
@@ -74,15 +74,15 @@ export class BinanceSpotProvider implements TradingProvider {
 
   private orders: ProviderOrder[] = [
     {
-      id: "bn-1001",
-      symbol: "BTCUSDT",
-      side: "buy",
-      type: "limit",
+      id: 'bn-1001',
+      symbol: 'BTCUSDT',
+      side: 'buy',
+      type: 'limit',
       qty: 0.02,
       filledQty: 0,
       limitPrice: 65000,
       avgFillPrice: null,
-      status: "new",
+      status: 'new',
       createdAt: new Date(Date.now() - 3600_000).toISOString(),
       updatedAt: new Date(Date.now() - 3600_000).toISOString(),
     },
@@ -90,14 +90,14 @@ export class BinanceSpotProvider implements TradingProvider {
 
   private fills: ProviderFill[] = [
     {
-      id: "bn-f-1",
-      orderId: "bn-998",
-      symbol: "ETHUSDT",
-      side: "buy",
+      id: 'bn-f-1',
+      orderId: 'bn-998',
+      symbol: 'ETHUSDT',
+      side: 'buy',
       qty: 0.85,
       price: 3412.2,
       fee: 1.45,
-      feeAsset: "USDT",
+      feeAsset: 'USDT',
       createdAt: new Date(Date.now() - 18 * 60_000).toISOString(),
     },
   ];
@@ -107,11 +107,11 @@ export class BinanceSpotProvider implements TradingProvider {
   }
 
   private assertConnected() {
-    if (!this.connected || this.account.status !== "connected") {
+    if (!this.connected || this.account.status !== 'connected') {
       throw new ProviderError(
-        "not_connected",
-        "Connect your Binance Spot API keys to load account data.",
-        this.id
+        'not_connected',
+        'Connect your Binance Spot API keys to load account data.',
+        this.id,
       );
     }
   }
@@ -130,16 +130,16 @@ export class BinanceSpotProvider implements TradingProvider {
     return structuredClone(this.positions);
   }
 
-  async getOrders(params?: { status?: "open" | "closed" | "all" }) {
+  async getOrders(params?: { status?: 'open' | 'closed' | 'all' }) {
     this.assertConnected();
-    const status = params?.status ?? "all";
-    const open: ProviderOrder["status"][] = ["new", "partially_filled"];
+    const status = params?.status ?? 'all';
+    const open: ProviderOrder['status'][] = ['new', 'partially_filled'];
     return structuredClone(
       this.orders.filter((o) => {
-        if (status === "open") return open.includes(o.status);
-        if (status === "closed") return !open.includes(o.status);
+        if (status === 'open') return open.includes(o.status);
+        if (status === 'closed') return !open.includes(o.status);
         return true;
-      })
+      }),
     );
   }
 
@@ -151,7 +151,7 @@ export class BinanceSpotProvider implements TradingProvider {
   async getMarketData(symbols: string[]) {
     const tickers: Record<string, MarketTicker> = {
       BTCUSDT: {
-        symbol: "BTCUSDT",
+        symbol: 'BTCUSDT',
         price: 67432.1,
         change24hPct: 1.25,
         high24h: 68210,
@@ -159,7 +159,7 @@ export class BinanceSpotProvider implements TradingProvider {
         volume24h: 28410,
       },
       ETHUSDT: {
-        symbol: "ETHUSDT",
+        symbol: 'ETHUSDT',
         price: 3412.2,
         change24hPct: 0.84,
       },
@@ -170,7 +170,7 @@ export class BinanceSpotProvider implements TradingProvider {
           symbol,
           price: 0,
           change24hPct: 0,
-        }
+        },
     );
   }
 
@@ -179,7 +179,7 @@ export class BinanceSpotProvider implements TradingProvider {
     const balances = await this.getBalances();
     const positions = await this.getPositions();
     const equity = balances.reduce((sum, b) => sum + (b.usdValue ?? 0), 0);
-    const usdt = balances.find((b) => b.asset === "USDT");
+    const usdt = balances.find((b) => b.asset === 'USDT');
     const buyingPower = usdt?.free ?? 0;
     const openPnl = positions.reduce((sum, p) => sum + p.unrealizedPnl, 0);
     const dayPnl = 320.45;
@@ -189,7 +189,7 @@ export class BinanceSpotProvider implements TradingProvider {
       providerId: this.id,
       equity,
       buyingPower,
-      currency: "USDT",
+      currency: 'USDT',
       dayPnl,
       dayPnlPct,
       openPnl,
@@ -201,8 +201,14 @@ export class BinanceSpotProvider implements TradingProvider {
 
   async placeOrder(input: PlaceOrderInput): Promise<ProviderOrder> {
     this.assertConnected();
-    if (!this.supports(input.type === "market" ? "marketOrders" : "limitOrders")) {
-      throw new ProviderError("unsupported", "Order type not supported.", this.id);
+    if (
+      !this.supports(input.type === 'market' ? 'marketOrders' : 'limitOrders')
+    ) {
+      throw new ProviderError(
+        'unsupported',
+        'Order type not supported.',
+        this.id,
+      );
     }
     const order: ProviderOrder = {
       id: `bn-${Date.now()}`,
@@ -210,10 +216,10 @@ export class BinanceSpotProvider implements TradingProvider {
       side: input.side,
       type: input.type,
       qty: input.qty,
-      filledQty: input.type === "market" ? input.qty : 0,
+      filledQty: input.type === 'market' ? input.qty : 0,
       limitPrice: input.limitPrice ?? null,
-      avgFillPrice: input.type === "market" ? 67432.1 : null,
-      status: input.type === "market" ? "filled" : "new",
+      avgFillPrice: input.type === 'market' ? 67432.1 : null,
+      status: input.type === 'market' ? 'filled' : 'new',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -225,9 +231,9 @@ export class BinanceSpotProvider implements TradingProvider {
     this.assertConnected();
     const order = this.orders.find((o) => o.id === orderId);
     if (!order) {
-      throw new ProviderError("invalid_request", "Order not found.", this.id);
+      throw new ProviderError('invalid_request', 'Order not found.', this.id);
     }
-    order.status = "canceled";
+    order.status = 'canceled';
     order.updatedAt = new Date().toISOString();
     return structuredClone(order);
   }
@@ -239,16 +245,16 @@ export class BinanceSpotProvider implements TradingProvider {
   }) {
     if (!credentials.apiKey || !credentials.apiSecret) {
       throw new ProviderError(
-        "invalid_request",
-        "API Key and Secret are required.",
-        this.id
+        'invalid_request',
+        'API Key and Secret are required.',
+        this.id,
       );
     }
     this.connected = true;
     this.account = {
       ...this.account,
-      status: "connected",
-      environment: credentials.environment ?? "live",
+      status: 'connected',
+      environment: credentials.environment ?? 'live',
       lastSyncedAt: new Date().toISOString(),
       errorMessage: undefined,
     };
@@ -259,7 +265,7 @@ export class BinanceSpotProvider implements TradingProvider {
     this.connected = false;
     this.account = {
       ...this.account,
-      status: "disconnected",
+      status: 'disconnected',
       lastSyncedAt: null,
     };
   }

@@ -1,0 +1,7 @@
+echo "🔍 Running full lint check before push..."
+bun run lint
+bun run build
+echo "✨ Running Prettier format check before push..."
+bun run format:check
+
+echo "✅ All checks passed! Pushing..."

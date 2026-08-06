@@ -1,1 +1,1 @@
-export { SecurityView } from "./components/security-view";
+export { SecurityView } from './components/security-view';

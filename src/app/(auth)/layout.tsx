@@ -1,6 +1,6 @@
-import { redirect } from "next/navigation";
-import { getAuthToken } from "@/features/auth/session";
-import { AuthBrandPanel } from "@/features/auth/components/auth-brand-panel";
+import { redirect } from 'next/navigation';
+import { getAuthToken } from '@/features/auth/session';
+import { AuthBrandPanel } from '@/features/auth/components/auth-brand-panel';
 
 export default async function AuthLayout({
   children,
@@ -8,10 +8,10 @@ export default async function AuthLayout({
   children: React.ReactNode;
 }) {
   const token = await getAuthToken();
-  if (token) redirect("/");
+  if (token) redirect('/');
 
   return (
-    <div className="flex h-svh max-h-svh overflow-hidden bg-background">
+    <div className="bg-background flex h-svh max-h-svh overflow-hidden">
       <AuthBrandPanel />
 
       <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto overscroll-contain">
