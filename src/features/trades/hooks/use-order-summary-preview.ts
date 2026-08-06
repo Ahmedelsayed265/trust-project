@@ -29,26 +29,19 @@ export function useOrderSummaryPreview(): OrderSummaryPreviewState {
 
   const amount = parseAmount(values.amount);
   const limitPrice = parseAmount(values.limitPrice ?? '');
+  const canPreview =
+    amount > 0 && !(values.orderType === 'limit' && limitPrice <= 0);
 
   useEffect(() => {
-    if (amount <= 0) {
-      setSummary(null);
-      setError(null);
-      setLoading(false);
-      return;
-    }
-
-    if (values.orderType === 'limit' && limitPrice <= 0) {
-      setSummary(null);
-      setError(null);
-      setLoading(false);
-      return;
-    }
+    if (!canPreview) return;
 
     let active = true;
-    setLoading(true);
 
     const timer = window.setTimeout(() => {
+      if (!active) return;
+
+      setLoading(true);
+
       void previewOrderSummaryAction({
         provider_id: activeProviderId,
         symbol: values.pair,
@@ -80,12 +73,17 @@ export function useOrderSummaryPreview(): OrderSummaryPreviewState {
   }, [
     activeProviderId,
     amount,
+    canPreview,
     limitPrice,
     values.currency,
     values.orderType,
     values.pair,
     values.side,
   ]);
+
+  if (!canPreview) {
+    return { summary: null, error: null, loading: false };
+  }
 
   return { summary, error, loading };
 }
