@@ -2,7 +2,6 @@
 
 import { useFormContext, Controller } from 'react-hook-form';
 import { ChevronDown } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -12,30 +11,32 @@ import {
   FieldLabel,
 } from '@/components/ui/field';
 import { Sparkline } from '@/shared/components/sparkline';
-import { ChangeIndicator } from '@/shared/components/change-indicator';
-import { cn } from '@/lib/utils';
-import {
-  BTC_PRICE,
-  estimateQuantity,
-  formatQty,
-  type OrderFormValues,
-} from '@/features/trades/schemas/order';
+import { PlaceOrderButton } from '@/features/trades/components/place-order-button';
+import type { OrderSummaryPreviewState } from '@/features/trades/hooks/use-order-summary-preview';
+import type { OrderFormValues } from '@/features/trades/schemas/order';
 import { formatMoney, useTrading } from '@/shared/trading';
+import { cn } from '@/lib/utils';
 
 const percents = [25, 50, 75, 100] as const;
 const priceData = [40, 42, 38, 45, 48, 46, 52, 55, 58, 62, 65];
 
-export function OrderEntry({ onReview }: { onReview?: () => void }) {
+export function OrderEntry({
+  preview,
+}: {
+  preview: OrderSummaryPreviewState;
+}) {
   const form = useFormContext<OrderFormValues>();
   const { snapshot, activeProvider, supports } = useTrading();
-  const amount = form.watch('amount');
+  const { summary } = preview;
   const side = form.watch('side');
   const orderType = form.watch('orderType');
   const percent = form.watch('percent');
-  const qty = estimateQuantity(amount);
-  const buyingPower = snapshot?.buyingPower ?? 0;
-  const currency = snapshot?.currency ?? 'USDT';
+  const pair = form.watch('pair');
+  const snapshotBuyingPower = snapshot?.buyingPower ?? 0;
+  const buyingPower = summary?.buying_power ?? snapshotBuyingPower;
+  const currency = summary?.currency ?? snapshot?.currency ?? 'USDT';
   const canTrade = supports('marketOrders') || supports('limitOrders');
+  const displayPrice = summary?.market_price ?? summary?.price;
 
   function applyPercent(value: number) {
     form.setValue('percent', value);
@@ -45,23 +46,26 @@ export function OrderEntry({ onReview }: { onReview?: () => void }) {
   }
 
   return (
-    <Card className="">
+    <Card>
       <CardHeader className="border-b [.border-b]:pb-4">
         <div className="flex w-full items-start justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-full bg-orange-100 text-sm font-bold text-orange-600 dark:bg-orange-950/40 dark:text-orange-300">
-              ₿
+            <div className="bg-primary/10 text-primary flex size-10 items-center justify-center rounded-full text-sm font-bold">
+              {(summary?.display_symbol || pair).slice(0, 1)}
             </div>
             <div>
-              <CardTitle className="text-base">BTC/USDT</CardTitle>
-              <p className="text-muted-foreground text-xs">Bitcoin</p>
+              <CardTitle className="text-base">
+                {summary?.display_symbol || pair}
+              </CardTitle>
+              <p className="text-muted-foreground text-xs">
+                {activeProvider.displayName}
+              </p>
             </div>
           </div>
           <div className="text-right">
             <p className="text-foreground text-sm font-semibold">
-              ${BTC_PRICE.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              {displayPrice != null ? formatMoney(displayPrice, currency) : '—'}
             </p>
-            <ChangeIndicator value="+1.25%" className="text-xs" />
           </div>
         </div>
         <Sparkline
@@ -124,6 +128,30 @@ export function OrderEntry({ onReview }: { onReview?: () => void }) {
           </div>
         </div>
 
+        {orderType === 'limit' ? (
+          <Controller
+            control={form.control}
+            name="limitPrice"
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid || undefined}>
+                <FieldLabel htmlFor="limitPrice">Limit Price</FieldLabel>
+                <FieldContent>
+                  <Input
+                    {...field}
+                    id="limitPrice"
+                    inputMode="decimal"
+                    className="bg-background h-11 rounded-xl text-sm"
+                    placeholder="0.00"
+                  />
+                  {fieldState.error ? (
+                    <FieldError>{fieldState.error.message}</FieldError>
+                  ) : null}
+                </FieldContent>
+              </Field>
+            )}
+          />
+        ) : null}
+
         <Controller
           control={form.control}
           name="amount"
@@ -143,13 +171,13 @@ export function OrderEntry({ onReview }: { onReview?: () => void }) {
                     type="button"
                     className="border-border bg-muted text-foreground absolute right-1.5 inline-flex h-8 items-center gap-1 rounded-lg border px-2.5 text-xs font-semibold"
                   >
-                    USDT
+                    {currency}
                     <ChevronDown className="text-muted-foreground size-3.5" />
                   </button>
                 </div>
-                {fieldState.error && (
+                {fieldState.error ? (
                   <FieldError>{fieldState.error.message}</FieldError>
-                )}
+                ) : null}
               </FieldContent>
             </Field>
           )}
@@ -197,24 +225,21 @@ export function OrderEntry({ onReview }: { onReview?: () => void }) {
         <div className="bg-muted/60 rounded-xl px-3 py-2.5 text-sm">
           <span className="text-muted-foreground">Estimated Quantity: </span>
           <span className="text-foreground font-semibold">
-            {formatQty(qty)} BTC
+            {summary?.qty_label ?? '—'}
           </span>
         </div>
 
-        <Button
-          type="button"
-          className="h-11 w-full rounded-xl"
+        <PlaceOrderButton
+          preview={preview}
           disabled={!canTrade || !snapshot}
-          onClick={() => {
-            void form.handleSubmit(() => onReview?.())();
-          }}
-        >
-          {!snapshot
-            ? 'Connect provider to trade'
-            : !canTrade
-              ? 'Trading not supported'
-              : 'Review Order'}
-        </Button>
+          disabledLabel={
+            !snapshot
+              ? 'Connect provider to trade'
+              : !canTrade
+                ? 'Trading not supported'
+                : undefined
+          }
+        />
       </CardContent>
     </Card>
   );

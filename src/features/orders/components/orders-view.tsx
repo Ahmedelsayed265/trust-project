@@ -1,82 +1,36 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-import { Filter, Search } from 'lucide-react';
+import { useState } from 'react';
+import { Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { cn } from '@/lib/utils';
-import { OrdersSummary } from '@/features/orders/components/orders-summary';
 import { OrderCard } from '@/features/orders/components/order-card';
+import { OrdersSummary } from '@/features/orders/components/orders-summary';
 import { RecentFills } from '@/features/orders/components/recent-fills';
-import {
-  openOrdersSeed,
-  orderHistorySeed,
-  recentFillsSeed,
-  type Order,
-} from '@/features/orders/data/orders';
+import { useOrders } from '@/features/orders/hooks/use-orders';
+import type { OrderFill, OrdersData } from '@/features/orders/types';
+import { cn } from '@/lib/utils';
 
 type Tab = 'open' | 'history' | 'trades';
 
-export function OrdersView() {
+export function OrdersView({
+  initialData,
+  initialFills,
+}: {
+  initialData: OrdersData;
+  initialFills: OrderFill[];
+}) {
   const [tab, setTab] = useState<Tab>('open');
-  const [orders, setOrders] = useState<Order[]>(openOrdersSeed);
-  const [query, setQuery] = useState('');
   const [showSearch, setShowSearch] = useState(false);
-
-  const openOrders = useMemo(
-    () =>
-      orders.filter(
-        (o) => o.status === 'pending' || o.status === 'partially_filled',
-      ),
-    [orders],
-  );
-
-  const pendingCount = openOrders.filter((o) => o.status === 'pending').length;
-  const partialCount = openOrders.filter(
-    (o) => o.status === 'partially_filled',
-  ).length;
-
-  const filteredOpen = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return openOrders;
-    return openOrders.filter(
-      (o) =>
-        o.symbol.toLowerCase().includes(q) || o.name.toLowerCase().includes(q),
-    );
-  }, [openOrders, query]);
-
-  const filteredHistory = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    const list = [
-      ...orderHistorySeed,
-      ...orders.filter(
-        (o) => o.status === 'cancelled' || o.status === 'filled',
-      ),
-    ];
-    if (!q) return list;
-    return list.filter(
-      (o) =>
-        o.symbol.toLowerCase().includes(q) || o.name.toLowerCase().includes(q),
-    );
-  }, [orders, query]);
-
-  function cancelOrder(id: string) {
-    setOrders((prev) =>
-      prev.map((order) =>
-        order.id === id ? { ...order, status: 'cancelled' as const } : order,
-      ),
-    );
-  }
-
-  function cancelAll() {
-    setOrders((prev) =>
-      prev.map((order) =>
-        order.status === 'pending' || order.status === 'partially_filled'
-          ? { ...order, status: 'cancelled' as const }
-          : order,
-      ),
-    );
-  }
+  const {
+    data,
+    query,
+    setQuery,
+    openOrders,
+    historyOrders,
+    fills,
+    markCancelled,
+  } = useOrders(initialData, initialFills);
 
   const tabs: { id: Tab; label: string }[] = [
     { id: 'open', label: `Open Orders (${openOrders.length})` },
@@ -95,37 +49,26 @@ export function OrdersView() {
             Track and manage all your orders.
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            className="rounded-xl"
-            aria-label="Search orders"
-            onClick={() => setShowSearch((v) => !v)}
-          >
-            <Search />
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            className="rounded-xl"
-            aria-label="Filter orders"
-          >
-            <Filter />
-          </Button>
-        </div>
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          className="rounded-xl"
+          aria-label="Search orders"
+          onClick={() => setShowSearch((value) => !value)}
+        >
+          <Search />
+        </Button>
       </div>
 
-      {showSearch && (
+      {showSearch ? (
         <Input
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search orders by asset..."
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder="Search by symbol or account..."
           className="bg-card h-10 rounded-xl"
         />
-      )}
+      ) : null}
 
       <div className="flex scrollbar-none gap-2 overflow-x-auto overscroll-x-contain pb-0.5">
         {tabs.map((item) => (
@@ -145,65 +88,53 @@ export function OrdersView() {
         ))}
       </div>
 
-      <OrdersSummary
-        openCount={openOrders.length}
-        pendingCount={pendingCount}
-        partialCount={partialCount}
-      />
+      <OrdersSummary summary={data.summary} />
 
-      {tab === 'open' && (
+      {tab === 'open' ? (
         <section className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h2 className="text-foreground text-base font-semibold">
-              Open Orders
-            </h2>
-            {openOrders.length > 0 && (
-              <button
-                type="button"
-                onClick={cancelAll}
-                className="text-primary text-sm font-medium hover:underline"
-              >
-                Cancel All
-              </button>
-            )}
-          </div>
-
-          {filteredOpen.length === 0 ? (
+          <h2 className="text-foreground text-base font-semibold">
+            Open Orders
+          </h2>
+          {openOrders.length === 0 ? (
             <CardEmpty message="No open orders" />
           ) : (
             <div className="space-y-3">
-              {filteredOpen.map((order) => (
+              {openOrders.map((order) => (
                 <OrderCard
                   key={order.id}
                   order={order}
-                  onCancel={cancelOrder}
+                  onCancelled={markCancelled}
                 />
               ))}
             </div>
           )}
+          <RecentFills
+            fills={fills.slice(0, 5)}
+            onViewAll={() => setTab('trades')}
+          />
         </section>
-      )}
+      ) : null}
 
-      {tab === 'history' && (
+      {tab === 'history' ? (
         <section className="space-y-3">
           <h2 className="text-foreground text-base font-semibold">
             Order History
           </h2>
-          {filteredHistory.length === 0 ? (
+          {historyOrders.length === 0 ? (
             <CardEmpty message="No order history" />
           ) : (
             <div className="space-y-3">
-              {filteredHistory.map((order) => (
+              {historyOrders.map((order) => (
                 <OrderCard key={order.id} order={order} />
               ))}
             </div>
           )}
         </section>
-      )}
+      ) : null}
 
-      {tab === 'trades' && <RecentFills fills={recentFillsSeed} />}
-
-      {tab === 'open' && <RecentFills fills={recentFillsSeed} />}
+      {tab === 'trades' ? (
+        <RecentFills fills={fills} title="Trade History" />
+      ) : null}
     </div>
   );
 }

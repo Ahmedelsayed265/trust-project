@@ -8,97 +8,122 @@ import {
 import {
   AssetIcon,
   SideBadge,
-  StatusBadge,
 } from '@/features/orders/components/order-badges';
-import type { Fill } from '@/features/orders/data/orders';
+import {
+  formatOrderDate,
+  formatOrderPrice,
+  formatOrderQty,
+} from '@/features/orders/lib/order-display';
+import type { OrderFill } from '@/features/orders/types';
+import { formatMoney } from '@/shared/trading';
 
-export function RecentFills({ fills }: { fills: Fill[] }) {
+export function RecentFills({
+  fills,
+  onViewAll,
+  title = 'Recent Fills',
+}: {
+  fills: OrderFill[];
+  onViewAll?: () => void;
+  title?: string;
+}) {
   return (
-    <Card className="">
+    <Card>
       <CardHeader>
-        <CardTitle>Recent Fills</CardTitle>
-        <CardAction>
-          <button
-            type="button"
-            className="text-primary text-sm font-medium hover:underline"
-          >
-            View All
-          </button>
-        </CardAction>
+        <CardTitle>{title}</CardTitle>
+        {onViewAll ? (
+          <CardAction>
+            <button
+              type="button"
+              className="text-primary text-sm font-medium hover:underline"
+              onClick={onViewAll}
+            >
+              View All
+            </button>
+          </CardAction>
+        ) : null}
       </CardHeader>
       <CardContent className="space-y-1">
-        <div className="border-border text-muted-foreground hidden grid-cols-[1.4fr_0.7fr_1fr_1fr_0.8fr_1fr] gap-3 border-b px-1 pb-2 text-xs font-medium md:grid">
-          <span>Asset</span>
-          <span>Side</span>
-          <span>Amount</span>
-          <span>Price</span>
-          <span>Status</span>
-          <span className="text-right">Time</span>
-        </div>
+        {fills.length === 0 ? (
+          <p className="text-muted-foreground py-6 text-center text-sm">
+            No fills yet.
+          </p>
+        ) : (
+          <>
+            <div className="border-border text-muted-foreground hidden grid-cols-[1.4fr_0.7fr_1fr_1fr_1fr_1fr] gap-3 border-b px-1 pb-2 text-xs font-medium md:grid">
+              <span>Asset</span>
+              <span>Side</span>
+              <span>Amount</span>
+              <span>Price</span>
+              <span>Fee</span>
+              <span className="text-right">Time</span>
+            </div>
 
-        {fills.map((fill) => (
-          <div
-            key={fill.id}
-            className="hover:bg-muted/40 flex flex-col gap-2 rounded-xl px-1 py-3 transition-colors md:grid md:grid-cols-[1.4fr_0.7fr_1fr_1fr_0.8fr_1fr] md:items-center md:gap-3"
-          >
-            <div className="flex items-center gap-2.5">
-              <AssetIcon
-                symbol={fill.symbol}
-                iconBg={fill.iconBg}
-                iconLabel={fill.iconLabel}
-              />
-              <div>
-                <p className="text-foreground text-sm font-semibold">
-                  {fill.symbol}
-                </p>
-                <p className="text-muted-foreground text-xs md:hidden">
-                  {fill.name}
-                </p>
+            {fills.map((fill) => (
+              <div
+                key={fill.id}
+                className="hover:bg-muted/40 flex flex-col gap-2 rounded-xl px-1 py-3 transition-colors md:grid md:grid-cols-[1.4fr_0.7fr_1fr_1fr_1fr_1fr] md:items-center md:gap-3"
+              >
+                <div className="flex items-center gap-2.5">
+                  <AssetIcon
+                    symbol={fill.symbol}
+                    displaySymbol={fill.display_symbol}
+                  />
+                  <div>
+                    <p className="text-foreground text-sm font-semibold">
+                      {fill.display_symbol || fill.symbol}
+                    </p>
+                    <p className="text-muted-foreground text-xs">
+                      {fill.account}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between md:block">
+                  <span className="text-muted-foreground text-xs md:hidden">
+                    Side
+                  </span>
+                  <SideBadge side={fill.side} />
+                </div>
+
+                <div className="flex items-center justify-between md:block">
+                  <span className="text-muted-foreground text-xs md:hidden">
+                    Amount
+                  </span>
+                  <p className="text-foreground text-sm font-medium">
+                    {formatOrderQty(fill.qty)}
+                  </p>
+                </div>
+
+                <div className="flex items-center justify-between md:block">
+                  <span className="text-muted-foreground text-xs md:hidden">
+                    Price
+                  </span>
+                  <p className="text-foreground text-sm font-medium">
+                    {formatOrderPrice(fill.price)}
+                  </p>
+                </div>
+
+                <div className="flex items-center justify-between md:block">
+                  <span className="text-muted-foreground text-xs md:hidden">
+                    Fee
+                  </span>
+                  <p className="text-muted-foreground text-sm">
+                    {formatMoney(fill.fee)} {fill.fee_asset}
+                  </p>
+                </div>
+
+                <div className="flex items-center justify-between md:justify-end">
+                  <span className="text-muted-foreground text-xs md:hidden">
+                    Time
+                  </span>
+                  <p className="text-muted-foreground text-xs md:text-sm">
+                    {formatOrderDate(fill.created_at)}
+                  </p>
+                </div>
               </div>
-            </div>
-
-            <div className="flex items-center justify-between md:block">
-              <span className="text-muted-foreground text-xs md:hidden">
-                Side
-              </span>
-              <SideBadge side={fill.side} />
-            </div>
-
-            <div className="flex items-center justify-between md:block">
-              <span className="text-muted-foreground text-xs md:hidden">
-                Amount
-              </span>
-              <p className="text-foreground text-sm font-medium">
-                {fill.amount}
-              </p>
-            </div>
-
-            <div className="flex items-center justify-between md:block">
-              <span className="text-muted-foreground text-xs md:hidden">
-                Price
-              </span>
-              <p className="text-foreground text-sm font-medium">
-                {fill.price}
-              </p>
-            </div>
-
-            <div className="flex items-center justify-between md:block">
-              <span className="text-muted-foreground text-xs md:hidden">
-                Status
-              </span>
-              <StatusBadge status={fill.status} />
-            </div>
-
-            <div className="flex items-center justify-between md:justify-end">
-              <span className="text-muted-foreground text-xs md:hidden">
-                Time
-              </span>
-              <p className="text-muted-foreground text-xs md:text-sm">
-                {fill.time}
-              </p>
-            </div>
-          </div>
-        ))}
+            ))}
+          </>
+        )}
       </CardContent>
     </Card>
   );

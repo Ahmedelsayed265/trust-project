@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { History, Plus, ChevronDown } from 'lucide-react';
@@ -15,10 +16,25 @@ import { OrderEntry } from '@/features/trades/components/order-entry';
 import { OrderSummary } from '@/features/trades/components/order-summary';
 import { TradeAiSignal } from '@/features/trades/components/trade-ai-signal';
 import { OpenPositions } from '@/features/trades/components/open-positions';
+import { useOrderSummaryPreview } from '@/features/trades/hooks/use-order-summary-preview';
+
+function TradeOrderPanel() {
+  const preview = useOrderSummaryPreview();
+
+  return (
+    <div className="grid gap-4 lg:gap-5 xl:grid-cols-3">
+      <OrderEntry preview={preview} />
+      <div className="flex flex-col gap-4">
+        <OrderSummary preview={preview} />
+        <TradeAiSignal />
+      </div>
+      <OpenPositions />
+    </div>
+  );
+}
 
 export function TradesView() {
   const [tab, setTab] = useState<'trade' | 'positions'>('trade');
-  const [reviewed, setReviewed] = useState(false);
 
   const form = useForm<OrderFormValues>({
     resolver: zodResolver(orderSchema),
@@ -44,7 +60,11 @@ export function TradesView() {
             Place new trades and manage your positions.
           </p>
         </div>
-        <Button variant="outline" className="w-full rounded-xl sm:w-auto">
+        <Button
+          variant="outline"
+          className="w-full rounded-xl sm:w-auto"
+          render={<Link href="/orders" />}
+        >
           <History />
           Trade History
         </Button>
@@ -84,24 +104,7 @@ export function TradesView() {
 
       <FormProvider {...form}>
         {tab === 'trade' ? (
-          <div className="grid gap-4 lg:gap-5 xl:grid-cols-3">
-            <OrderEntry
-              onReview={() => {
-                setReviewed(true);
-                window.setTimeout(() => setReviewed(false), 2500);
-              }}
-            />
-            <div className="flex flex-col gap-4">
-              <OrderSummary />
-              <TradeAiSignal />
-              {reviewed && (
-                <p className="border-success/30 text-success rounded-xl border bg-emerald-50 px-3 py-2 text-sm font-medium dark:bg-emerald-950/30">
-                  Order ready for review — estimated total updated.
-                </p>
-              )}
-            </div>
-            <OpenPositions />
-          </div>
+          <TradeOrderPanel />
         ) : (
           <div className="mx-auto w-full max-w-xl">
             <OpenPositions />

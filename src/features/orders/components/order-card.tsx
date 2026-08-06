@@ -1,88 +1,113 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
+import { CancelOrderButton } from '@/features/orders/components/cancel-order-button';
 import {
   AssetIcon,
   SideBadge,
   StatusBadge,
 } from '@/features/orders/components/order-badges';
-import type { Order } from '@/features/orders/data/orders';
+import {
+  formatOrderDate,
+  formatOrderQty,
+  orderDisplayPrice,
+} from '@/features/orders/lib/order-display';
+import type { Order } from '@/features/orders/types';
+import { formatMoney } from '@/shared/trading';
+
+function orderHref(order: Order) {
+  const params = new URLSearchParams();
+  if (order.provider_id) params.set('provider_id', order.provider_id);
+  const query = params.toString();
+  return `/orders/${encodeURIComponent(order.id)}${query ? `?${query}` : ''}`;
+}
 
 export function OrderCard({
   order,
-  onCancel,
+  onCancelled,
 }: {
   order: Order;
-  onCancel?: (id: string) => void;
+  onCancelled?: (orderId: string) => void;
 }) {
-  const canCancel =
-    order.status === 'pending' || order.status === 'partially_filled';
-
   const details = [
-    { label: 'Order Type', value: order.orderType },
-    { label: 'Amount', value: order.amount },
-    ...(order.filled ? [{ label: 'Filled', value: order.filled }] : []),
-    { label: 'Price', value: order.price },
-    { label: order.totalLabel ?? 'Total', value: order.total },
+    { label: 'Order Type', value: order.type },
+    { label: 'Amount', value: formatOrderQty(order.qty) },
+    ...(order.filled_qty > 0
+      ? [
+          {
+            label: 'Filled',
+            value: `${formatOrderQty(order.filled_qty)} / ${formatOrderQty(order.qty)}`,
+          },
+        ]
+      : []),
+    { label: 'Price', value: orderDisplayPrice(order) },
+    {
+      label: order.is_open ? 'Est. Total' : 'Total',
+      value: formatMoney(order.quote_amount),
+    },
   ];
 
   return (
-    <Card className="">
+    <Card className="hover:bg-card/80 transition-colors">
       <CardContent className="space-y-4">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex min-w-0 items-center gap-3">
-            <AssetIcon
-              symbol={order.symbol}
-              iconBg={order.iconBg}
-              iconLabel={order.iconLabel}
-            />
-            <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-2">
-                <p className="text-foreground text-sm font-semibold">
-                  {order.symbol}
-                </p>
-                <SideBadge side={order.side} />
+        <Link href={orderHref(order)} className="block space-y-4 outline-none">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex min-w-0 items-center gap-3">
+              <AssetIcon
+                symbol={order.symbol}
+                displaySymbol={order.display_symbol}
+              />
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className="text-foreground text-sm font-semibold">
+                    {order.display_symbol || order.symbol}
+                  </p>
+                  <SideBadge side={order.side} />
+                </div>
+                <p className="text-muted-foreground text-xs">{order.account}</p>
               </div>
-              <p className="text-muted-foreground text-xs">{order.name}</p>
             </div>
+            <StatusBadge status={order.status} />
           </div>
-          <StatusBadge status={order.status} />
-        </div>
 
-        <div
-          className={`grid gap-3 text-sm ${
-            details.length > 4
-              ? 'grid-cols-2 sm:grid-cols-5'
-              : 'grid-cols-2 sm:grid-cols-4'
-          }`}
-        >
-          {details.map((detail) => (
-            <div key={detail.label}>
-              <p className="text-muted-foreground text-xs">{detail.label}</p>
-              <p className="text-foreground font-semibold capitalize">
-                {detail.value}
-              </p>
-            </div>
-          ))}
-        </div>
+          <div
+            className={`grid gap-3 text-sm ${
+              details.length > 4
+                ? 'grid-cols-2 sm:grid-cols-5'
+                : 'grid-cols-2 sm:grid-cols-4'
+            }`}
+          >
+            {details.map((detail) => (
+              <div key={detail.label}>
+                <p className="text-muted-foreground text-xs">{detail.label}</p>
+                <p className="text-foreground font-semibold capitalize">
+                  {detail.value}
+                </p>
+              </div>
+            ))}
+          </div>
 
-        {canCancel && (
+          <div className="text-muted-foreground flex flex-wrap items-center justify-between gap-2 text-xs">
+            <span>{formatOrderDate(order.created_at)}</span>
+            {order.fee > 0 ? (
+              <span>
+                Fee {formatMoney(order.fee)} {order.fee_asset}
+              </span>
+            ) : null}
+          </div>
+        </Link>
+
+        {order.is_open ? (
           <div className="flex sm:justify-end">
-            <Button
-              type="button"
-              variant="outline"
-              className="border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive h-10 w-full rounded-xl sm:w-auto"
-              onClick={() => onCancel?.(order.id)}
-            >
-              Cancel Order
-            </Button>
+            <CancelOrderButton
+              orderId={order.id}
+              providerId={order.provider_id}
+              symbol={order.display_symbol || order.symbol}
+              onCancelled={onCancelled}
+            />
           </div>
-        )}
-
-        {order.createdAt && (
-          <p className="text-muted-foreground text-xs">{order.createdAt}</p>
-        )}
+        ) : null}
       </CardContent>
     </Card>
   );
