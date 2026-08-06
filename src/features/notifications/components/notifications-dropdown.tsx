@@ -1,10 +1,13 @@
 'use client';
 
+import type { Notification } from '@/features/notifications/types';
 import { useEffect, useState, useTransition } from 'react';
-import Link from 'next/link';
 import { Bell } from 'lucide-react';
 import { toast } from 'sonner';
 import { buttonVariants } from '@/components/ui/button';
+import { NotificationItem } from '@/features/notifications/components/notification-item';
+import { useCurrentUser } from '@/shared/providers/user-provider';
+import { cn } from '@/lib/utils';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,14 +15,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { NotificationItem } from '@/features/notifications/components/notification-item';
 import {
   getNotificationsAction,
   markAllNotificationsReadAction,
 } from '@/features/notifications/actions/notifications';
-import type { Notification } from '@/features/notifications/types';
-import { useCurrentUser } from '@/shared/providers/user-provider';
-import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 export function NotificationsDropdown() {
   const user = useCurrentUser();
@@ -105,7 +105,7 @@ export function NotificationsDropdown() {
       <DropdownMenuContent
         align="end"
         sideOffset={8}
-        className="w-[min(100vw-1.5rem,360px)] min-w-[300px] overflow-hidden p-0"
+        className="w-[min(100vw-1.5rem,360px)] min-w-75 overflow-hidden p-0"
       >
         <div className="flex items-center justify-between gap-3 px-4 py-3">
           <p className="text-foreground text-sm font-semibold">Notifications</p>
