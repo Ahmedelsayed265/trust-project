@@ -1,5 +1,9 @@
+'use client';
+
+import { useEffect, useMemo, useState, useTransition } from 'react';
 import Link from 'next/link';
 import { MessageCircle } from 'lucide-react';
+import { toast } from 'sonner';
 import {
   Accordion,
   AccordionContent,
@@ -9,70 +13,65 @@ import {
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PageHeader } from '@/shared/components/page-header';
-const faqSections = [
-  {
-    title: 'Getting started',
-    items: [
-      {
-        question: 'How do I fund my trading account?',
-        answer:
-          'TrustAI does not hold an internal wallet. Fund your Binance Spot or Alpaca account on the provider’s site, then connect API keys under Accounts so balances sync here.',
-      },
-      {
-        question: 'How do I place my first trade?',
-        answer:
-          'Connect a provider, go to Trade, select a market, choose buy or sell, enter size, and confirm. Orders are sent to the provider API — not an in-app ledger.',
-      },
-      {
-        question: 'What is included with Premium?',
-        answer:
-          'Premium unlocks stronger AI signal coverage, priority support, and advanced portfolio tools. Review tiers anytime on the Plans page.',
-      },
-    ],
-  },
-  {
-    title: 'Trading & AI signals',
-    items: [
-      {
-        question: 'How do AI signal confidence scores work?',
-        answer:
-          'Confidence reflects model agreement across momentum, volatility, and sentiment inputs. Strong setups usually score above 75%.',
-      },
-      {
-        question: 'Can I customize risk on trades?',
-        answer:
-          'Yes. Set default size, leverage preferences, and risk limits in Settings, then adjust per order on the Trade screen.',
-      },
-      {
-        question: 'Where can I find order history?',
-        answer:
-          'Open Orders to review open, filled, and canceled activity from your connected provider.',
-      },
-    ],
-  },
-  {
-    title: 'Account & security',
-    items: [
-      {
-        question: 'How do I enable 2FA?',
-        answer:
-          'Open Profile → Security, turn on two-factor authentication, and link an authenticator app. Keep recovery codes somewhere safe.',
-      },
-      {
-        question: 'What does Verified mean?',
-        answer:
-          'Verified means your KYC documents were approved. You can check status and resubmit documents from Profile → Verification.',
-      },
-      {
-        question: 'How do withdrawals work?',
-        answer:
-          'Withdrawals are handled by your broker/exchange (Binance or Alpaca). TrustAI never custodied funds and does not run in-app withdrawals.',
-      },
-    ],
-  },
-];
+import { getFaqsAction } from '@/features/faq/actions/get-faqs';
+import {
+  FAQ_CATEGORY_LABELS,
+  type FaqItem,
+  type FaqsData,
+} from '@/features/faq/types';
+import { cn } from '@/lib/utils';
 
-export function FaqView() {
+type Filter = 'all' | string;
+
+function groupByCategory(items: FaqItem[]) {
+  const groups = new Map<string, FaqItem[]>();
+
+  for (const item of items) {
+    const key = item.category || 'general';
+    const list = groups.get(key) ?? [];
+    list.push(item);
+    groups.set(key, list);
+  }
+
+  return [...groups.entries()].map(([category, faqs]) => ({
+    category,
+    title: FAQ_CATEGORY_LABELS[category] ?? category,
+    items: faqs,
+  }));
+}
+
+export function FaqView({ initialData }: { initialData: FaqsData }) {
+  const [filter, setFilter] = useState<Filter>('all');
+  const [items, setItems] = useState(initialData.items);
+  const [categories, setCategories] = useState(initialData.categories);
+  const [loading, startLoad] = useTransition();
+
+  useEffect(() => {
+    startLoad(async () => {
+      const result = await getFaqsAction({
+        category: filter === 'all' ? undefined : filter,
+      });
+
+      if (!result.ok) {
+        toast.error(result.message);
+        return;
+      }
+
+      setItems(result.data.items);
+      setCategories(result.data.categories);
+    });
+  }, [filter]);
+
+  const sections = useMemo(() => groupByCategory(items), [items]);
+
+  const tabs: { id: Filter; label: string }[] = [
+    { id: 'all', label: 'All' },
+    ...categories.map((category) => ({
+      id: category,
+      label: FAQ_CATEGORY_LABELS[category] ?? category,
+    })),
+  ];
+
   return (
     <div className="flex w-full min-w-0 flex-col gap-4 sm:gap-5">
       <PageHeader
@@ -90,28 +89,59 @@ export function FaqView() {
         }
       />
 
-      <div className="grid gap-4">
-        {faqSections.map((section) => (
-          <Card key={section.title}>
-            <CardHeader className="border-border border-b">
-              <CardTitle>{section.title}</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-1">
-              <Accordion className="w-full">
-                {section.items.map((item) => (
-                  <AccordionItem key={item.question} value={item.question}>
-                    <AccordionTrigger className="text-left text-sm font-semibold hover:no-underline">
-                      {item.question}
-                    </AccordionTrigger>
-                    <AccordionContent className="text-muted-foreground text-sm leading-relaxed">
-                      {item.answer}
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
+      <div className="flex flex-wrap items-center gap-2">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            type="button"
+            onClick={() => setFilter(tab.id)}
+            className={cn(
+              'rounded-full px-3.5 py-1.5 text-sm font-medium capitalize transition-colors',
+              filter === tab.id
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-muted text-muted-foreground hover:text-foreground',
+            )}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      <div className={cn('grid gap-4', loading && 'opacity-70')}>
+        {sections.length === 0 ? (
+          <Card>
+            <CardContent className="py-10 text-center">
+              <p className="text-foreground text-sm font-medium">
+                No FAQs in this category
+              </p>
+              <p className="text-muted-foreground mt-1 text-sm">
+                Try another filter or contact support.
+              </p>
             </CardContent>
           </Card>
-        ))}
+        ) : (
+          sections.map((section) => (
+            <Card key={section.category}>
+              <CardHeader className="border-border border-b">
+                <CardTitle>{section.title}</CardTitle>
+              </CardHeader>
+              <CardContent className="pt-1">
+                <Accordion className="w-full">
+                  {section.items.map((item) => (
+                    <AccordionItem key={item.id} value={`faq-${item.id}`}>
+                      <AccordionTrigger className="text-left text-sm font-semibold hover:no-underline">
+                        {item.question}
+                      </AccordionTrigger>
+                      <AccordionContent className="text-muted-foreground text-sm leading-relaxed">
+                        {item.answer}
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+              </CardContent>
+            </Card>
+          ))
+        )}
       </div>
 
       <Card className="border-primary/20 bg-gradient-to-br from-blue-50 to-sky-50 dark:from-blue-950/30 dark:to-slate-900">

@@ -1,16 +1,22 @@
+'use client';
+
 import Link from 'next/link';
+import { useTransition } from 'react';
 import {
   ArrowLeftRight,
-  Sparkles,
-  Link2,
   Info,
+  Link2,
+  Sparkles,
+  Trash2,
   type LucideIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { markNotificationReadAction } from '@/features/notifications/actions/notifications';
 import type {
   Notification,
   NotificationType,
-} from '@/features/notifications/data/notifications';
+} from '@/features/notifications/types';
 
 const typeIcon: Record<NotificationType, LucideIcon> = {
   trade: ArrowLeftRight,
@@ -31,18 +37,38 @@ const typeColor: Record<NotificationType, string> = {
 export function NotificationItem({
   notification,
   compact,
+  onRead,
+  onDelete,
 }: {
   notification: Notification;
   compact?: boolean;
+  onRead?: (notification: Notification) => void;
+  onDelete?: (id: number) => void;
 }) {
-  const Icon = typeIcon[notification.type];
+  const Icon = typeIcon[notification.type] ?? Info;
+  const [pending, startTransition] = useTransition();
+
+  function markRead() {
+    if (notification.read) {
+      onRead?.(notification);
+      return;
+    }
+
+    startTransition(async () => {
+      const result = await markNotificationReadAction(notification.id);
+      if (result.ok) {
+        onRead?.(result.data);
+      }
+    });
+  }
+
   const content = (
     <>
       <div
         className={cn(
           'flex shrink-0 items-center justify-center rounded-xl',
           compact ? 'size-9' : 'size-10',
-          typeColor[notification.type],
+          typeColor[notification.type] ?? typeColor.system,
         )}
       >
         <Icon className={compact ? 'size-4' : 'size-5'} />
@@ -77,21 +103,44 @@ export function NotificationItem({
   );
 
   const className = cn(
-    'flex gap-3 transition-colors',
+    'flex w-full gap-3 transition-colors text-left',
     compact
       ? 'rounded-none px-4 py-3 hover:bg-muted/60'
       : 'rounded-lg border border-border bg-card p-4 hover:bg-muted/20',
+    !compact && onDelete && 'pr-12',
     !notification.read &&
       (compact ? 'bg-primary/[0.04]' : 'border-primary/20 bg-primary/[0.03]'),
+    pending && 'opacity-70',
   );
 
-  if (notification.href) {
-    return (
-      <Link href={notification.href} className={className}>
-        {content}
-      </Link>
-    );
+  const body = notification.href ? (
+    <Link href={notification.href} className={className} onClick={markRead}>
+      {content}
+    </Link>
+  ) : (
+    <button type="button" className={className} onClick={markRead}>
+      {content}
+    </button>
+  );
+
+  if (!onDelete || compact) {
+    return body;
   }
 
-  return <div className={className}>{content}</div>;
+  return (
+    <div className="relative">
+      {body}
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon-sm"
+        className="text-muted-foreground hover:text-destructive absolute top-3 right-3"
+        aria-label="Delete notification"
+        disabled={pending}
+        onClick={() => onDelete(notification.id)}
+      >
+        <Trash2 className="size-4" />
+      </Button>
+    </div>
+  );
 }
