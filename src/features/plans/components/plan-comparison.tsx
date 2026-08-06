@@ -9,10 +9,17 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { comparisonRows, plans } from '@/features/plans/data/plans';
+import { planIcon } from '@/features/plans/lib/plan-icons';
+import type { Plan, PlanComparisonRow } from '@/features/plans/types';
 import { cn } from '@/lib/utils';
 
-export function PlanComparison() {
+export function PlanComparison({
+  plans,
+  comparison,
+}: {
+  plans: Plan[];
+  comparison: PlanComparisonRow[];
+}) {
   return (
     <section className="space-y-4">
       <h2 className="text-foreground text-base font-semibold sm:text-lg">
@@ -29,10 +36,10 @@ export function PlanComparison() {
                     Features
                   </TableHead>
                   {plans.map((plan) => {
-                    const Icon = plan.icon;
+                    const Icon = planIcon(plan.icon);
                     return (
                       <TableHead
-                        key={plan.id}
+                        key={plan.key}
                         className="h-auto px-3 py-4 text-center"
                       >
                         <div className="flex flex-col items-center gap-2">
@@ -42,11 +49,11 @@ export function PlanComparison() {
                           <span className="text-foreground text-xs font-semibold whitespace-normal sm:text-sm">
                             {plan.name}
                           </span>
-                          {plan.popular && (
+                          {plan.is_popular ? (
                             <Badge className="border-0 px-2 py-0 text-[10px]">
                               Most Popular
                             </Badge>
-                          )}
+                          ) : null}
                         </div>
                       </TableHead>
                     );
@@ -54,17 +61,17 @@ export function PlanComparison() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {comparisonRows.map((row) => (
-                  <TableRow key={row.feature}>
+                {comparison.map((row) => (
+                  <TableRow key={row.key}>
                     <TableCell className="text-foreground px-4 py-3.5 font-medium whitespace-normal sm:px-5">
-                      {row.feature}
+                      {row.label}
                     </TableCell>
                     {plans.map((plan) => (
                       <TableCell
-                        key={plan.id}
+                        key={plan.key}
                         className="px-3 py-3.5 text-center"
                       >
-                        {row.values[plan.id] ? (
+                        {row.values[plan.key] ? (
                           <Check
                             className={cn('text-primary mx-auto size-4')}
                             strokeWidth={2.5}

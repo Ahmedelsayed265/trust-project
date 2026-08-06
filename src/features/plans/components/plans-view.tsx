@@ -3,7 +3,15 @@ import { ChevronRight, Info, Lock } from 'lucide-react';
 import { CurrentPlanCard } from '@/features/plans/components/current-plan-card';
 import { PlanCards } from '@/features/plans/components/plan-cards';
 import { PlanComparison } from '@/features/plans/components/plan-comparison';
-export function PlansView() {
+import type { MySubscriptionData, PlansData } from '@/features/plans/types';
+
+export function PlansView({
+  data,
+  subscription,
+}: {
+  data: PlansData;
+  subscription: MySubscriptionData;
+}) {
   return (
     <div className="flex w-full min-w-0 flex-col gap-5 sm:gap-6">
       <div>
@@ -22,9 +30,13 @@ export function PlansView() {
         </nav>
       </div>
 
-      <CurrentPlanCard />
-      <PlanCards />
-      <PlanComparison />
+      <CurrentPlanCard
+        plan={data.current_plan}
+        subscription={subscription.subscription}
+        history={subscription.history}
+      />
+      <PlanCards plans={data.plans} />
+      <PlanComparison plans={data.plans} comparison={data.comparison} />
 
       <div className="border-border text-muted-foreground flex flex-col gap-3 border-t pt-4 text-xs sm:flex-row sm:items-center sm:justify-between">
         <p className="flex items-start gap-1.5 sm:items-center">

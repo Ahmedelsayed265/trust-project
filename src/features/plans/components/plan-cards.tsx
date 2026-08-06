@@ -1,5 +1,4 @@
-import { Check, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 import {
   Card,
   CardContent,
@@ -7,129 +6,83 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { PlanFeaturesList } from '@/features/plans/components/plan-features';
+import { SubscribePlanButton } from '@/features/plans/components/subscribe-plan-button';
+import { planIcon } from '@/features/plans/lib/plan-icons';
+import type { Plan } from '@/features/plans/types';
 import { cn } from '@/lib/utils';
-import { getPlanFeatures, plans, type Plan } from '@/features/plans/data/plans';
-
-function FeatureIcon({ included }: { included: boolean }) {
-  return included ? (
-    <span className="bg-primary/10 text-primary mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full">
-      <Check className="size-2.5" strokeWidth={3} />
-    </span>
-  ) : (
-    <span className="bg-muted text-muted-foreground/50 mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full">
-      <X className="size-2.5" strokeWidth={3} />
-    </span>
-  );
-}
 
 function PlanCard({ plan }: { plan: Plan }) {
-  const Icon = plan.icon;
-  const features = getPlanFeatures(plan.id);
-  const isActive = plan.current || plan.popular;
+  const Icon = planIcon(plan.icon);
+  const isHighlighted = plan.is_current || plan.is_popular;
+  const href = `/profile/plans/${encodeURIComponent(plan.key)}`;
 
   return (
     <Card
       className={cn(
         'relative gap-0 overflow-hidden py-0 transition-colors',
-        isActive
+        isHighlighted
           ? 'border-primary bg-primary/3 dark:bg-primary/10 z-1'
           : 'border-border',
       )}
     >
-      {plan.popular && (
+      {plan.is_popular ? (
         <div className="bg-primary text-primary-foreground px-3 py-2 text-center text-[11px] font-bold tracking-[0.14em] uppercase">
           Most Popular
         </div>
-      )}
+      ) : null}
 
       <CardHeader className="gap-4 pt-5">
-        <div className="flex items-start justify-between gap-3">
-          <div
-            className={cn(
-              'flex size-11 items-center justify-center rounded-[12px]',
-              isActive
-                ? 'bg-primary text-primary-foreground'
-                : 'bg-primary/10 text-primary',
-            )}
-          >
-            <Icon className="size-5" />
+        <Link href={href} className="block space-y-4 outline-none">
+          <div className="flex items-start justify-between gap-3">
+            <div
+              className={cn(
+                'flex size-11 items-center justify-center rounded-[12px]',
+                isHighlighted
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-primary/10 text-primary',
+              )}
+            >
+              <Icon className="size-5" />
+            </div>
+            {plan.is_current ? (
+              <span className="border-primary/20 bg-primary/10 text-primary rounded-md border px-2 py-0.5 text-[11px] font-semibold">
+                Active
+              </span>
+            ) : null}
           </div>
-          {plan.current && (
-            <span className="border-primary/20 bg-primary/10 text-primary rounded-md border px-2 py-0.5 text-[11px] font-semibold">
-              Active
+
+          <div>
+            <CardTitle className="text-lg hover:underline">
+              {plan.name}
+            </CardTitle>
+            <CardDescription className="mt-1.5 text-sm leading-relaxed">
+              {plan.tagline}
+            </CardDescription>
+          </div>
+
+          <p className="text-foreground text-3xl font-bold tracking-tight">
+            ${plan.price_monthly}
+            <span className="text-muted-foreground text-sm font-medium">
+              {' '}
+              /month
             </span>
-          )}
-        </div>
+          </p>
+        </Link>
 
-        <div>
-          <CardTitle className="text-lg">{plan.name}</CardTitle>
-          <CardDescription className="mt-1.5 text-sm leading-relaxed">
-            {plan.tagline}
-          </CardDescription>
-        </div>
-
-        <p className="text-foreground text-3xl font-bold tracking-tight">
-          ${plan.price}
-          <span className="text-muted-foreground text-sm font-medium">
-            {' '}
-            /month
-          </span>
-        </p>
-
-        <Button
-          className={cn(
-            'h-10 w-full rounded-md',
-            plan.action === 'current' &&
-              'border-primary/25 bg-primary/10 text-primary hover:bg-primary/15 border disabled:opacity-100',
-          )}
-          variant={
-            plan.action === 'upgrade'
-              ? 'default'
-              : plan.action === 'current'
-                ? 'secondary'
-                : 'outline'
-          }
-          disabled={plan.action === 'current'}
-        >
-          {plan.action === 'upgrade' ? (
-            'Upgrade'
-          ) : plan.action === 'current' ? (
-            <>
-              <Check className="size-4" strokeWidth={2.5} />
-              Current Plan
-            </>
-          ) : (
-            'Downgrade'
-          )}
-        </Button>
+        <SubscribePlanButton plan={plan} />
       </CardHeader>
 
       <CardContent className="pb-5">
-        <ul className="border-border space-y-2.5 border-t pt-4">
-          {features.map((feature) => (
-            <li
-              key={feature.label}
-              className="flex items-start gap-2.5 text-sm"
-            >
-              <FeatureIcon included={feature.included} />
-              <span
-                className={cn(
-                  feature.included
-                    ? 'text-foreground font-medium'
-                    : 'text-muted-foreground',
-                )}
-              >
-                {feature.label}
-              </span>
-            </li>
-          ))}
-        </ul>
+        <div className="border-border border-t pt-4">
+          <PlanFeaturesList features={plan.features} />
+        </div>
       </CardContent>
     </Card>
   );
 }
 
-export function PlanCards() {
+export function PlanCards({ plans }: { plans: Plan[] }) {
   return (
     <section className="space-y-4">
       <h2 className="text-foreground text-base font-semibold sm:text-lg">
