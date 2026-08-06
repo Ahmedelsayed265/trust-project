@@ -30,16 +30,16 @@ Use a **server-only** `API_URL` (not `NEXT_PUBLIC_*`) so the API base stays off 
 
 ## Scripts
 
-| Command | Description |
-| --- | --- |
-| `bun run dev` | Start Next.js dev server |
-| `bun run build` | Production build |
-| `bun run start` | Start production server |
-| `bun run lint` | ESLint |
-| `bun run format` | Prettier write |
-| `bun run format:check` | Prettier check (CI / pre-push) |
-| `bun run test` | Vitest watch mode |
-| `bun run test:run` | Vitest single run |
+| Command                 | Description                                      |
+| ----------------------- | ------------------------------------------------ |
+| `bun run dev`           | Start Next.js dev server                         |
+| `bun run build`         | Production build                                 |
+| `bun run start`         | Start production server                          |
+| `bun run lint`          | ESLint                                           |
+| `bun run format`        | Prettier write                                   |
+| `bun run format:check`  | Prettier check (CI / pre-push)                   |
+| `bun run test`          | Vitest watch mode                                |
+| `bun run test:run`      | Vitest single run                                |
 | `bun run test:coverage` | Vitest coverage (requires `@vitest/coverage-v8`) |
 
 ### Pre-push hook (Husky)
@@ -84,13 +84,13 @@ Snapshot of the project as of the latest internal review. Scores are for **curre
 
 ### Scores
 
-| Area | Score | Verdict |
-| --- | --- | --- |
-| **Security (app design)** | **5.5 / 10** | Decent early auth patterns, not finance-ready |
-| **Vulnerability posture (deps)** | **4 / 10** | Known Next CVEs + noisy CLI deps |
-| **Structure / readability** | **8 / 10** | Clear feature folders, easy to navigate |
-| **Scalability** | **6.5 / 10** | Good bones; trading/data layer still demo |
-| **Safe-side readiness** | **~45–55%** | Fine for private/demo; not for real money / public launch |
+| Area                             | Score        | Verdict                                                   |
+| -------------------------------- | ------------ | --------------------------------------------------------- |
+| **Security (app design)**        | **5.5 / 10** | Decent early auth patterns, not finance-ready             |
+| **Vulnerability posture (deps)** | **4 / 10**   | Known Next CVEs + noisy CLI deps                          |
+| **Structure / readability**      | **8 / 10**   | Clear feature folders, easy to navigate                   |
+| **Scalability**                  | **6.5 / 10** | Good bones; trading/data layer still demo                 |
+| **Safe-side readiness**          | **~45–55%**  | Fine for private/demo; not for real money / public launch |
 
 ### How safe are we right now?
 
@@ -116,10 +116,10 @@ For a **financial** product the bar is higher — several gaps below are real, n
 1. **Next.js `16.2.10` has published CVEs** (SSRF, DoS, middleware/proxy issues, etc.)  
    **Fix:** bump Next (+ `eslint-config-next`) to **≥ 16.2.11**, then re-run `bun audit`.
 
-2. **OTP / auth debug leakage**  
-   - `console.log` on forgot-password / verify / send-code  
+2. **OTP / auth debug leakage**
+   - `console.log` on forgot-password / verify / send-code
    - `forgotPasswordAction` returns `otp` to the client  
-   **Fix:** never return OTP to the browser; remove debug logs (or gate behind a server-only debug flag that is off in prod).
+     **Fix:** never return OTP to the browser; remove debug logs (or gate behind a server-only debug flag that is off in prod).
 
 3. **Reset code stored in cookie** (`trustai_pending_reset_code`)  
    HttpOnly helps, but a stolen cookie jar still has the code.  
@@ -147,8 +147,8 @@ For a **financial** product the bar is higher — several gaps below are real, n
 
 #### Lower (still worth cleaning)
 
-9. `@types/node` jumped to 26 unintentionally — pin back to `^20` if you want stability.  
-10. `NODE_ENV` in `.env` is unnecessary (Next sets this).  
+9. `@types/node` jumped to 26 unintentionally — pin back to `^20` if you want stability.
+10. `NODE_ENV` in `.env` is unnecessary (Next sets this).
 11. Almost no security-focused tests (auth redirects, cookie behavior, action error paths).
 
 ---
@@ -202,15 +202,15 @@ For a **financial** product the bar is higher — several gaps below are real, n
 
 ### Safe-side roadmap (priority order)
 
-| Priority | Action | Impact |
-| --- | --- | --- |
-| 1 | Upgrade Next to patched version | Closes known framework CVEs |
-| 2 | Strip OTP from client + remove auth `console.log` | Stops secret leakage |
-| 3 | Move `shadcn` out of runtime deps + `bun audit` clean | Smaller attack surface |
-| 4 | Add auth middleware | Harder to ship unprotected pages |
-| 5 | Wire `test:run` into pre-push / CI | Catches regressions |
-| 6 | Production trading path (no demo keys in prod) | Required before real money |
-| 7 | Expand tests around auth + money formatting + order validation | Confidence for finance |
+| Priority | Action                                                         | Impact                           |
+| -------- | -------------------------------------------------------------- | -------------------------------- |
+| 1        | Upgrade Next to patched version                                | Closes known framework CVEs      |
+| 2        | Strip OTP from client + remove auth `console.log`              | Stops secret leakage             |
+| 3        | Move `shadcn` out of runtime deps + `bun audit` clean          | Smaller attack surface           |
+| 4        | Add auth middleware                                            | Harder to ship unprotected pages |
+| 5        | Wire `test:run` into pre-push / CI                             | Catches regressions              |
+| 6        | Production trading path (no demo keys in prod)                 | Required before real money       |
+| 7        | Expand tests around auth + money formatting + order validation | Confidence for finance           |
 
 ---
 
