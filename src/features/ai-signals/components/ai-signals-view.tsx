@@ -1,46 +1,45 @@
-import { ArrowDownRight, ArrowUpRight, Sparkles } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { PageHeader } from '@/shared/components/page-header';
-import { cn } from '@/lib/utils';
-import Link from 'next/link';
-const signals = [
-  {
-    pair: 'BTC/USDT',
-    side: 'BUY' as const,
-    strength: 'Strong',
-    confidence: 78,
-    price: '$67,432.10',
-    updated: '30s ago',
-  },
-  {
-    pair: 'ETH/USDT',
-    side: 'BUY' as const,
-    strength: 'Moderate',
-    confidence: 64,
-    price: '$3,456.78',
-    updated: '2m ago',
-  },
-  {
-    pair: 'SOL/USDT',
-    side: 'SELL' as const,
-    strength: 'Watch',
-    confidence: 51,
-    price: '$175.32',
-    updated: '5m ago',
-  },
-  {
-    pair: 'XAU/USD',
-    side: 'BUY' as const,
-    strength: 'Strong',
-    confidence: 72,
-    price: '$2,345.80',
-    updated: '8m ago',
-  },
-];
+'use client';
 
-export function AiSignalsView() {
+import Link from 'next/link';
+import type {
+  SignalSide,
+  SignalStatus,
+  SignalStrength,
+  SignalsListData,
+  SignalsStats,
+} from '@/features/ai-signals/types';
+import { Button } from '@/components/ui/button';
+import { PageHeader } from '@/shared/components/page-header';
+import { SignalsFilters } from '@/features/ai-signals/components/signals-filters';
+import { SignalsList } from '@/features/ai-signals/components/signals-list';
+import { SignalsPaginationBar } from '@/features/ai-signals/components/signals-pagination';
+import { SignalsStatsCards } from '@/features/ai-signals/components/signals-stats';
+import { useSignalsList } from '@/features/ai-signals/hooks/use-signals-list';
+
+export function AiSignalsView({
+  initialData,
+  initialStats,
+}: {
+  initialData: SignalsListData;
+  initialStats: SignalsStats;
+}) {
+  const {
+    status,
+    setStatus,
+    side,
+    setSide,
+    strength,
+    setStrength,
+    symbolDraft,
+    setSymbolDraft,
+    setPage,
+    items,
+    stats,
+    pagination,
+    applySymbolFilter,
+    resetPage,
+  } = useSignalsList(initialData, initialStats);
+
   return (
     <div className="flex w-full min-w-0 flex-col gap-4 sm:gap-5">
       <PageHeader
@@ -53,99 +52,32 @@ export function AiSignalsView() {
         }
       />
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        {[
-          { label: 'Active Signals', value: '12' },
-          { label: 'Avg. Confidence', value: '71%' },
-          { label: 'Win Rate (30D)', value: '64%' },
-        ].map((stat) => (
-          <Card key={stat.label} className="" size="sm">
-            <CardContent>
-              <p className="text-muted-foreground text-xs">{stat.label}</p>
-              <p className="text-foreground mt-1 text-2xl font-bold">
-                {stat.value}
-              </p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      <SignalsStatsCards stats={stats} />
 
-      <div className="grid gap-4 md:grid-cols-2">
-        {signals.map((signal) => {
-          const isBuy = signal.side === 'BUY';
-          return (
-            <Card key={signal.pair} className="">
-              <CardHeader className="flex-row items-start justify-between gap-3 space-y-0">
-                <div className="flex items-center gap-3">
-                  <div
-                    className={cn(
-                      'flex size-12 flex-col items-center justify-center rounded-xl',
-                      isBuy
-                        ? 'text-success bg-emerald-50 dark:bg-emerald-950/40'
-                        : 'text-destructive bg-red-50 dark:bg-red-950/40',
-                    )}
-                  >
-                    {isBuy ? (
-                      <ArrowUpRight className="size-5" />
-                    ) : (
-                      <ArrowDownRight className="size-5" />
-                    )}
-                    <span className="text-[10px] font-bold">{signal.side}</span>
-                  </div>
-                  <div>
-                    <CardTitle className="text-base">{signal.pair}</CardTitle>
-                    <p className="text-muted-foreground text-xs">
-                      Updated {signal.updated}
-                    </p>
-                  </div>
-                </div>
-                <Badge
-                  className={cn(
-                    'border-0',
-                    isBuy
-                      ? 'text-success bg-emerald-50 hover:bg-emerald-50 dark:bg-emerald-950/40'
-                      : 'text-destructive bg-red-50 hover:bg-red-50 dark:bg-red-950/40',
-                  )}
-                >
-                  {signal.strength}
-                </Badge>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Spot Price</span>
-                  <span className="text-foreground font-semibold">
-                    {signal.price}
-                  </span>
-                </div>
-                <div>
-                  <div className="mb-1.5 flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground flex items-center gap-1">
-                      <Sparkles className="size-3.5" />
-                      Confidence
-                    </span>
-                    <span className="text-foreground font-semibold">
-                      {signal.confidence}%
-                    </span>
-                  </div>
-                  <div className="bg-muted h-2 overflow-hidden rounded-full">
-                    <div
-                      className="bg-primary h-full rounded-full"
-                      style={{ width: `${signal.confidence}%` }}
-                    />
-                  </div>
-                </div>
-                <Button
-                  variant="outline"
-                  className="h-9 w-full rounded-xl"
-                  render={<Link href="/trades" />}
-                >
-                  Act on Signal
-                </Button>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
+      <SignalsFilters
+        status={status}
+        side={side}
+        strength={strength}
+        symbolDraft={symbolDraft}
+        onStatusChange={(value: SignalStatus) => {
+          resetPage();
+          setStatus(value);
+        }}
+        onSideChange={(value: 'all' | SignalSide) => {
+          resetPage();
+          setSide(value);
+        }}
+        onStrengthChange={(value: 'all' | SignalStrength) => {
+          resetPage();
+          setStrength(value);
+        }}
+        onSymbolDraftChange={setSymbolDraft}
+        onSymbolSubmit={applySymbolFilter}
+      />
+
+      <SignalsList items={items} />
+
+      <SignalsPaginationBar pagination={pagination} onPageChange={setPage} />
     </div>
   );
 }
