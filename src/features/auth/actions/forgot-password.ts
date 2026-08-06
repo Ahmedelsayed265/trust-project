@@ -13,6 +13,12 @@ type ForgotPasswordData = {
   otp?: string;
 };
 
+type VerifyResetCodeData = {
+  email: string;
+  valid: boolean;
+  expires_at?: string;
+};
+
 export async function forgotPasswordAction(input: {
   email: string;
 }): Promise<ActionResult<ForgotPasswordData>> {
@@ -59,13 +65,61 @@ export async function resendPasswordResetCodeAction(): Promise<
   return forgotPasswordAction({ email: pending.email });
 }
 
+export async function verifyResetCodeAction(input: {
+  code: string;
+}): Promise<ActionResult<{ next: "/reset-password" }>> {
+  const code = input.code.trim();
+  if (!/^\d{6}$/.test(code)) {
+    return { ok: false, message: "Enter the 6-digit code." };
+  }
+
+  const pending = await getPendingPasswordReset();
+  if (!pending?.email) {
+    return { ok: false, message: "No pending reset. Start again." };
+  }
+
+  try {
+    const response = await api.post<ApiSuccessResponse<VerifyResetCodeData>>(
+      "/user/auth/verify-reset-code",
+      { email: pending.email, code }
+    );
+
+    console.log("[verify-reset-code]", response);
+
+    if (response.data && response.data.valid === false) {
+      return { ok: false, message: "Invalid reset code." };
+    }
+
+    await setPendingPasswordReset({ email: pending.email, code });
+
+    return { ok: true, data: { next: "/reset-password" } };
+  } catch (error) {
+    if (error instanceof ApiError) {
+      return {
+        ok: false,
+        message: error.message || "Invalid reset code.",
+        errors: error.errors,
+        status: error.status,
+      };
+    }
+
+    return {
+      ok: false,
+      message:
+        error instanceof Error
+          ? error.message
+          : "Something went wrong. Please try again.",
+    };
+  }
+}
+
 export async function resetPasswordAction(input: {
   password: string;
   password_confirmation: string;
 }): Promise<ActionResult<null>> {
   const pending = await getPendingPasswordReset();
   if (!pending?.email || !pending.code) {
-    return { ok: false, message: "Verify your email code first." };
+    return { ok: false, message: "Verify your reset code first." };
   }
 
   try {
@@ -101,4 +155,12 @@ export async function resetPasswordAction(input: {
 
 export async function cancelPasswordResetAction() {
   await clearPendingPasswordReset();
+}
+
+/** Keep email pending, drop verified code, return to OTP step. */
+export async function backToResetCodeAction() {
+  const pending = await getPendingPasswordReset();
+  if (pending?.email) {
+    await setPendingPasswordReset({ email: pending.email });
+  }
 }

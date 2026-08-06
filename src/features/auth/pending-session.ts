@@ -33,6 +33,8 @@ export async function setPendingVerification(input: {
     input.remember === false ? "0" : "1",
     options
   );
+  jar.delete(PENDING_RESET_EMAIL_COOKIE);
+  jar.delete(PENDING_RESET_CODE_COOKIE);
 }
 
 export async function getPendingVerification() {
@@ -68,6 +70,10 @@ export async function setPendingPasswordReset(input: {
   } else {
     jar.delete(PENDING_RESET_CODE_COOKIE);
   }
+
+  jar.delete(PENDING_TOKEN_COOKIE);
+  jar.delete(PENDING_EMAIL_COOKIE);
+  jar.delete(PENDING_REMEMBER_COOKIE);
 }
 
 export async function getPendingPasswordReset() {

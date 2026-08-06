@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { FormPasswordField } from "@/shared/components/form-password-field";
 import { SubmitButton } from "@/shared/components/submit-button";
 import {
-  cancelPasswordResetAction,
+  backToResetCodeAction,
   resetPasswordAction,
 } from "@/features/auth/actions/forgot-password";
 import {
@@ -56,8 +56,8 @@ export function ResetPasswordForm({ email }: { email: string }) {
 
   function onBack() {
     startTransition(async () => {
-      await cancelPasswordResetAction();
-      router.push("/forgot-password");
+      await backToResetCodeAction();
+      router.push("/verify-email");
       router.refresh();
     });
   }

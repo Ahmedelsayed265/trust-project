@@ -18,6 +18,7 @@ import {
 import {
   cancelPasswordResetAction,
   resendPasswordResetCodeAction,
+  verifyResetCodeAction,
 } from "@/features/auth/actions/forgot-password";
 
 const RESEND_SECONDS = 3 * 60;
@@ -58,7 +59,10 @@ export function VerifyEmailForm({
     }
 
     startTransition(async () => {
-      const result = await verifyEmailAction({ code: nextCode });
+      const result = isReset
+        ? await verifyResetCodeAction({ code: nextCode })
+        : await verifyEmailAction({ code: nextCode });
+
       if (!result.ok) {
         toast.error(result.message);
         return;
@@ -118,11 +122,11 @@ export function VerifyEmailForm({
 
       <div className="mb-8 space-y-2">
         <h2 className="text-2xl font-bold tracking-tight text-foreground">
-          Verify your email
+          {isReset ? "Enter reset code" : "Verify your email"}
         </h2>
         <p className="text-sm text-muted-foreground">
           {isReset
-            ? "Enter the code we sent to reset your password"
+            ? "Enter the 6-digit code we sent to reset your password"
             : "Enter the code we sent to finish signing in"}
         </p>
       </div>
