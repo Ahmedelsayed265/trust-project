@@ -14,6 +14,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Field, FieldContent, FieldLabel } from '@/components/ui/field';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { PageHeader } from '@/shared/components/page-header';
 import { cn } from '@/lib/utils';
 import { formatMoney } from '@/shared/trading';
@@ -340,21 +347,46 @@ export function AccountsView({
                 <form onSubmit={handleConnect} className="space-y-3">
                   {selectedProvider.environments.length > 1 && (
                     <Field>
-                      <FieldLabel>Environment</FieldLabel>
+                      <FieldLabel htmlFor="account-environment">
+                        Environment
+                      </FieldLabel>
                       <FieldContent>
-                        <select
+                        <Select
                           value={environment}
-                          onChange={(event) =>
-                            setEnvironment(event.target.value)
-                          }
-                          className="border-input bg-card h-10 w-full rounded-md border px-3 text-sm outline-none"
+                          onValueChange={(value) => {
+                            if (value) setEnvironment(value);
+                          }}
+                          items={selectedProvider.environments.map((env) => ({
+                            value: env,
+                            label:
+                              env === 'paper'
+                                ? 'Paper'
+                                : env === 'live'
+                                  ? 'Live'
+                                  : env,
+                          }))}
                         >
-                          {selectedProvider.environments.map((env) => (
-                            <option key={env} value={env}>
-                              {env === 'paper' ? 'Paper' : 'Live'}
-                            </option>
-                          ))}
-                        </select>
+                          <SelectTrigger
+                            id="account-environment"
+                            className="h-10 w-full min-w-0 rounded-md data-[size=default]:h-10"
+                          >
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent
+                            align="start"
+                            alignItemWithTrigger={false}
+                          >
+                            {selectedProvider.environments.map((env) => (
+                              <SelectItem key={env} value={env}>
+                                {env === 'paper'
+                                  ? 'Paper'
+                                  : env === 'live'
+                                    ? 'Live'
+                                    : env}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </FieldContent>
                     </Field>
                   )}
