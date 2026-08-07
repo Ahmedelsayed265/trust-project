@@ -4,7 +4,10 @@ import { Button } from '@/components/ui/button';
 import { ChatComposer } from '@/features/ai-chat/components/chat-composer';
 import { ChatMessageList } from '@/features/ai-chat/components/chat-message-list';
 import { ChatSuggestionsBar } from '@/features/ai-chat/components/chat-suggestions-bar';
-import type { ChatConversationSummary, ChatMessage } from '@/features/ai-chat/types';
+import type {
+  ChatConversationSummary,
+  ChatMessage,
+} from '@/features/ai-chat/types';
 
 export function ChatPanel({
   conversations,

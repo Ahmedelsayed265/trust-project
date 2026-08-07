@@ -12,7 +12,7 @@ export function ChatSuggestionsBar({
   if (suggestions.length === 0) return null;
 
   return (
-    <div className="border-border shrink-0 border-b px-4 py-3 h-13.5">
+    <div className="border-border h-13.5 shrink-0 border-b px-4 py-3">
       <div className="flex flex-wrap gap-2">
         {suggestions.map((suggestion) => (
           <button

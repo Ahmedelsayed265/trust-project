@@ -111,11 +111,9 @@ export async function deleteChatConversationAction(
 ): Promise<ActionResult<null>> {
   try {
     const token = await requireAuth();
-    await api.delete<ApiSuccessResponse<null>>(
-      `/user/chat/${id}`,
-      undefined,
-      { token },
-    );
+    await api.delete<ApiSuccessResponse<null>>(`/user/chat/${id}`, undefined, {
+      token,
+    });
     return { ok: true, data: null };
   } catch (error) {
     return mapActionError(error, 'Failed to delete conversation.');

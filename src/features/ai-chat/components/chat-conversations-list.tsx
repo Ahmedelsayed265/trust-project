@@ -22,7 +22,7 @@ export function ChatConversationsList({
 }) {
   return (
     <div className="border-border flex h-full min-h-0 flex-col border-r">
-      <div className="border-border flex items-center justify-between gap-2 border-b px-3 py-3 h-13.5">
+      <div className="border-border flex h-13.5 items-center justify-between gap-2 border-b px-3 py-3">
         <p className="text-foreground text-sm font-semibold">Conversations</p>
         <Button
           type="button"
