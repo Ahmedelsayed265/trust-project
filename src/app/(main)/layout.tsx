@@ -39,8 +39,8 @@ export default async function MainLayout({
               <AppHeader />
               <MaintenanceBanner />
 
-              <main className="min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain p-3 pb-24 sm:p-4 lg:p-6 lg:pb-6">
-                <div className="mx-auto w-full max-w-350 min-w-0">
+              <main className="flex min-h-0 min-w-0 flex-1 flex-col overflow-x-hidden overflow-y-auto overscroll-contain p-3 pb-24 sm:p-4 lg:p-6 lg:pb-6">
+                <div className="mx-auto flex min-h-full w-full max-w-350 min-w-0 flex-col">
                   {children}
                 </div>
               </main>
