@@ -7,41 +7,62 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { PageHeader } from '@/shared/components/page-header';
+import { useAppSettings } from '@/shared/providers/app-settings-provider';
 import { useCurrentUser } from '@/shared/providers/user-provider';
-
-const rewards = [
-  {
-    title: 'You earn $25',
-    description:
-      'Credit added when your friend funds and places their first trade.',
-  },
-  {
-    title: 'They earn $15',
-    description:
-      'Welcome bonus unlocked after verification and connecting a trading provider.',
-  },
-  {
-    title: 'Unlimited invites',
-    description: 'No cap on referrals — keep sharing and stacking rewards.',
-  },
-];
-
-const recentInvites = [
-  { name: 'Sara K.', status: 'Joined', reward: '+$25', done: true },
-  {
-    name: 'Omar H.',
-    status: 'Pending provider connect',
-    reward: '—',
-    done: false,
-  },
-  { name: 'Lina M.', status: 'Joined', reward: '+$25', done: true },
-];
+import { formatMoney } from '@/shared/trading/format';
 
 export function InviteFriendsView() {
   const user = useCurrentUser();
+  const settings = useAppSettings();
   const [copied, setCopied] = useState<'code' | 'link' | null>(null);
   const referralCode = user.referral_code;
   const referralLink = user.referral_link;
+  const inviterReward = formatMoney(settings.referral.inviter_reward, 'USD', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
+  const inviteeReward = formatMoney(settings.referral.invitee_reward, 'USD', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
+
+  const rewards = [
+    {
+      title: `You earn ${inviterReward}`,
+      description:
+        'Credit added when your friend funds and places their first trade.',
+    },
+    {
+      title: `They earn ${inviteeReward}`,
+      description:
+        'Welcome bonus unlocked after verification and connecting a trading provider.',
+    },
+    {
+      title: 'Unlimited invites',
+      description: 'No cap on referrals — keep sharing and stacking rewards.',
+    },
+  ];
+
+  const recentInvites = [
+    {
+      name: 'Sara K.',
+      status: 'Joined',
+      reward: `+${inviterReward}`,
+      done: true,
+    },
+    {
+      name: 'Omar H.',
+      status: 'Pending provider connect',
+      reward: '—',
+      done: false,
+    },
+    {
+      name: 'Lina M.',
+      status: 'Joined',
+      reward: `+${inviterReward}`,
+      done: true,
+    },
+  ];
 
   async function copyValue(value: string, type: 'code' | 'link') {
     try {

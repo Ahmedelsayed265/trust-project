@@ -1,9 +1,12 @@
+import { getSettingsAction } from '@/features/app-settings/actions/get-settings';
+import { DEFAULT_APP_SETTINGS } from '@/features/app-settings/types';
+
 type LegalSection = {
   title: string;
   paragraphs: string[];
 };
 
-export function LegalDocument({
+export async function LegalDocument({
   title,
   updatedAt,
   intro,
@@ -14,6 +17,11 @@ export function LegalDocument({
   intro: string;
   sections: LegalSection[];
 }) {
+  const settingsResult = await getSettingsAction();
+  const supportEmail = settingsResult.ok
+    ? settingsResult.data.support_email
+    : DEFAULT_APP_SETTINGS.support_email;
+
   return (
     <article className="space-y-8">
       <header className="border-border space-y-3 border-b pb-8">
@@ -49,10 +57,10 @@ export function LegalDocument({
       <p className="border-border text-muted-foreground border-t pt-6 text-sm">
         Questions? Email{' '}
         <a
-          href="mailto:support@trustai.app"
+          href={`mailto:${supportEmail}`}
           className="text-primary font-medium hover:underline"
         >
-          support@trustai.app
+          {supportEmail}
         </a>
         .
       </p>

@@ -23,24 +23,13 @@ import {
 } from '@/components/ui/select';
 import { FormTextField } from '@/shared/components/form-text-field';
 import { PageHeader } from '@/shared/components/page-header';
+import { useAppSettings } from '@/shared/providers/app-settings-provider';
 import { useCurrentUser } from '@/shared/providers/user-provider';
 import {
   settingsSchema,
   type SettingsFormValues,
 } from '@/features/settings/schemas/settings';
 import { cn } from '@/lib/utils';
-
-const languages = [
-  { value: 'en', label: 'English' },
-  { value: 'ar', label: 'Arabic' },
-  { value: 'es', label: 'Spanish' },
-] as const;
-
-const currencies = [
-  { value: 'USD', label: 'USD — US Dollar' },
-  { value: 'EUR', label: 'EUR — Euro' },
-  { value: 'SAR', label: 'SAR — Saudi Riyal' },
-] as const;
 
 const notificationOptions = [
   {
@@ -65,18 +54,28 @@ const notificationOptions = [
 
 export function SettingsView() {
   const user = useCurrentUser();
+  const settings = useAppSettings();
+  const languages = settings.locales;
+  const currencies = settings.currencies.map((code) => ({
+    value: code,
+    label: code,
+  }));
+  const defaultLanguage =
+    languages.find((locale) => locale.value === user.language)?.value ??
+    languages[0]?.value ??
+    'en';
+  const defaultCurrency = settings.currencies.includes(user.currency)
+    ? user.currency
+    : (settings.currencies[0] ?? 'USD');
+
   const [saved, setSaved] = useState(false);
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(settingsSchema),
     defaultValues: {
       displayName: user.name,
       email: user.email,
-      language: (['en', 'ar', 'es'].includes(user.language)
-        ? user.language
-        : 'en') as SettingsFormValues['language'],
-      currency: (['USD', 'EUR', 'SAR'].includes(user.currency)
-        ? user.currency
-        : 'USD') as SettingsFormValues['currency'],
+      language: defaultLanguage,
+      currency: defaultCurrency,
       emailAlerts: user.email_alerts,
       pushAlerts: user.push_alerts,
       aiDigest: user.ai_digest,

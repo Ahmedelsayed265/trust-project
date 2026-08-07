@@ -1,7 +1,11 @@
+'use client';
+
+import { createElement } from 'react';
 import { BadgeCheck, Building2, FileText, Scale } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { PageHeader } from '@/shared/components/page-header';
+import { useAppSettings } from '@/shared/providers/app-settings-provider';
 
 const highlights = [
   {
@@ -25,10 +29,12 @@ const highlights = [
 ];
 
 export function AboutView() {
+  const settings = useAppSettings();
+
   return (
     <div className="flex w-full min-w-0 flex-col gap-4 sm:gap-5">
       <PageHeader
-        title="About TrustAI"
+        title={`About ${settings.app_name}`}
         description="Learn more about the product, version, and company details."
       />
 
@@ -37,7 +43,7 @@ export function AboutView() {
           <div>
             <p className="text-muted-foreground text-sm">Current version</p>
             <p className="text-foreground mt-1 text-2xl font-bold tracking-tight">
-              TrustAI 1.0.0
+              {settings.app_name} 1.0.0
             </p>
             <p className="text-muted-foreground mt-1 text-sm">
               AI Trading Platform · Released March 2026
@@ -50,16 +56,16 @@ export function AboutView() {
       </Card>
 
       <div className="grid gap-4 md:grid-cols-3">
-        {highlights.map(({ title, description, icon: Icon }) => (
-          <Card key={title}>
+        {highlights.map((item) => (
+          <Card key={item.title}>
             <CardHeader className="flex-row items-start gap-3 space-y-0">
               <div className="bg-primary/10 text-primary flex size-10 shrink-0 items-center justify-center rounded-xl">
-                <Icon className="size-5" />
+                {createElement(item.icon, { className: 'size-5' })}
               </div>
               <div>
-                <CardTitle className="text-base">{title}</CardTitle>
+                <CardTitle className="text-base">{item.title}</CardTitle>
                 <p className="text-muted-foreground mt-1 text-sm leading-relaxed">
-                  {description}
+                  {item.description}
                 </p>
               </div>
             </CardHeader>
@@ -76,16 +82,17 @@ export function AboutView() {
             <div>
               <CardTitle>Legal & compliance</CardTitle>
               <p className="text-muted-foreground mt-1 text-sm">
-                TrustAI provides market tools and AI insights. Trading involves
-                risk and past performance is not a guarantee of future results.
+                {settings.app_name} provides market tools and AI insights.
+                Trading involves risk and past performance is not a guarantee of
+                future results.
               </p>
             </div>
           </div>
         </CardHeader>
         <CardContent className="grid gap-3 sm:grid-cols-3">
           {[
-            ['Company', 'TrustAI Markets Ltd.'],
-            ['Support', 'support@trustai.app'],
+            ['Company', `${settings.app_name} Markets Ltd.`],
+            ['Support', settings.support_email],
             ['Website', 'trustai.app'],
           ].map(([label, value]) => (
             <div
