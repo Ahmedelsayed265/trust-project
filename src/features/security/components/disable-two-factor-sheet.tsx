@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useTransition } from 'react';
+import { useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -27,9 +27,10 @@ export function DisableTwoFactorSheet({
   const [code, setCode] = useState('');
   const [pending, startTransition] = useTransition();
 
-  useEffect(() => {
-    if (!open) setCode('');
-  }, [open]);
+  function handleOpenChange(next: boolean) {
+    if (!next) setCode('');
+    onOpenChange(next);
+  }
 
   function onConfirm() {
     if (code.trim().length < 6) {
@@ -49,7 +50,7 @@ export function DisableTwoFactorSheet({
   }
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
+    <Sheet open={open} onOpenChange={handleOpenChange}>
       <SheetContent className="flex w-full flex-col sm:max-w-md" side="right">
         <SheetHeader>
           <SheetTitle>Disable two-factor?</SheetTitle>
@@ -80,7 +81,7 @@ export function DisableTwoFactorSheet({
             variant="outline"
             className="rounded-xl"
             disabled={pending}
-            onClick={() => onOpenChange(false)}
+            onClick={() => handleOpenChange(false)}
           >
             Keep enabled
           </Button>

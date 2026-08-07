@@ -21,6 +21,42 @@ import {
 import { confirmTwoFactorAction } from '@/features/security/actions/two-factor';
 import type { TwoFactorEnableData } from '@/features/security/types';
 
+function QrPreview({ uri }: { uri: string }) {
+  const [dataUrl, setDataUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    void QRCode.toDataURL(uri, {
+      width: 200,
+      margin: 1,
+    }).then((url) => {
+      if (!cancelled) setDataUrl(url);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [uri]);
+
+  if (!dataUrl) {
+    return (
+      <div className="border-border bg-muted/40 mx-auto size-48 animate-pulse rounded-xl border" />
+    );
+  }
+
+  return (
+    <div className="flex justify-center">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={dataUrl}
+        alt="Two-factor authentication QR code"
+        className="border-border size-48 rounded-xl border bg-white p-2"
+      />
+    </div>
+  );
+}
+
 export function EnableTwoFactorSheet({
   open,
   setup,
@@ -33,35 +69,16 @@ export function EnableTwoFactorSheet({
   onConfirmed: (codes: string[]) => void;
 }) {
   const [code, setCode] = useState('');
-  const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [pending, startTransition] = useTransition();
 
-  useEffect(() => {
-    if (!setup?.provisioning_uri) {
-      setQrDataUrl(null);
-      return;
-    }
-
-    let cancelled = false;
-    void QRCode.toDataURL(setup.provisioning_uri, {
-      width: 200,
-      margin: 1,
-    }).then((url) => {
-      if (!cancelled) setQrDataUrl(url);
-    });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [setup?.provisioning_uri]);
-
-  useEffect(() => {
-    if (!open) {
+  function handleOpenChange(next: boolean) {
+    if (!next) {
       setCode('');
       setCopied(false);
     }
-  }, [open]);
+    onOpenChange(next);
+  }
 
   async function copyKey() {
     if (!setup?.manual_entry_key) return;
@@ -92,7 +109,7 @@ export function EnableTwoFactorSheet({
   }
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
+    <Sheet open={open} onOpenChange={handleOpenChange}>
       <SheetContent className="flex w-full flex-col sm:max-w-md" side="right">
         <SheetHeader>
           <SheetTitle>Set up authenticator</SheetTitle>
@@ -102,15 +119,11 @@ export function EnableTwoFactorSheet({
         </SheetHeader>
 
         <div className="space-y-5 overflow-y-auto px-4 py-2">
-          {qrDataUrl ? (
-            <div className="flex justify-center">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={qrDataUrl}
-                alt="Two-factor authentication QR code"
-                className="border-border size-48 rounded-xl border bg-white p-2"
-              />
-            </div>
+          {setup?.provisioning_uri ? (
+            <QrPreview
+              key={setup.provisioning_uri}
+              uri={setup.provisioning_uri}
+            />
           ) : (
             <div className="border-border bg-muted/40 mx-auto size-48 animate-pulse rounded-xl border" />
           )}
@@ -163,7 +176,7 @@ export function EnableTwoFactorSheet({
             variant="outline"
             className="rounded-xl"
             disabled={pending}
-            onClick={() => onOpenChange(false)}
+            onClick={() => handleOpenChange(false)}
           >
             Cancel
           </Button>
