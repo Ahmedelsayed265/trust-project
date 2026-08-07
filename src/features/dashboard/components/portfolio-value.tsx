@@ -1,16 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { Eye, Link2, TrendingUp } from 'lucide-react';
+import { Eye, Link2, TrendingDown, TrendingUp } from 'lucide-react';
 import { useState } from 'react';
+import type { HomePortfolio } from '@/features/dashboard/types';
 import { cn } from '@/lib/utils';
 import { Sparkline } from '@/shared/components/sparkline';
-import {
-  formatMoney,
-  formatPct,
-  formatSignedMoney,
-  useTrading,
-} from '@/shared/trading';
+import { formatMoney, formatPct, formatSignedMoney } from '@/shared/trading';
 
 const timeframes = ['1D', '1W', '1M', '3M', '1Y', 'ALL'] as const;
 
@@ -23,14 +19,25 @@ const chartByTimeframe: Record<(typeof timeframes)[number], number[]> = {
   ALL: [12, 18, 22, 28, 26, 34, 40, 38, 46, 52, 55, 62, 68, 74, 78],
 };
 
-export function PortfolioValue() {
+type PortfolioValueProps = {
+  portfolio: HomePortfolio;
+  plan?: string;
+  accountsCount?: number;
+};
+
+export function PortfolioValue({
+  portfolio,
+  plan,
+  accountsCount = 0,
+}: PortfolioValueProps) {
   const [timeframe, setTimeframe] = useState<(typeof timeframes)[number]>('1D');
-  const { snapshot, activeProvider, loading } = useTrading();
   const chartData = chartByTimeframe[timeframe];
-  const equity = snapshot?.equity ?? null;
-  const dayPnl = snapshot?.dayPnl ?? null;
-  const dayPnlPct = snapshot?.dayPnlPct ?? null;
-  const currency = snapshot?.currency ?? 'USD';
+  const { currency, equity, day_pnl, day_pnl_pct, is_positive, has_accounts } =
+    portfolio;
+  const PnlIcon = is_positive ? TrendingUp : TrendingDown;
+  const pnlTone = is_positive
+    ? 'text-success bg-emerald-50 dark:bg-emerald-950/40'
+    : 'text-destructive bg-red-50 dark:bg-red-950/40';
 
   return (
     <div className="border-border bg-card rounded-[12px] border px-5 py-6 shadow-none sm:px-6 sm:py-7">
@@ -38,34 +45,44 @@ export function PortfolioValue() {
         <div className="flex min-w-0 flex-1 flex-col justify-between gap-5">
           <div>
             <div className="text-muted-foreground mb-3 flex flex-wrap items-center gap-2 text-sm">
-              <span>Provider equity</span>
+              <span>Total equity</span>
               <Eye className="size-3.5 opacity-70" />
-              <span className="border-border rounded-md border px-2 py-0.5 text-[11px] font-semibold">
-                {activeProvider.displayName}
-              </span>
-              <span className="rounded-md border border-amber-200 bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-700 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-300">
-                Demo
-              </span>
+              {plan ? (
+                <span className="border-border rounded-md border px-2 py-0.5 text-[11px] font-semibold">
+                  {plan}
+                </span>
+              ) : null}
+              {has_accounts ? (
+                <span className="border-border text-muted-foreground rounded-md border px-2 py-0.5 text-[11px] font-semibold">
+                  {accountsCount} linked
+                </span>
+              ) : (
+                <span className="rounded-md border border-amber-200 bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-700 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-300">
+                  No accounts
+                </span>
+              )}
             </div>
 
             <p className="text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
-              {loading
-                ? '…'
-                : equity != null
-                  ? formatMoney(equity, currency)
-                  : formatMoney(0, currency)}
+              {formatMoney(equity, currency)}
             </p>
 
-            {dayPnl != null && dayPnlPct != null ? (
-              <div className="text-success mt-2.5 inline-flex items-center gap-1.5 rounded-md bg-emerald-50 px-2.5 py-1 text-sm font-semibold dark:bg-emerald-950/40">
-                <TrendingUp className="size-3.5" />
+            {has_accounts ? (
+              <div
+                className={cn(
+                  'mt-2.5 inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-sm font-semibold',
+                  pnlTone,
+                )}
+              >
+                <PnlIcon className="size-3.5" />
                 <span>
-                  {formatSignedMoney(dayPnl, currency)} ({formatPct(dayPnlPct)})
+                  {formatSignedMoney(day_pnl, currency)} (
+                  {formatPct(day_pnl_pct)})
                 </span>
               </div>
             ) : (
               <p className="text-muted-foreground mt-2 text-sm">
-                Demo balances from {activeProvider.displayName}.
+                Connect a broker or exchange to see live balances.
               </p>
             )}
           </div>
@@ -76,7 +93,7 @@ export function PortfolioValue() {
               className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center gap-2 rounded-md px-5 py-2.5 text-sm font-semibold transition-colors"
             >
               <Link2 className="size-4" />
-              Manage accounts
+              {has_accounts ? 'Manage accounts' : 'Connect account'}
             </Link>
             <Link
               href="/trades"
@@ -93,13 +110,21 @@ export function PortfolioValue() {
               <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
                 Day P&L
               </p>
-              <p className="text-success mt-1 text-lg font-semibold tracking-tight">
-                {dayPnl != null ? formatSignedMoney(dayPnl, currency) : '—'}
-                {dayPnlPct != null && (
-                  <span className="text-success/80 ml-1.5 text-sm font-medium">
-                    ({formatPct(dayPnlPct)})
-                  </span>
+              <p
+                className={cn(
+                  'mt-1 text-lg font-semibold tracking-tight',
+                  is_positive ? 'text-success' : 'text-destructive',
                 )}
+              >
+                {formatSignedMoney(day_pnl, currency)}
+                <span
+                  className={cn(
+                    'ml-1.5 text-sm font-medium',
+                    is_positive ? 'text-success/80' : 'text-destructive/80',
+                  )}
+                >
+                  ({formatPct(day_pnl_pct)})
+                </span>
               </p>
             </div>
             <span className="border-border text-muted-foreground rounded-md border px-2 py-0.5 text-[11px] font-semibold">
@@ -118,7 +143,7 @@ export function PortfolioValue() {
             </div>
             <Sparkline
               data={chartData}
-              positive
+              positive={is_positive}
               fill
               showDot
               className="relative h-full min-h-30 w-full"

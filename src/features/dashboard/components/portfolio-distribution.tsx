@@ -1,44 +1,35 @@
-'use client';
+import Link from 'next/link';
+import type { HomeAllocation } from '@/features/dashboard/types';
+import { formatMoney } from '@/shared/trading';
 
-import { formatMoney, useTrading } from '@/shared/trading';
+const palette = [
+  '#2563eb',
+  '#14b8a6',
+  '#8b5cf6',
+  '#f59e0b',
+  '#64748b',
+  '#ec4899',
+];
 
-const palette = ['#2563eb', '#14b8a6', '#8b5cf6', '#f59e0b', '#64748b'];
+type PortfolioDistributionProps = {
+  allocation: HomeAllocation[];
+  equity: number;
+  currency: string;
+  hasAccounts: boolean;
+};
 
-export function PortfolioDistribution() {
-  const { snapshot, positions, loading } = useTrading();
-  const currency = snapshot?.currency ?? 'USD';
-  const equity = snapshot?.equity ?? 0;
-
-  const segments =
-    positions.length > 0
-      ? positions.map((p, i) => ({
-          label: p.symbol,
-          percent: equity > 0 ? (p.marketValue / equity) * 100 : 0,
-          amount: formatMoney(p.marketValue, currency),
-          color: palette[i % palette.length],
-        }))
-      : [];
-
-  const cashBalance = snapshot?.balances.find(
-    (b) => b.asset === 'USDT' || b.asset === 'USD',
-  );
-  if (cashBalance && (cashBalance.usdValue ?? 0) > 0) {
-    segments.push({
-      label: `${cashBalance.asset} free`,
-      percent: equity > 0 ? ((cashBalance.usdValue ?? 0) / equity) * 100 : 0,
-      amount: formatMoney(cashBalance.usdValue ?? 0, currency),
-      color: palette[segments.length % palette.length],
-    });
-  }
-
-  const totalPercent = segments.reduce((s, seg) => s + seg.percent, 0);
-  const normalized =
-    totalPercent > 0
-      ? segments.map((seg) => ({
-          ...seg,
-          percent: (seg.percent / totalPercent) * 100,
-        }))
-      : segments;
+export function PortfolioDistribution({
+  allocation,
+  equity,
+  currency,
+  hasAccounts,
+}: PortfolioDistributionProps) {
+  const segments = allocation.map((item, i) => ({
+    label: item.display_symbol || item.symbol,
+    percent: item.percent,
+    amount: formatMoney(item.value, currency),
+    color: palette[i % palette.length],
+  }));
 
   return (
     <div className="border-border bg-card rounded-lg border p-5">
@@ -46,21 +37,21 @@ export function PortfolioDistribution() {
         Portfolio Distribution
       </h2>
 
-      {loading || !snapshot || normalized.length === 0 ? (
+      {!hasAccounts || segments.length === 0 ? (
         <p className="text-muted-foreground text-sm">
-          {loading
-            ? 'Loading provider balances…'
+          {hasAccounts
+            ? 'No allocation data yet.'
             : 'Connect a provider to see allocation.'}
         </p>
       ) : (
         <div className="flex flex-col items-center gap-5 sm:flex-row sm:items-center">
           <DonutChart
-            segments={normalized}
+            segments={segments}
             total={formatMoney(equity, currency)}
           />
 
           <ul className="w-full space-y-3">
-            {normalized.map((segment) => (
+            {segments.map((segment) => (
               <li key={segment.label} className="flex items-center gap-2.5">
                 <span
                   className="size-2.5 shrink-0 rounded-full"
@@ -84,6 +75,15 @@ export function PortfolioDistribution() {
           </ul>
         </div>
       )}
+
+      {hasAccounts ? (
+        <Link
+          href="/portfolio"
+          className="text-primary mt-4 inline-block text-sm font-medium hover:underline"
+        >
+          View portfolio
+        </Link>
+      ) : null}
     </div>
   );
 }
