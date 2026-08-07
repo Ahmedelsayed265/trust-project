@@ -1,43 +1,80 @@
 'use client';
 
-import {
-  BadgeCheck,
-  Building,
-  CheckCircle2,
-  Clock3,
-  FileCheck2,
-  IdCard,
-} from 'lucide-react';
+import { useState } from 'react';
+import { AlertCircle, BadgeCheck, CheckCircle2, Clock3 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { VerificationStepSheet } from '@/features/verification/components/verification-step-sheet';
+import { VerificationStepIcon } from '@/features/verification/lib/verification-icons';
+import {
+  isVerificationStepKey,
+  type UserVerification,
+  type VerificationStep,
+} from '@/features/verification/types';
 import { PageHeader } from '@/shared/components/page-header';
 import { useCurrentUser } from '@/shared/providers/user-provider';
 import { cn } from '@/lib/utils';
 
-const steps = [
-  {
-    title: 'Personal details',
-    description: 'Legal name, date of birth, and contact information.',
-    status: 'complete' as const,
-    icon: IdCard,
-  },
-  {
-    title: 'Identity document',
-    description: 'Passport or national ID uploaded and reviewed.',
-    status: 'complete' as const,
-    icon: FileCheck2,
-  },
-  {
-    title: 'Address verification',
-    description: 'Proof of residence confirmed against submitted documents.',
-    status: 'complete' as const,
-    icon: Building,
-  },
-];
+function formatDate(value: string | null) {
+  if (!value) return null;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  }).format(date);
+}
 
-export function VerificationView() {
+function formatDocumentType(value: string | null) {
+  if (!value) return null;
+  return value
+    .split('_')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+}
+
+function stepStatusLabel(status: string) {
+  if (status === 'complete') return 'Complete';
+  if (status === 'rejected') return 'Rejected';
+  if (status === 'in_review') return 'In review';
+  if (status === 'pending') return 'Pending';
+  return status.replaceAll('_', ' ');
+}
+
+function stepActionLabel(status: string) {
+  if (status === 'rejected') return 'Fix & resubmit';
+  if (status === 'complete') return 'Update';
+  return 'Submit';
+}
+
+export function VerificationView({ data }: { data: UserVerification }) {
   const user = useCurrentUser();
+  const [activeStep, setActiveStep] = useState<VerificationStep | null>(null);
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const reviewedAt = formatDate(data.reviewed_at);
+  const submittedAt = formatDate(data.submitted_at);
+  const progress = Math.min(100, Math.max(0, data.progress));
+
+  function openStep(step: VerificationStep) {
+    if (!isVerificationStepKey(step.key)) return;
+    setActiveStep(step);
+    setSheetOpen(true);
+  }
+
+  function openFirstActionableStep() {
+    const target =
+      data.steps.find(
+        (step) =>
+          isVerificationStepKey(step.key) &&
+          (step.status === 'rejected' ||
+            step.status === 'pending' ||
+            step.status !== 'complete'),
+      ) ?? data.steps.find((step) => isVerificationStepKey(step.key));
+
+    if (target) openStep(target);
+  }
 
   return (
     <div className="flex w-full min-w-0 flex-col gap-4 sm:gap-5">
@@ -45,8 +82,15 @@ export function VerificationView() {
         title="Verification"
         description="Identity and KYC status for your TrustAI account."
         actions={
-          <Badge className="text-success border-0 bg-emerald-50 hover:bg-emerald-50 dark:bg-emerald-950/40">
-            {user.kyc_verified ? 'Verified' : 'Pending'}
+          <Badge
+            className={cn(
+              'border-0',
+              data.is_verified
+                ? 'text-success bg-emerald-50 hover:bg-emerald-50 dark:bg-emerald-950/40'
+                : 'bg-amber-50 text-amber-700 hover:bg-amber-50 dark:bg-amber-950/40 dark:text-amber-300',
+            )}
+          >
+            {data.status_label}
           </Badge>
         }
       />
@@ -54,61 +98,154 @@ export function VerificationView() {
       <Card>
         <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-start gap-3">
-            <div className="text-success flex size-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 dark:bg-emerald-950/40">
-              <BadgeCheck className="size-6" />
+            <div
+              className={cn(
+                'flex size-12 shrink-0 items-center justify-center rounded-2xl',
+                data.is_verified
+                  ? 'text-success bg-emerald-50 dark:bg-emerald-950/40'
+                  : 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300',
+              )}
+            >
+              {data.is_verified ? (
+                <BadgeCheck className="size-6" />
+              ) : (
+                <Clock3 className="size-6" />
+              )}
             </div>
             <div>
               <p className="text-muted-foreground text-sm">KYC status</p>
               <p className="text-foreground mt-1 text-2xl font-bold tracking-tight">
-                {user.kyc_verified
-                  ? 'Fully verified'
-                  : (user.kyc_status ?? 'Unverified')}
+                {data.status_label}
               </p>
               <p className="text-muted-foreground mt-1 text-sm">
                 {user.name}
-                {user.member_since_label
-                  ? ` · Member since ${user.member_since_label}`
-                  : null}
+                {reviewedAt
+                  ? ` · Reviewed ${reviewedAt}`
+                  : submittedAt
+                    ? ` · Submitted ${submittedAt}`
+                    : null}
               </p>
             </div>
           </div>
           <div className="border-border bg-muted/40 rounded-xl border px-3 py-2 text-sm">
             <p className="text-muted-foreground">Review level</p>
             <p className="text-foreground mt-0.5 font-semibold">
-              {user.kyc_level ?? '—'}
+              {data.level_label}
             </p>
           </div>
         </CardContent>
       </Card>
 
+      <Card>
+        <CardContent className="space-y-3">
+          <div className="flex items-center justify-between gap-3 text-sm">
+            <p className="text-muted-foreground">Verification progress</p>
+            <p className="text-foreground font-semibold">
+              {data.approved_steps}/{data.total_steps} steps · {progress}%
+            </p>
+          </div>
+          <div className="bg-muted h-2 overflow-hidden rounded-full">
+            <div
+              className={cn(
+                'h-full rounded-full transition-[width]',
+                data.is_verified ? 'bg-emerald-500' : 'bg-primary',
+              )}
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {data.rejection_reason ? (
+        <Card className="border-destructive/30">
+          <CardContent className="flex items-start gap-3">
+            <div className="bg-destructive/10 text-destructive flex size-10 shrink-0 items-center justify-center rounded-xl">
+              <AlertCircle className="size-5" />
+            </div>
+            <div>
+              <p className="text-foreground text-sm font-semibold">
+                Action required
+              </p>
+              <p className="text-muted-foreground mt-1 text-sm leading-relaxed">
+                {data.rejection_reason}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      ) : null}
+
       <div className="grid gap-4 lg:grid-cols-3">
-        {steps.map(({ title, description, status, icon: Icon }) => (
-          <Card key={title}>
-            <CardHeader className="flex-row items-start gap-3 space-y-0">
-              <div
-                className={cn(
-                  'flex size-10 shrink-0 items-center justify-center rounded-xl',
-                  status === 'complete'
-                    ? 'text-success bg-emerald-50 dark:bg-emerald-950/40'
-                    : 'bg-muted text-muted-foreground',
-                )}
-              >
-                <Icon className="size-5" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
-                  <CardTitle className="text-base">{title}</CardTitle>
-                  {status === 'complete' && (
-                    <CheckCircle2 className="text-success size-4" />
+        {data.steps.map((step) => {
+          const complete = step.status === 'complete';
+          const rejected = step.status === 'rejected';
+          const documentLabel = formatDocumentType(step.document_type);
+          const completedAt = formatDate(step.completed_at);
+          const canSubmit = isVerificationStepKey(step.key);
+
+          return (
+            <Card key={step.key} className="flex flex-col">
+              <CardHeader className="flex-row items-start gap-3 space-y-0">
+                <div
+                  className={cn(
+                    'flex size-10 shrink-0 items-center justify-center rounded-xl',
+                    complete
+                      ? 'text-success bg-emerald-50 dark:bg-emerald-950/40'
+                      : rejected
+                        ? 'bg-destructive/10 text-destructive'
+                        : 'bg-muted text-muted-foreground',
                   )}
+                >
+                  <VerificationStepIcon name={step.icon} className="size-5" />
                 </div>
-                <p className="text-muted-foreground mt-1 text-sm leading-relaxed">
-                  {description}
-                </p>
-              </div>
-            </CardHeader>
-          </Card>
-        ))}
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <CardTitle className="text-base">{step.title}</CardTitle>
+                    {complete ? (
+                      <CheckCircle2 className="text-success size-4" />
+                    ) : (
+                      <Badge
+                        variant="secondary"
+                        className="rounded-md px-1.5 py-0 text-[10px] font-medium"
+                      >
+                        {stepStatusLabel(step.status)}
+                      </Badge>
+                    )}
+                  </div>
+                  <p className="text-muted-foreground mt-1 text-sm leading-relaxed">
+                    {step.description}
+                  </p>
+                  {documentLabel ? (
+                    <p className="text-foreground mt-2 text-xs font-medium">
+                      Document: {documentLabel}
+                    </p>
+                  ) : null}
+                  {step.rejection_reason ? (
+                    <p className="text-destructive mt-2 text-xs leading-relaxed">
+                      {step.rejection_reason}
+                    </p>
+                  ) : null}
+                  {completedAt ? (
+                    <p className="text-muted-foreground mt-2 text-xs">
+                      Completed {completedAt}
+                    </p>
+                  ) : null}
+                </div>
+              </CardHeader>
+              {canSubmit ? (
+                <CardContent className="mt-auto pt-0">
+                  <Button
+                    type="button"
+                    variant={complete ? 'outline' : 'default'}
+                    className="w-full rounded-xl"
+                    onClick={() => openStep(step)}
+                  >
+                    {stepActionLabel(step.status)}
+                  </Button>
+                </CardContent>
+              ) : null}
+            </Card>
+          );
+        })}
       </div>
 
       <Card>
@@ -130,11 +267,22 @@ export function VerificationView() {
           <p className="text-muted-foreground text-sm">
             Average review time is under 24 hours for Premium members.
           </p>
-          <Button type="button" variant="outline" className="rounded-xl">
+          <Button
+            type="button"
+            variant="outline"
+            className="rounded-xl"
+            onClick={openFirstActionableStep}
+          >
             Resubmit documents
           </Button>
         </CardContent>
       </Card>
+
+      <VerificationStepSheet
+        step={activeStep}
+        open={sheetOpen}
+        onOpenChange={setSheetOpen}
+      />
     </div>
   );
 }
