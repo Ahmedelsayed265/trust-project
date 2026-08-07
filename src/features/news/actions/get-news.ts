@@ -1,28 +1,12 @@
 'use server';
 
-import { api, ApiError, type ActionResult } from '@/shared/lib/api';
+import { api, mapActionError, type ActionResult } from '@/shared/lib/api';
 import type { ApiSuccessResponse } from '@/features/auth/types';
 import type {
   GetNewsInput,
   NewsArticle,
   NewsListData,
 } from '@/features/news/types';
-
-function mapError(error: unknown, fallback: string): ActionResult<never> {
-  if (error instanceof ApiError) {
-    return {
-      ok: false,
-      message: error.message || fallback,
-      errors: error.errors,
-      status: error.status,
-    };
-  }
-
-  return {
-    ok: false,
-    message: error instanceof Error ? error.message : fallback,
-  };
-}
 
 function clampPerPage(value?: number) {
   if (value == null) return 15;
@@ -45,7 +29,7 @@ export async function getNewsAction(
 
     return { ok: true, data: response.data };
   } catch (error) {
-    return mapError(error, 'Failed to load news.');
+    return mapActionError(error, 'Failed to load news.');
   }
 }
 
@@ -59,6 +43,6 @@ export async function getNewsBySlugAction(
 
     return { ok: true, data: response.data };
   } catch (error) {
-    return mapError(error, 'Failed to load article.');
+    return mapActionError(error, 'Failed to load article.');
   }
 }

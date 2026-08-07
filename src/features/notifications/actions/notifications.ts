@@ -1,6 +1,6 @@
 'use server';
 
-import { api, ApiError, type ActionResult } from '@/shared/lib/api';
+import { api, mapActionError, type ActionResult } from '@/shared/lib/api';
 import { getCurrentUser } from '@/features/auth/get-current-user';
 import { requireAuth } from '@/features/auth/session';
 import type { ApiSuccessResponse } from '@/features/auth/types';
@@ -17,22 +17,6 @@ export type GetNotificationsInput = {
   type?: NotificationType;
   unread?: boolean;
 };
-
-function mapError(error: unknown, fallback: string): ActionResult<never> {
-  if (error instanceof ApiError) {
-    return {
-      ok: false,
-      message: error.message || fallback,
-      errors: error.errors,
-      status: error.status,
-    };
-  }
-
-  return {
-    ok: false,
-    message: error instanceof Error ? error.message : fallback,
-  };
-}
 
 function clampPerPage(value?: number) {
   if (value == null) return 20;
@@ -69,7 +53,7 @@ export async function getNotificationsAction(
 
     return { ok: true, data: response.data };
   } catch (error) {
-    return mapError(error, 'Failed to load notifications.');
+    return mapActionError(error, 'Failed to load notifications.');
   }
 }
 
@@ -85,7 +69,7 @@ export async function getUnreadNotificationsCountAction(): Promise<
 
     return { ok: true, data: response.data };
   } catch (error) {
-    return mapError(error, 'Failed to load unread count.');
+    return mapActionError(error, 'Failed to load unread count.');
   }
 }
 
@@ -102,7 +86,7 @@ export async function markNotificationReadAction(
 
     return { ok: true, data: response.data };
   } catch (error) {
-    return mapError(error, 'Failed to mark notification as read.');
+    return mapActionError(error, 'Failed to mark notification as read.');
   }
 }
 
@@ -119,7 +103,7 @@ export async function markAllNotificationsReadAction(): Promise<
 
     return { ok: true, data: response.data };
   } catch (error) {
-    return mapError(error, 'Failed to mark notifications as read.');
+    return mapActionError(error, 'Failed to mark notifications as read.');
   }
 }
 
@@ -136,6 +120,6 @@ export async function deleteNotificationAction(
 
     return { ok: true, data: null };
   } catch (error) {
-    return mapError(error, 'Failed to delete notification.');
+    return mapActionError(error, 'Failed to delete notification.');
   }
 }

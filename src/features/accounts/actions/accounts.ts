@@ -1,6 +1,6 @@
 'use server';
 
-import { api, ApiError, type ActionResult } from '@/shared/lib/api';
+import { api, mapActionError, type ActionResult } from '@/shared/lib/api';
 import { requireAuth } from '@/features/auth/session';
 import type { ApiSuccessResponse } from '@/features/auth/types';
 import type {
@@ -8,22 +8,6 @@ import type {
   ConnectedAccount,
   SyncAccountsData,
 } from '@/features/accounts/types';
-
-function mapError(error: unknown, fallback: string): ActionResult<never> {
-  if (error instanceof ApiError) {
-    return {
-      ok: false,
-      message: error.message || fallback,
-      errors: error.errors,
-      status: error.status,
-    };
-  }
-
-  return {
-    ok: false,
-    message: error instanceof Error ? error.message : fallback,
-  };
-}
 
 export async function getAccountsAction(): Promise<
   ActionResult<AccountsListData>
@@ -36,7 +20,7 @@ export async function getAccountsAction(): Promise<
     );
     return { ok: true, data: response.data };
   } catch (error) {
-    return mapError(error, 'Failed to load accounts.');
+    return mapActionError(error, 'Failed to load accounts.');
   }
 }
 
@@ -51,7 +35,7 @@ export async function getAccountAction(
     );
     return { ok: true, data: response.data };
   } catch (error) {
-    return mapError(error, 'Failed to load connection detail.');
+    return mapActionError(error, 'Failed to load connection detail.');
   }
 }
 
@@ -75,7 +59,7 @@ export async function connectAccountAction(input: {
     );
     return { ok: true, data: response.data };
   } catch (error) {
-    return mapError(error, 'Could not connect provider.');
+    return mapActionError(error, 'Could not connect provider.');
   }
 }
 
@@ -91,7 +75,7 @@ export async function syncAccountsAction(input?: {
     );
     return { ok: true, data: response.data };
   } catch (error) {
-    return mapError(error, 'Failed to sync accounts.');
+    return mapActionError(error, 'Failed to sync accounts.');
   }
 }
 
@@ -107,7 +91,7 @@ export async function disconnectAccountAction(
     );
     return { ok: true, data: response.data };
   } catch (error) {
-    return mapError(error, 'Failed to disconnect provider.');
+    return mapActionError(error, 'Failed to disconnect provider.');
   }
 }
 
@@ -123,6 +107,6 @@ export async function setDefaultAccountAction(
     );
     return { ok: true, data: response.data };
   } catch (error) {
-    return mapError(error, 'Failed to set default account.');
+    return mapActionError(error, 'Failed to set default account.');
   }
 }

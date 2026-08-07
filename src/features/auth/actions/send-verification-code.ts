@@ -1,6 +1,6 @@
 'use server';
 
-import { api, ApiError, type ActionResult } from '@/shared/lib/api';
+import { api, mapActionError, type ActionResult } from '@/shared/lib/api';
 import {
   getPendingVerification,
   setPendingVerification,
@@ -31,22 +31,7 @@ export async function startEmailVerificationAction(input: {
 
     return { ok: true, data: null };
   } catch (error) {
-    if (error instanceof ApiError) {
-      return {
-        ok: false,
-        message: error.message || 'Failed to send verification code.',
-        errors: error.errors,
-        status: error.status,
-      };
-    }
-
-    return {
-      ok: false,
-      message:
-        error instanceof Error
-          ? error.message
-          : 'Something went wrong. Please try again.',
-    };
+    return mapActionError(error, 'Failed to send verification code.');
   }
 }
 
@@ -69,21 +54,6 @@ export async function sendVerificationCodeAction(): Promise<
 
     return { ok: true, data: null };
   } catch (error) {
-    if (error instanceof ApiError) {
-      return {
-        ok: false,
-        message: error.message || 'Failed to send verification code.',
-        errors: error.errors,
-        status: error.status,
-      };
-    }
-
-    return {
-      ok: false,
-      message:
-        error instanceof Error
-          ? error.message
-          : 'Something went wrong. Please try again.',
-    };
+    return mapActionError(error, 'Failed to send verification code.');
   }
 }

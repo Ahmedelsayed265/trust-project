@@ -1,6 +1,6 @@
 'use server';
 
-import { api, ApiError, type ActionResult } from '@/shared/lib/api';
+import { api, mapActionError, type ActionResult } from '@/shared/lib/api';
 import { setAuthToken } from '@/features/auth/session';
 import {
   clearPendingVerification,
@@ -35,22 +35,7 @@ export async function verifyEmailAction(input: {
 
     return { ok: true, data: { next: '/' } };
   } catch (error) {
-    if (error instanceof ApiError) {
-      return {
-        ok: false,
-        message: error.message || 'Invalid verification code.',
-        errors: error.errors,
-        status: error.status,
-      };
-    }
-
-    return {
-      ok: false,
-      message:
-        error instanceof Error
-          ? error.message
-          : 'Something went wrong. Please try again.',
-    };
+    return mapActionError(error, 'Invalid verification code.');
   }
 }
 

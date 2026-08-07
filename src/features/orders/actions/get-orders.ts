@@ -13,23 +13,7 @@ import type {
   OrdersData,
   PlaceOrderInput,
 } from '@/features/orders/types';
-import { api, ApiError, type ActionResult } from '@/shared/lib/api';
-
-function mapError(error: unknown, fallback: string): ActionResult<never> {
-  if (error instanceof ApiError) {
-    return {
-      ok: false,
-      message: error.message || fallback,
-      errors: error.errors,
-      status: error.status,
-    };
-  }
-
-  return {
-    ok: false,
-    message: error instanceof Error ? error.message : fallback,
-  };
-}
+import { api, mapActionError, type ActionResult } from '@/shared/lib/api';
 
 function clampLimit(value?: number) {
   if (value == null) return 20;
@@ -55,7 +39,7 @@ export async function getOrdersAction(
 
     return { ok: true, data: response.data };
   } catch (error) {
-    return mapError(error, 'Failed to load orders.');
+    return mapActionError(error, 'Failed to load orders.');
   }
 }
 
@@ -82,7 +66,7 @@ export async function getOrderByIdAction(
 
     return { ok: true, data: response.data };
   } catch (error) {
-    return mapError(error, 'Failed to load order.');
+    return mapActionError(error, 'Failed to load order.');
   }
 }
 
@@ -105,7 +89,7 @@ export async function getOrderFillsAction(
 
     return { ok: true, data: response.data };
   } catch (error) {
-    return mapError(error, 'Failed to load fills.');
+    return mapActionError(error, 'Failed to load fills.');
   }
 }
 
@@ -128,7 +112,7 @@ export async function cancelOrderAction(
 
     return { ok: true, data: response.data };
   } catch (error) {
-    return mapError(error, 'Failed to cancel order.');
+    return mapActionError(error, 'Failed to cancel order.');
   }
 }
 
@@ -174,7 +158,7 @@ export async function previewOrderSummaryAction(
 
     return { ok: true, data: response.data };
   } catch (error) {
-    return mapError(error, 'Failed to preview order.');
+    return mapActionError(error, 'Failed to preview order.');
   }
 }
 
@@ -221,6 +205,6 @@ export async function placeOrderAction(
 
     return { ok: true, data: response.data };
   } catch (error) {
-    return mapError(error, 'Failed to place order.');
+    return mapActionError(error, 'Failed to place order.');
   }
 }

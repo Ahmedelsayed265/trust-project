@@ -7,23 +7,7 @@ import type {
   VerificationStepKey,
 } from '@/features/verification/types';
 import { isVerificationStepKey } from '@/features/verification/types';
-import { api, ApiError, type ActionResult } from '@/shared/lib/api';
-
-function mapError(error: unknown, fallback: string): ActionResult<never> {
-  if (error instanceof ApiError) {
-    return {
-      ok: false,
-      message: error.message || fallback,
-      errors: error.errors,
-      status: error.status,
-    };
-  }
-
-  return {
-    ok: false,
-    message: error instanceof Error ? error.message : fallback,
-  };
-}
+import { api, mapActionError, type ActionResult } from '@/shared/lib/api';
 
 export async function submitVerificationStepAction(
   step: VerificationStepKey,
@@ -43,6 +27,6 @@ export async function submitVerificationStepAction(
 
     return { ok: true, data: response.data };
   } catch (error) {
-    return mapError(error, 'Failed to submit verification step.');
+    return mapActionError(error, 'Failed to submit verification step.');
   }
 }

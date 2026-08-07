@@ -3,23 +3,7 @@
 import type { ApiSuccessResponse } from '@/features/auth/types';
 import { getAuthToken } from '@/features/auth/session';
 import type { ContactFormValues } from '@/features/contact/schemas/contact';
-import { api, ApiError, type ActionResult } from '@/shared/lib/api';
-
-function mapError(error: unknown, fallback: string): ActionResult<never> {
-  if (error instanceof ApiError) {
-    return {
-      ok: false,
-      message: error.message || fallback,
-      errors: error.errors,
-      status: error.status,
-    };
-  }
-
-  return {
-    ok: false,
-    message: error instanceof Error ? error.message : fallback,
-  };
-}
+import { api, mapActionError, type ActionResult } from '@/shared/lib/api';
 
 export async function submitContactAction(
   input: ContactFormValues,
@@ -49,6 +33,6 @@ export async function submitContactAction(
       },
     };
   } catch (error) {
-    return mapError(error, 'Failed to send message.');
+    return mapActionError(error, 'Failed to send message.');
   }
 }

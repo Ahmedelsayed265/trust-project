@@ -1,6 +1,6 @@
 'use server';
 
-import { api, ApiError, type ActionResult } from '@/shared/lib/api';
+import { api, mapActionError, type ActionResult } from '@/shared/lib/api';
 import {
   clearPendingPasswordReset,
   getPendingPasswordReset,
@@ -35,22 +35,7 @@ export async function forgotPasswordAction(input: {
 
     return { ok: true, data: { email, otp: response.data?.otp } };
   } catch (error) {
-    if (error instanceof ApiError) {
-      return {
-        ok: false,
-        message: error.message || 'Failed to send reset code.',
-        errors: error.errors,
-        status: error.status,
-      };
-    }
-
-    return {
-      ok: false,
-      message:
-        error instanceof Error
-          ? error.message
-          : 'Something went wrong. Please try again.',
-    };
+    return mapActionError(error, 'Failed to send reset code.');
   }
 }
 
@@ -94,22 +79,7 @@ export async function verifyResetCodeAction(input: {
 
     return { ok: true, data: { next: '/reset-password' } };
   } catch (error) {
-    if (error instanceof ApiError) {
-      return {
-        ok: false,
-        message: error.message || 'Invalid reset code.',
-        errors: error.errors,
-        status: error.status,
-      };
-    }
-
-    return {
-      ok: false,
-      message:
-        error instanceof Error
-          ? error.message
-          : 'Something went wrong. Please try again.',
-    };
+    return mapActionError(error, 'Invalid reset code.');
   }
 }
 
@@ -134,22 +104,7 @@ export async function resetPasswordAction(input: {
 
     return { ok: true, data: null };
   } catch (error) {
-    if (error instanceof ApiError) {
-      return {
-        ok: false,
-        message: error.message || 'Failed to reset password.',
-        errors: error.errors,
-        status: error.status,
-      };
-    }
-
-    return {
-      ok: false,
-      message:
-        error instanceof Error
-          ? error.message
-          : 'Something went wrong. Please try again.',
-    };
+    return mapActionError(error, 'Failed to reset password.');
   }
 }
 

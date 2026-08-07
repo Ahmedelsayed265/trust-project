@@ -1,6 +1,6 @@
 'use server';
 
-import { api, ApiError, type ActionResult } from '@/shared/lib/api';
+import { api, mapActionError, type ActionResult } from '@/shared/lib/api';
 import { requireAuth } from '@/features/auth/session';
 import type { ApiSuccessResponse } from '@/features/auth/types';
 import type {
@@ -8,22 +8,6 @@ import type {
   SignalsListData,
   SignalsStats,
 } from '@/features/ai-signals/types';
-
-function mapError(error: unknown, fallback: string): ActionResult<never> {
-  if (error instanceof ApiError) {
-    return {
-      ok: false,
-      message: error.message || fallback,
-      errors: error.errors,
-      status: error.status,
-    };
-  }
-
-  return {
-    ok: false,
-    message: error instanceof Error ? error.message : fallback,
-  };
-}
 
 function clampPerPage(value?: number) {
   if (value == null) return 20;
@@ -53,7 +37,7 @@ export async function getSignalsAction(
 
     return { ok: true, data: response.data };
   } catch (error) {
-    return mapError(error, 'Failed to load signals.');
+    return mapActionError(error, 'Failed to load signals.');
   }
 }
 
@@ -69,6 +53,6 @@ export async function getSignalsStatsAction(): Promise<
 
     return { ok: true, data: response.data };
   } catch (error) {
-    return mapError(error, 'Failed to load signal stats.');
+    return mapActionError(error, 'Failed to load signal stats.');
   }
 }

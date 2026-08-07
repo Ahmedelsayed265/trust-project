@@ -1,6 +1,6 @@
 'use server';
 
-import { api, ApiError, type ActionResult } from '@/shared/lib/api';
+import { api, mapActionError, type ActionResult } from '@/shared/lib/api';
 import { getAuthToken } from '@/features/auth/session';
 import type { ApiSuccessResponse } from '@/features/auth/types';
 import type {
@@ -11,22 +11,6 @@ import type {
   MarketsListData,
   MarketsSummary,
 } from '@/features/markets/types';
-
-function mapError(error: unknown, fallback: string): ActionResult<never> {
-  if (error instanceof ApiError) {
-    return {
-      ok: false,
-      message: error.message || fallback,
-      errors: error.errors,
-      status: error.status,
-    };
-  }
-
-  return {
-    ok: false,
-    message: error instanceof Error ? error.message : fallback,
-  };
-}
 
 function clampPerPage(value?: number) {
   if (value == null) return 20;
@@ -56,7 +40,7 @@ export async function getMarketsAction(
 
     return { ok: true, data: response.data };
   } catch (error) {
-    return mapError(error, 'Failed to load markets.');
+    return mapActionError(error, 'Failed to load markets.');
   }
 }
 
@@ -70,7 +54,7 @@ export async function getMarketsCategoriesAction(): Promise<
 
     return { ok: true, data: response.data };
   } catch (error) {
-    return mapError(error, 'Failed to load market categories.');
+    return mapActionError(error, 'Failed to load market categories.');
   }
 }
 
@@ -83,7 +67,7 @@ export async function getMarketsSummaryAction(): Promise<
 
     return { ok: true, data: response.data };
   } catch (error) {
-    return mapError(error, 'Failed to load market summary.');
+    return mapActionError(error, 'Failed to load market summary.');
   }
 }
 
@@ -96,7 +80,7 @@ export async function getMarketsTickerAction(): Promise<
 
     return { ok: true, data: response.data };
   } catch (error) {
-    return mapError(error, 'Failed to load market ticker.');
+    return mapActionError(error, 'Failed to load market ticker.');
   }
 }
 
@@ -119,6 +103,6 @@ export async function getMarketBySymbolAction(
 
     return { ok: true, data: response.data };
   } catch (error) {
-    return mapError(error, 'Failed to load symbol.');
+    return mapActionError(error, 'Failed to load symbol.');
   }
 }

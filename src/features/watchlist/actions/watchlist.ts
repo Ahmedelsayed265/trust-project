@@ -7,24 +7,8 @@ import type {
   WatchlistItem,
   WatchlistToggleData,
 } from '@/features/watchlist/types';
-import { api, ApiError, type ActionResult } from '@/shared/lib/api';
+import { api, mapActionError, type ActionResult } from '@/shared/lib/api';
 import { requireAuth } from '@/features/auth/session';
-
-function mapError(error: unknown, fallback: string): ActionResult<never> {
-  if (error instanceof ApiError) {
-    return {
-      ok: false,
-      message: error.message || fallback,
-      errors: error.errors,
-      status: error.status,
-    };
-  }
-
-  return {
-    ok: false,
-    message: error instanceof Error ? error.message : fallback,
-  };
-}
 
 function normalizeSymbol(symbol: string) {
   return symbol.trim().replace(/\//g, '').toUpperCase();
@@ -42,7 +26,7 @@ export async function getWatchlistAction(): Promise<
 
     return { ok: true, data: response.data };
   } catch (error) {
-    return mapError(error, 'Failed to load watchlist.');
+    return mapActionError(error, 'Failed to load watchlist.');
   }
 }
 
@@ -63,7 +47,7 @@ export async function addToWatchlistAction(
 
     return { ok: true, data: response.data };
   } catch (error) {
-    return mapError(error, 'Could not add to watchlist.');
+    return mapActionError(error, 'Could not add to watchlist.');
   }
 }
 
@@ -80,7 +64,7 @@ export async function toggleWatchlistAction(
 
     return { ok: true, data: response.data };
   } catch (error) {
-    return mapError(error, 'Could not update watchlist.');
+    return mapActionError(error, 'Could not update watchlist.');
   }
 }
 
@@ -102,7 +86,7 @@ export async function removeFromWatchlistAction(
 
     return { ok: true, data: response.data ?? null };
   } catch (error) {
-    return mapError(error, 'Could not remove from watchlist.');
+    return mapActionError(error, 'Could not remove from watchlist.');
   }
 }
 
@@ -119,6 +103,6 @@ export async function reorderWatchlistAction(
 
     return { ok: true, data: response.data };
   } catch (error) {
-    return mapError(error, 'Could not reorder watchlist.');
+    return mapActionError(error, 'Could not reorder watchlist.');
   }
 }
