@@ -25,7 +25,7 @@ import { Link } from '@/i18n/navigation';
 export function NotificationsDropdown() {
   const t = useTranslations('Notifications');
   const tCommon = useTranslations('Common');
-  const tNav = useTranslations('Nav');
+  const tHeader = useTranslations('Header');
   const user = useCurrentUser();
   const [items, setItems] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(user.unread_notifications);
@@ -92,7 +92,7 @@ export function NotificationsDropdown() {
       }}
     >
       <DropdownMenuTrigger
-        aria-label={tNav('notificationsAria')}
+        aria-label={tHeader('notificationsAria')}
         className={cn(
           buttonVariants({ variant: 'ghost', size: 'icon' }),
           'text-muted-foreground relative shrink-0',
