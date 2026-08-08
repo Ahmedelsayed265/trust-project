@@ -41,8 +41,11 @@ export function PlanFeaturesList({ features }: { features: PlanFeature[] }) {
   );
 }
 
-export function planActionLabel(action: string) {
-  if (action === 'upgrade') return 'Upgrade';
-  if (action === 'downgrade') return 'Downgrade';
-  return 'Current Plan';
+export function planActionLabel(
+  action: string,
+  t: (key: 'upgrade' | 'downgrade' | 'currentPlan') => string,
+) {
+  if (action === 'upgrade') return t('upgrade');
+  if (action === 'downgrade') return t('downgrade');
+  return t('currentPlan');
 }

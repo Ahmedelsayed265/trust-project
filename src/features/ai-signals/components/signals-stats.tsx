@@ -1,15 +1,19 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import { Card, CardContent } from '@/components/ui/card';
 import type { SignalsStats } from '@/features/ai-signals/types';
 
 export function SignalsStatsCards({ stats }: { stats: SignalsStats }) {
+  const t = useTranslations('AiSignals');
   const statCards = [
-    { label: 'Active Signals', value: String(stats.active_signals) },
+    { label: t('statActive'), value: String(stats.active_signals) },
     {
-      label: 'Avg. Confidence',
+      label: t('statAvgConfidence'),
       value: `${Math.round(stats.avg_confidence)}%`,
     },
-    { label: 'Win Rate (30D)', value: `${stats.win_rate_30d}%` },
-    { label: 'Strong Signals', value: String(stats.strong_signals) },
+    { label: t('statWinRate'), value: `${stats.win_rate_30d}%` },
+    { label: t('statStrong'), value: String(stats.strong_signals) },
   ];
 
   return (

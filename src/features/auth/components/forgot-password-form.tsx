@@ -1,7 +1,8 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useTransition } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
@@ -14,6 +15,9 @@ import {
 } from '@/features/auth/schemas/auth';
 
 export function ForgotPasswordForm() {
+  const t = useTranslations('AuthForgotPassword');
+  const tCommon = useTranslations('Common');
+  const tLogin = useTranslations('AuthLogin');
   const router = useRouter();
   const [pending, startTransition] = useTransition();
 
@@ -39,7 +43,7 @@ export function ForgotPasswordForm() {
         return;
       }
 
-      toast.success('Reset code sent. Check your email.');
+      toast.success(t('toastSent'));
       router.push('/verify-email');
     });
   }
@@ -48,26 +52,24 @@ export function ForgotPasswordForm() {
     <>
       <div className="mb-8 space-y-2">
         <h2 className="text-foreground text-2xl font-bold tracking-tight">
-          Reset password
+          {t('title')}
         </h2>
-        <p className="text-muted-foreground text-sm">
-          Enter your email and we&apos;ll send you a 6-digit code
-        </p>
+        <p className="text-muted-foreground text-sm">{t('subtitle')}</p>
       </div>
 
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
         <FormTextField
           control={form.control}
           name="email"
-          label="Email"
+          label={tCommon('email')}
           type="email"
           autoComplete="email"
-          placeholder="you@example.com"
+          placeholder={tLogin('emailPlaceholder')}
           inputClassName="h-12 rounded-[12px]! bg-card px-3"
         />
 
-        <SubmitButton loading={pending} loadingText="Sending...">
-          Send reset code
+        <SubmitButton loading={pending} loadingText={t('submitting')}>
+          {t('submit')}
         </SubmitButton>
       </form>
     </>

@@ -1,4 +1,7 @@
-import Link from 'next/link';
+'use client';
+
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,21 +14,21 @@ export function PortfolioAccount({
 }: {
   accounts: PortfolioAccountSummary[];
 }) {
+  const t = useTranslations('Portfolio');
+  const tCommon = useTranslations('Common');
+
   return (
     <Card>
       <CardHeader className="flex-row items-center justify-between gap-3">
-        <CardTitle>Accounts</CardTitle>
+        <CardTitle>{t('accountsTitle')}</CardTitle>
         <Badge variant="secondary" className="border-0">
-          {accounts.length} linked
+          {t('linkedCount', { count: accounts.length })}
         </Badge>
       </CardHeader>
 
       <CardContent className="space-y-3">
         {accounts.length === 0 ? (
-          <p className="text-muted-foreground text-sm">
-            No providers linked yet. Connect a broker or exchange to see
-            balances here.
-          </p>
+          <p className="text-muted-foreground text-sm">{t('noProviders')}</p>
         ) : (
           <ul className="space-y-2.5">
             {accounts.map((account) => {
@@ -57,13 +60,13 @@ export function PortfolioAccount({
                         )}
                       >
                         {formatSignedMoney(account.day_pnl, account.currency)}{' '}
-                        today
+                        {tCommon('today')}
                       </p>
                     </div>
                   </div>
 
                   <p className="text-muted-foreground mt-1.5 text-xs">
-                    Buying power{' '}
+                    {t('buyingPower')}{' '}
                     {formatMoney(account.buying_power, account.currency)}
                   </p>
                 </li>
@@ -73,8 +76,7 @@ export function PortfolioAccount({
         )}
 
         <p className="text-muted-foreground text-xs leading-relaxed">
-          Balances are read directly from each provider. TrustAI never holds
-          funds and cannot move them between accounts.
+          {t('custodyNote')}
         </p>
 
         <Button
@@ -83,7 +85,7 @@ export function PortfolioAccount({
           nativeButton={false}
           render={<Link href="/accounts" />}
         >
-          Manage connections
+          {t('manageConnections')}
         </Button>
       </CardContent>
     </Card>

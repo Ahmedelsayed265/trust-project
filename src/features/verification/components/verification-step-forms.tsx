@@ -1,6 +1,7 @@
 'use client';
 
 import { useTransition } from 'react';
+import { useTranslations } from 'next-intl';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
@@ -32,17 +33,6 @@ import {
 import { FormTextField } from '@/shared/components/form-text-field';
 import { DateInput } from '@/shared/components/date-input';
 
-const identityTypes = [
-  { value: 'passport', label: 'Passport' },
-  { value: 'national_id', label: 'National ID' },
-  { value: 'driving_license', label: 'Driving license' },
-] as const;
-
-const addressTypes = [
-  { value: 'utility_bill', label: 'Utility bill' },
-  { value: 'bank_statement', label: 'Bank statement' },
-] as const;
-
 function appendPayload(formData: FormData, payload: Record<string, string>) {
   for (const [key, value] of Object.entries(payload)) {
     if (value) formData.append(`payload[${key}]`, value);
@@ -54,12 +44,16 @@ function FileField({
   label,
   error,
   optional,
+  optionalLabel,
+  fileHint,
   onChange,
 }: {
   id: string;
   label: string;
   error?: string;
   optional?: boolean;
+  optionalLabel: string;
+  fileHint: string;
   onChange: (file: File | null) => void;
 }) {
   return (
@@ -67,7 +61,10 @@ function FileField({
       <FieldLabel htmlFor={id}>
         {label}
         {optional ? (
-          <span className="text-muted-foreground font-normal"> (optional)</span>
+          <span className="text-muted-foreground font-normal">
+            {' '}
+            {optionalLabel}
+          </span>
         ) : null}
       </FieldLabel>
       <FieldContent>
@@ -80,9 +77,7 @@ function FileField({
             onChange(event.target.files?.[0] ?? null);
           }}
         />
-        <p className="text-muted-foreground text-xs">
-          Max 8 MB · JPG, PNG, PDF
-        </p>
+        <p className="text-muted-foreground text-xs">{fileHint}</p>
         {error ? <FieldError>{error}</FieldError> : null}
       </FieldContent>
     </Field>
@@ -95,6 +90,8 @@ type StepFormProps = {
 };
 
 export function PersonalDetailsForm({ onSuccess, onCancel }: StepFormProps) {
+  const t = useTranslations('Verification');
+  const tCommon = useTranslations('Common');
   const [pending, startTransition] = useTransition();
   const form = useForm<PersonalDetailsValues>({
     resolver: zodResolver(personalDetailsSchema),
@@ -126,7 +123,7 @@ export function PersonalDetailsForm({ onSuccess, onCancel }: StepFormProps) {
         return;
       }
 
-      toast.success('Personal details submitted.');
+      toast.success(t('toastPersonal'));
       onSuccess();
     });
   }
@@ -140,14 +137,14 @@ export function PersonalDetailsForm({ onSuccess, onCancel }: StepFormProps) {
         <FormTextField
           control={form.control}
           name="legal_first_name"
-          label="Legal first name"
+          label={t('legalFirstName')}
           autoComplete="given-name"
           inputClassName="h-12 rounded-xl bg-background px-2.5"
         />
         <FormTextField
           control={form.control}
           name="legal_last_name"
-          label="Legal last name"
+          label={t('legalLastName')}
           autoComplete="family-name"
           inputClassName="h-12 rounded-xl bg-background px-2.5"
         />
@@ -156,14 +153,16 @@ export function PersonalDetailsForm({ onSuccess, onCancel }: StepFormProps) {
           name="date_of_birth"
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid || undefined}>
-              <FieldLabel htmlFor="date_of_birth">Date of birth</FieldLabel>
+              <FieldLabel htmlFor="date_of_birth">
+                {t('dateOfBirth')}
+              </FieldLabel>
               <FieldContent>
                 <DateInput
                   id="date_of_birth"
                   value={field.value}
                   onChange={field.onChange}
                   onBlur={field.onBlur}
-                  placeholder="Select date of birth"
+                  placeholder={t('dobPlaceholder')}
                   invalid={fieldState.invalid}
                   adultOnly
                 />
@@ -177,8 +176,8 @@ export function PersonalDetailsForm({ onSuccess, onCancel }: StepFormProps) {
         <FormTextField
           control={form.control}
           name="nationality"
-          label="Nationality"
-          placeholder="EG"
+          label={t('nationality')}
+          placeholder={t('nationalityPlaceholder')}
           inputClassName="h-12 rounded-xl bg-background px-2.5 uppercase"
         />
       </div>
@@ -190,10 +189,10 @@ export function PersonalDetailsForm({ onSuccess, onCancel }: StepFormProps) {
           disabled={pending}
           onClick={onCancel}
         >
-          Cancel
+          {tCommon('cancel')}
         </Button>
         <Button type="submit" className="rounded-xl" disabled={pending}>
-          {pending ? 'Submitting…' : 'Submit step'}
+          {pending ? t('submitting') : t('submitStep')}
         </Button>
       </SheetFooter>
     </form>
@@ -201,7 +200,14 @@ export function PersonalDetailsForm({ onSuccess, onCancel }: StepFormProps) {
 }
 
 export function IdentityDocumentForm({ onSuccess, onCancel }: StepFormProps) {
+  const t = useTranslations('Verification');
+  const tCommon = useTranslations('Common');
   const [pending, startTransition] = useTransition();
+  const identityTypes = [
+    { value: 'passport' as const, label: t('docPassport') },
+    { value: 'national_id' as const, label: t('docNationalId') },
+    { value: 'driving_license' as const, label: t('docDrivingLicense') },
+  ];
   const form = useForm<IdentityDocumentValues>({
     resolver: zodResolver(identityDocumentSchema),
     defaultValues: {
@@ -229,7 +235,7 @@ export function IdentityDocumentForm({ onSuccess, onCancel }: StepFormProps) {
         return;
       }
 
-      toast.success('Identity document submitted.');
+      toast.success(t('toastIdentity'));
       onSuccess();
     });
   }
@@ -246,7 +252,7 @@ export function IdentityDocumentForm({ onSuccess, onCancel }: StepFormProps) {
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid || undefined}>
               <FieldLabel htmlFor="identity-document-type">
-                Document type
+                {t('documentType')}
               </FieldLabel>
               <FieldContent>
                 <Select
@@ -283,8 +289,10 @@ export function IdentityDocumentForm({ onSuccess, onCancel }: StepFormProps) {
           render={({ field, fieldState }) => (
             <FileField
               id="identity-document-front"
-              label="Front of document"
+              label={t('frontOfDocument')}
               error={fieldState.error?.message}
+              optionalLabel={t('optional')}
+              fileHint={t('fileHint')}
               onChange={field.onChange}
             />
           )}
@@ -295,8 +303,10 @@ export function IdentityDocumentForm({ onSuccess, onCancel }: StepFormProps) {
           render={({ field, fieldState }) => (
             <FileField
               id="identity-document-back"
-              label="Back of document"
+              label={t('backOfDocument')}
               optional
+              optionalLabel={t('optional')}
+              fileHint={t('fileHint')}
               error={fieldState.error?.message}
               onChange={field.onChange}
             />
@@ -311,10 +321,10 @@ export function IdentityDocumentForm({ onSuccess, onCancel }: StepFormProps) {
           disabled={pending}
           onClick={onCancel}
         >
-          Cancel
+          {tCommon('cancel')}
         </Button>
         <Button type="submit" className="rounded-xl" disabled={pending}>
-          {pending ? 'Submitting…' : 'Submit step'}
+          {pending ? t('submitting') : t('submitStep')}
         </Button>
       </SheetFooter>
     </form>
@@ -322,7 +332,13 @@ export function IdentityDocumentForm({ onSuccess, onCancel }: StepFormProps) {
 }
 
 export function AddressForm({ onSuccess, onCancel }: StepFormProps) {
+  const t = useTranslations('Verification');
+  const tCommon = useTranslations('Common');
   const [pending, startTransition] = useTransition();
+  const addressTypes = [
+    { value: 'utility_bill' as const, label: t('docUtilityBill') },
+    { value: 'bank_statement' as const, label: t('docBankStatement') },
+  ];
   const form = useForm<AddressValues>({
     resolver: zodResolver(addressSchema),
     defaultValues: {
@@ -353,7 +369,7 @@ export function AddressForm({ onSuccess, onCancel }: StepFormProps) {
         return;
       }
 
-      toast.success('Address verification submitted.');
+      toast.success(t('toastAddress'));
       onSuccess();
     });
   }
@@ -370,7 +386,7 @@ export function AddressForm({ onSuccess, onCancel }: StepFormProps) {
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid || undefined}>
               <FieldLabel htmlFor="address-document-type">
-                Document type
+                {t('documentType')}
               </FieldLabel>
               <FieldContent>
                 <Select
@@ -407,8 +423,10 @@ export function AddressForm({ onSuccess, onCancel }: StepFormProps) {
           render={({ field, fieldState }) => (
             <FileField
               id="address-document-front"
-              label="Proof of address"
+              label={t('proofOfAddress')}
               error={fieldState.error?.message}
+              optionalLabel={t('optional')}
+              fileHint={t('fileHint')}
               onChange={field.onChange}
             />
           )}
@@ -416,14 +434,14 @@ export function AddressForm({ onSuccess, onCancel }: StepFormProps) {
         <FormTextField
           control={form.control}
           name="address_line"
-          label="Address line"
+          label={t('addressLine')}
           autoComplete="street-address"
           inputClassName="h-12 rounded-xl bg-background px-2.5"
         />
         <FormTextField
           control={form.control}
           name="city"
-          label="City"
+          label={t('city')}
           autoComplete="address-level2"
           inputClassName="h-12 rounded-xl bg-background px-2.5"
         />
@@ -431,15 +449,15 @@ export function AddressForm({ onSuccess, onCancel }: StepFormProps) {
           <FormTextField
             control={form.control}
             name="country"
-            label="Country"
-            placeholder="EG"
+            label={tCommon('country')}
+            placeholder={t('nationalityPlaceholder')}
             autoComplete="country"
             inputClassName="h-12 rounded-xl bg-background px-2.5 uppercase"
           />
           <FormTextField
             control={form.control}
             name="postal_code"
-            label="Postal code"
+            label={t('postalCode')}
             autoComplete="postal-code"
             inputClassName="h-12 rounded-xl bg-background px-2.5"
           />
@@ -453,10 +471,10 @@ export function AddressForm({ onSuccess, onCancel }: StepFormProps) {
           disabled={pending}
           onClick={onCancel}
         >
-          Cancel
+          {tCommon('cancel')}
         </Button>
         <Button type="submit" className="rounded-xl" disabled={pending}>
-          {pending ? 'Submitting…' : 'Submit step'}
+          {pending ? t('submitting') : t('submitStep')}
         </Button>
       </SheetFooter>
     </form>

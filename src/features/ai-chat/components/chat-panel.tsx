@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { ChatComposer } from '@/features/ai-chat/components/chat-composer';
 import { ChatMessageList } from '@/features/ai-chat/components/chat-message-list';
@@ -32,6 +33,8 @@ export function ChatPanel({
   onCreate: () => void;
   onSelectRecent: (id: number) => void;
 }) {
+  const t = useTranslations('AiChat');
+
   return (
     <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden">
       <div className="border-border flex shrink-0 items-center justify-between gap-2 border-b px-4 py-3 lg:hidden">
@@ -43,7 +46,7 @@ export function ChatPanel({
           disabled={pending}
           onClick={onCreate}
         >
-          New chat
+          {t('newChat')}
         </Button>
         {conversations[0] ? (
           <Button
@@ -54,7 +57,7 @@ export function ChatPanel({
             disabled={pending}
             onClick={() => onSelectRecent(conversations[0]!.id)}
           >
-            Recent
+            {t('recent')}
           </Button>
         ) : null}
       </div>

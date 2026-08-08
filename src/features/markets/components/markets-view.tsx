@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { MarketCategoryTabs } from '@/features/markets/components/market-category-tabs';
 import { MarketSummaryCards } from '@/features/markets/components/market-summary-cards';
 import { MarketsTable } from '@/features/markets/components/markets-table';
@@ -20,6 +21,7 @@ export function MarketsView({
   initialSummary: MarketsSummary;
   categories: MarketCategory[];
 }) {
+  const t = useTranslations('Markets');
   const [searchOpen, setSearchOpen] = useState(false);
   const {
     assetClass,
@@ -41,11 +43,9 @@ export function MarketsView({
     <div className="flex w-full min-w-0 flex-col gap-4 sm:gap-5">
       <div>
         <h1 className="text-foreground text-xl font-bold tracking-tight sm:text-2xl">
-          Markets
+          {t('title')}
         </h1>
-        <p className="text-muted-foreground mt-1 text-sm">
-          Explore global markets and trade smarter.
-        </p>
+        <p className="text-muted-foreground mt-1 text-sm">{t('description')}</p>
       </div>
 
       <MarketCategoryTabs

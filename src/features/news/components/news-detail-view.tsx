@@ -1,4 +1,5 @@
-import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
+import { Link } from '@/i18n/navigation';
 import { ArrowLeft, ExternalLink } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -8,7 +9,9 @@ import type { NewsArticle } from '@/features/news/types';
 import { cn } from '@/lib/utils';
 import { PageHeader } from '@/shared/components/page-header';
 
-export function NewsDetailView({ article }: { article: NewsArticle }) {
+export async function NewsDetailView({ article }: { article: NewsArticle }) {
+  const t = await getTranslations('News');
+  const tCommon = await getTranslations('Common');
   const paragraphs = article.body
     .split(/\n+/)
     .map((part) => part.trim())
@@ -26,7 +29,7 @@ export function NewsDetailView({ article }: { article: NewsArticle }) {
             render={<Link href="/news" />}
           >
             <ArrowLeft className="size-4" />
-            Back
+            {tCommon('back')}
           </Button>
         }
       />
@@ -54,7 +57,7 @@ export function NewsDetailView({ article }: { article: NewsArticle }) {
               {article.sentiment}
             </Badge>
             {article.is_featured ? (
-              <Badge className="border-0">Featured</Badge>
+              <Badge className="border-0">{t('featured')}</Badge>
             ) : null}
           </div>
 
@@ -95,7 +98,7 @@ export function NewsDetailView({ article }: { article: NewsArticle }) {
                 <a href={article.source_url} target="_blank" rel="noreferrer" />
               }
             >
-              Read original
+              {t('readOriginal')}
               <ExternalLink className="size-3.5" />
             </Button>
           ) : null}

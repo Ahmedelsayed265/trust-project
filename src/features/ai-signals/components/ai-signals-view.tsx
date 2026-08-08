@@ -1,6 +1,7 @@
 'use client';
 
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import type {
   SignalSide,
   SignalStatus,
@@ -23,6 +24,7 @@ export function AiSignalsView({
   initialData: SignalsListData;
   initialStats: SignalsStats;
 }) {
+  const t = useTranslations('AiSignals');
   const {
     status,
     setStatus,
@@ -43,11 +45,11 @@ export function AiSignalsView({
   return (
     <div className="flex w-full min-w-0 flex-col gap-4 sm:gap-5">
       <PageHeader
-        title="AI Signals"
-        description="Confidence-scored trade ideas updated in real time."
+        title={t('title')}
+        description={t('description')}
         actions={
           <Button className="rounded-xl" render={<Link href="/trades" />}>
-            Open Trade Desk
+            {t('openTradeDesk')}
           </Button>
         }
       />

@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { Bot, UserRound } from 'lucide-react';
 import type { ChatMessage } from '@/features/ai-chat/types';
 import { cn } from '@/lib/utils';
@@ -13,6 +14,8 @@ export function ChatMessageList({
   pending: boolean;
   bottomRef: React.RefObject<HTMLDivElement | null>;
 }) {
+  const t = useTranslations('AiChat');
+
   return (
     <div className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain px-4 py-4">
       {messages.map((message) => {
@@ -55,7 +58,7 @@ export function ChatMessageList({
             <Bot className="size-4" />
           </div>
           <div className="border-border bg-muted/40 text-muted-foreground rounded-2xl border px-3.5 py-2.5 text-sm">
-            Thinking…
+            {t('thinking')}
           </div>
         </div>
       ) : null}

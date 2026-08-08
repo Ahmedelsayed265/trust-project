@@ -1,7 +1,8 @@
 'use client';
 
 import { useMemo } from 'react';
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/shared/components/page-header';
@@ -38,6 +39,8 @@ export function PortfolioView({
   initialHistory,
   initialBalances,
 }: PortfolioViewProps) {
+  const t = useTranslations('Portfolio');
+  const tCommon = useTranslations('Common');
   const { portfolio, allocation, orders, pending, refresh } = usePortfolio({
     initialPortfolio,
     initialAllocation,
@@ -58,20 +61,20 @@ export function PortfolioView({
     null;
   const providerLabel = hasAccounts
     ? portfolio.accounts.map((account) => account.label).join(' · ')
-    : 'no linked providers';
+    : t('noLinkedProviders');
 
   return (
     <div className="flex w-full min-w-0 flex-col gap-4 sm:gap-5">
       <PageHeader
-        title="Portfolio"
-        description={`Read-only holdings from ${providerLabel}. No internal TrustAI wallet.`}
+        title={t('title')}
+        description={t('description', { provider: providerLabel })}
         actions={
           <>
             <Button
               variant="outline"
               size="icon"
               className="rounded-md"
-              aria-label="Refresh portfolio"
+              aria-label={t('refreshAria')}
               disabled={pending}
               onClick={refresh}
             >
@@ -83,14 +86,14 @@ export function PortfolioView({
               nativeButton={false}
               render={<Link href="/trades" />}
             >
-              Trade
+              {tCommon('trade')}
             </Button>
             <Button
               className="rounded-md"
               nativeButton={false}
               render={<Link href="/accounts" />}
             >
-              Manage accounts
+              {tCommon('manageAccounts')}
             </Button>
           </>
         }
@@ -100,16 +103,14 @@ export function PortfolioView({
         <div className="border-border bg-card flex flex-col gap-3 rounded-[12px] border px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-start gap-2.5">
             <AlertTriangle className="text-chart-4 mt-0.5 size-4 shrink-0" />
-            <p className="text-muted-foreground text-sm">
-              Connect a trading provider to load portfolio balances.
-            </p>
+            <p className="text-muted-foreground text-sm">{t('connectHint')}</p>
           </div>
           <Button
             className="shrink-0 rounded-md"
             nativeButton={false}
             render={<Link href="/accounts" />}
           >
-            Connect provider
+            {tCommon('connectProvider')}
           </Button>
         </div>
       )}

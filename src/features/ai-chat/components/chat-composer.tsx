@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { ArrowUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -14,6 +15,8 @@ export function ChatComposer({
   onChange: (value: string) => void;
   onSend: (value: string) => void;
 }) {
+  const t = useTranslations('AiChat');
+
   return (
     <form
       onSubmit={(event) => {
@@ -33,7 +36,7 @@ export function ChatComposer({
             }
           }}
           rows={1}
-          placeholder="Ask TrustAI anything..."
+          placeholder={t('placeholder')}
           className="placeholder:text-muted-foreground max-h-32 min-h-11 flex-1 resize-none bg-transparent px-2 py-2.5 text-sm outline-none"
         />
         <Button
@@ -41,14 +44,12 @@ export function ChatComposer({
           size="icon"
           className="size-10 shrink-0 rounded-xl"
           disabled={!value.trim() || pending}
-          aria-label="Send message"
+          aria-label={t('sendAria')}
         >
           <ArrowUp className="size-4" />
         </Button>
       </div>
-      <p className="text-muted-foreground mt-2 text-xs">
-        AI responses are educational and not financial advice.
-      </p>
+      <p className="text-muted-foreground mt-2 text-xs">{t('disclaimer')}</p>
     </form>
   );
 }

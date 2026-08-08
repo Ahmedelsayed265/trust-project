@@ -1,6 +1,7 @@
 'use client';
 
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import { Card } from '@/components/ui/card';
 import { CancelOrderButton } from '@/features/orders/components/cancel-order-button';
 import {
@@ -59,26 +60,36 @@ export function OrderCard({
   order: Order;
   onCancelled?: (orderId: string) => void;
 }) {
+  const t = useTranslations('Orders');
   const symbol = order.display_symbol || order.symbol;
   const filledPct =
     order.qty > 0 ? Math.min((order.filled_qty / order.qty) * 100, 100) : 0;
   const partiallyFilled = order.filled_qty > 0 && filledPct < 100;
 
+  const typeLabel = order.type.charAt(0).toUpperCase() + order.type.slice(1);
   const meta = [
-    order.type.charAt(0).toUpperCase() + order.type.slice(1),
+    typeLabel,
     order.account,
     formatOrderDate(order.created_at),
     partiallyFilled
-      ? `${formatOrderQty(order.filled_qty)} of ${formatOrderQty(order.qty)} filled`
+      ? t('filledOf', {
+          filled: formatOrderQty(order.filled_qty),
+          qty: formatOrderQty(order.qty),
+        })
       : null,
-    order.fee > 0 ? `Fee ${formatMoney(order.fee)} ${order.fee_asset}` : null,
+    order.fee > 0
+      ? t('feeWithAsset', {
+          amount: formatMoney(order.fee),
+          asset: order.fee_asset,
+        })
+      : null,
   ].filter(Boolean) as string[];
 
   return (
     <Card className="hover:border-border/70 hover:bg-muted/25 relative gap-0 py-0 transition-colors">
       <Link
         href={orderHref(order)}
-        aria-label={`${order.side} ${symbol} order`}
+        aria-label={t('orderAria', { side: order.side, symbol })}
         className="focus-visible:ring-ring absolute inset-0 rounded-[inherit] focus-visible:ring-2 focus-visible:outline-none"
       />
 
@@ -111,17 +122,17 @@ export function OrderCard({
 
         <dl className="grid grid-cols-3 gap-3 sm:flex sm:shrink-0 sm:items-center sm:gap-6">
           <Stat
-            label="Amount"
+            label={t('amount')}
             value={formatOrderQty(order.qty)}
             className="sm:w-24"
           />
           <Stat
-            label="Price"
+            label={t('price')}
             value={orderDisplayPrice(order)}
             className="sm:w-28"
           />
           <Stat
-            label={order.is_open ? 'Est. total' : 'Total'}
+            label={order.is_open ? t('estTotal') : t('total')}
             value={formatMoney(order.quote_amount)}
             className="sm:w-28"
             emphasis
@@ -134,7 +145,7 @@ export function OrderCard({
               orderId={order.id}
               providerId={order.provider_id}
               symbol={symbol}
-              label="Cancel"
+              label={t('cancel')}
               onCancelled={onCancelled}
               className="h-9 rounded-lg px-3 text-xs"
             />

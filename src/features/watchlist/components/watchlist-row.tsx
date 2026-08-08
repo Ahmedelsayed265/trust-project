@@ -1,3 +1,6 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import { Star } from 'lucide-react';
 import { ChangeIndicator } from '@/shared/components/change-indicator';
 import { Sparkline } from '@/shared/components/sparkline';
@@ -13,6 +16,9 @@ type WatchlistRowProps = {
 };
 
 export function WatchlistRow({ item, onRemove, removing }: WatchlistRowProps) {
+  const t = useTranslations('Watchlist');
+  const symbol = item.display_symbol || item.symbol;
+
   return (
     <li className="flex items-center gap-3 px-4 py-3.5 sm:px-5">
       <div
@@ -25,9 +31,7 @@ export function WatchlistRow({ item, onRemove, removing }: WatchlistRowProps) {
       </div>
 
       <div className="min-w-0 flex-1">
-        <p className="text-foreground text-sm font-semibold">
-          {item.display_symbol || item.symbol}
-        </p>
+        <p className="text-foreground text-sm font-semibold">{symbol}</p>
         <p className="text-muted-foreground text-xs">{item.name}</p>
       </div>
 
@@ -56,7 +60,7 @@ export function WatchlistRow({ item, onRemove, removing }: WatchlistRowProps) {
           onClick={onRemove}
           disabled={removing}
           className="text-primary transition-colors hover:opacity-80 disabled:opacity-50"
-          aria-label={`Remove ${item.display_symbol || item.symbol}`}
+          aria-label={t('removeAria', { symbol })}
         >
           <Star className="size-4" fill="currentColor" />
         </button>

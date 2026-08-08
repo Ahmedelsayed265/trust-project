@@ -1,4 +1,5 @@
-import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
+import { Link } from '@/i18n/navigation';
 import type { WatchlistItem } from '@/features/watchlist/types';
 import { Sparkline } from '@/shared/components/sparkline';
 import { formatMoney, formatPct } from '@/shared/trading';
@@ -8,29 +9,26 @@ type MarketHighlightsProps = {
   items: WatchlistItem[];
 };
 
-export function MarketHighlights({ items }: MarketHighlightsProps) {
+export async function MarketHighlights({ items }: MarketHighlightsProps) {
+  const t = await getTranslations('Dashboard');
+  const tCommon = await getTranslations('Common');
+
   return (
     <div className="border-border bg-card rounded-lg border p-5">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-foreground text-base font-semibold">
-          Market Highlights
+          {t('marketHighlights')}
         </h2>
         <Link
           href="/markets"
           className="text-primary text-sm font-medium hover:underline"
         >
-          View All
+          {tCommon('viewAll')}
         </Link>
       </div>
 
       {items.length === 0 ? (
-        <p className="text-muted-foreground text-sm">
-          No market highlights right now. Check{' '}
-          <Link href="/markets" className="text-primary hover:underline">
-            markets
-          </Link>{' '}
-          for live prices.
-        </p>
+        <p className="text-muted-foreground text-sm">{t('noHighlights')}</p>
       ) : (
         <div className="space-y-3">
           {items.map((market) => (

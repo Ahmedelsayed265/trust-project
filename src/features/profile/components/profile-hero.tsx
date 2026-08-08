@@ -1,6 +1,7 @@
 'use client';
 
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -8,10 +9,13 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { BadgeCheck, Camera, Check } from 'lucide-react';
 import { useCurrentUser } from '@/shared/providers/user-provider';
 
-const benefits = ['Advanced AI Signals', 'Real-time News', 'Priority Support'];
-
 export function ProfileHero() {
+  const t = useTranslations('Profile');
+  const tCommon = useTranslations('Common');
+  const tBrand = useTranslations('Brand');
   const user = useCurrentUser();
+
+  const benefits = [t('benefitSignals'), t('benefitNews'), t('benefitSupport')];
 
   return (
     <Card className="">
@@ -27,7 +31,7 @@ export function ProfileHero() {
               <button
                 type="button"
                 className="bg-primary text-primary-foreground ring-card absolute right-0 bottom-0 flex size-8 items-center justify-center rounded-full ring-2"
-                aria-label="Change photo"
+                aria-label={t('changePhoto')}
               >
                 <Camera className="size-3.5" />
               </button>
@@ -41,7 +45,7 @@ export function ProfileHero() {
                 {user.email_verified || user.kyc_verified ? (
                   <BadgeCheck
                     className="text-primary size-5"
-                    aria-label="Verified"
+                    aria-label={tCommon('verified')}
                   />
                 ) : null}
               </div>
@@ -49,20 +53,22 @@ export function ProfileHero() {
               <div className="mt-2.5 flex flex-wrap items-center justify-center gap-2 sm:justify-start">
                 {user.kyc_verified ? (
                   <Badge className="text-success border-0 bg-emerald-50 hover:bg-emerald-50 dark:bg-emerald-950/40">
-                    Verified
+                    {tCommon('verified')}
                   </Badge>
                 ) : null}
-                <Badge className="border-0">{user.plan?.name ?? 'Free'}</Badge>
+                <Badge className="border-0">
+                  {user.plan?.name ?? tBrand('planFree')}
+                </Badge>
               </div>
               <p className="text-muted-foreground mt-2 text-xs">
-                Member since {user.member_since_label}
+                {t('memberSince', { date: user.member_since_label })}
               </p>
             </div>
           </div>
 
           <div className="border-border bg-muted/40 rounded-lg border p-4 lg:min-w-[280px]">
             <p className="text-foreground mb-3 text-sm font-semibold">
-              Premium Benefits
+              {t('premiumBenefits')}
             </p>
             <ul className="mb-4 space-y-2">
               {benefits.map((benefit) => (
@@ -81,7 +87,7 @@ export function ProfileHero() {
               className="h-10 w-full rounded-xl"
               render={<Link href="/profile/plans" />}
             >
-              Manage Plan
+              {t('managePlan')}
             </Button>
           </div>
         </div>

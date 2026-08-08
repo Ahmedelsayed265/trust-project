@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useTranslations } from 'next-intl';
+import { useMemo, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -11,15 +12,24 @@ import { FormPasswordField } from '@/shared/components/form-password-field';
 import { SubmitButton } from '@/shared/components/submit-button';
 import { deleteAccountAction } from '@/features/security/actions/delete-account';
 
-const deleteAccountSchema = z.object({
-  password: z.string().min(1, 'Enter your password'),
-});
-
-type DeleteAccountFormValues = z.infer<typeof deleteAccountSchema>;
+type DeleteAccountFormValues = {
+  password: string;
+};
 
 export function DeleteAccountCard() {
+  const t = useTranslations('Profile');
+  const tCommon = useTranslations('Common');
+  const tValidation = useTranslations('Validation');
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [pending, startTransition] = useTransition();
+
+  const deleteAccountSchema = useMemo(
+    () =>
+      z.object({
+        password: z.string().min(1, tValidation('enterPassword')),
+      }),
+    [tValidation],
+  );
 
   const form = useForm<DeleteAccountFormValues>({
     resolver: zodResolver(deleteAccountSchema),
@@ -59,10 +69,10 @@ export function DeleteAccountCard() {
         </div>
         <div className="min-w-0 flex-1 text-left">
           <p className="text-destructive text-sm font-semibold">
-            Delete Account
+            {t('deleteAccount')}
           </p>
           <p className="text-muted-foreground truncate text-xs">
-            Permanently delete your data
+            {t('deleteAccountDesc')}
           </p>
         </div>
         <ChevronRight className="text-muted-foreground size-4 shrink-0" />
@@ -82,11 +92,10 @@ export function DeleteAccountCard() {
         </div>
         <div className="min-w-0 flex-1">
           <p className="text-destructive text-sm font-semibold">
-            Confirm delete
+            {t('confirmDelete')}
           </p>
           <p className="text-muted-foreground mt-0.5 text-xs leading-relaxed">
-            Enter your password. This soft-deletes your account and signs you
-            out of every device.
+            {t('confirmDeleteBody')}
           </p>
         </div>
       </div>
@@ -95,9 +104,9 @@ export function DeleteAccountCard() {
         <FormPasswordField
           control={form.control}
           name="password"
-          label="Current password"
+          label={t('currentPassword')}
           autoComplete="current-password"
-          placeholder="Enter your password"
+          placeholder={tValidation('enterPassword')}
           inputClassName="bg-background h-11 rounded-xl px-2.5"
         />
 
@@ -109,14 +118,14 @@ export function DeleteAccountCard() {
             onClick={onCancel}
             disabled={pending}
           >
-            Cancel
+            {tCommon('cancel')}
           </Button>
           <SubmitButton
             loading={pending}
-            loadingText="Deleting..."
+            loadingText={t('deleting')}
             className="bg-destructive hover:bg-destructive/90 h-9 w-auto rounded-xl px-4 text-white hover:text-white"
           >
-            Confirm delete
+            {t('confirmDelete')}
           </SubmitButton>
         </div>
       </form>

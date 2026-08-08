@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { createElement, useState, useTransition } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -45,14 +46,6 @@ import { useCurrentUser } from '@/shared/providers/user-provider';
 import { useAppSettings } from '@/shared/providers/app-settings-provider';
 import { cn } from '@/lib/utils';
 
-const categories = [
-  { value: 'account', label: 'Account & verification' },
-  { value: 'trading', label: 'Trading & orders' },
-  { value: 'billing', label: 'Billing & plans' },
-  { value: 'technical', label: 'Technical issue' },
-  { value: 'other', label: 'Other' },
-] as const;
-
 type SupportChannel = {
   title: string;
   description: string;
@@ -61,6 +54,8 @@ type SupportChannel = {
 };
 
 export function ContactView() {
+  const t = useTranslations('Contact');
+  const tCommon = useTranslations('Common');
   const user = useCurrentUser();
   const settings = useAppSettings();
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -76,18 +71,26 @@ export function ContactView() {
     },
   });
 
+  const categories = [
+    { value: 'account' as const, label: t('categoryAccount') },
+    { value: 'trading' as const, label: t('categoryTrading') },
+    { value: 'billing' as const, label: t('categoryBilling') },
+    { value: 'technical' as const, label: t('categoryTechnical') },
+    { value: 'other' as const, label: t('categoryOther') },
+  ];
+
   const supportChannels: SupportChannel[] = [
     {
-      title: 'Email support',
-      description: 'We typically reply within a few hours.',
+      title: t('channelEmail'),
+      description: t('channelEmailDesc'),
       icon: Mail,
       meta: settings.support_email,
     },
     ...(settings.support_phone
       ? [
           {
-            title: 'Phone',
-            description: 'Call us during support hours.',
+            title: t('channelPhone'),
+            description: t('channelPhoneDesc'),
             icon: Phone,
             meta: settings.support_phone,
           },
@@ -96,24 +99,24 @@ export function ContactView() {
     ...(settings.whatsapp
       ? [
           {
-            title: 'WhatsApp',
-            description: 'Message us on WhatsApp.',
+            title: t('channelWhatsApp'),
+            description: t('channelWhatsAppDesc'),
             icon: MessageCircle,
             meta: settings.whatsapp,
           },
         ]
       : []),
     {
-      title: 'Live hours',
-      description: 'Priority help for Premium members.',
+      title: t('liveHours'),
+      description: t('liveHoursDesc'),
       icon: Clock3,
-      meta: 'Mon–Fri · 9:00–18:00 UTC',
+      meta: t('liveHoursMeta'),
     },
     {
-      title: 'Ticket updates',
-      description: 'Track replies in your notifications.',
+      title: t('ticketUpdates'),
+      description: t('ticketUpdatesDesc'),
       icon: MessagesSquare,
-      meta: 'In-app alerts enabled',
+      meta: t('ticketUpdatesMeta'),
     },
   ];
 
@@ -138,7 +141,7 @@ export function ContactView() {
         return;
       }
 
-      setSuccessMessage(result.data.message);
+      setSuccessMessage(result.data.message || t('toastSuccessFallback'));
       form.reset({
         name: user.name,
         email: user.email,
@@ -151,10 +154,7 @@ export function ContactView() {
 
   return (
     <div className="flex w-full min-w-0 flex-col gap-4 sm:gap-5">
-      <PageHeader
-        title="Contact Support"
-        description="Tell us what's going on and we'll get back to you soon."
-      />
+      <PageHeader title={t('title')} description={t('description')} />
 
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
         <Card>
@@ -177,14 +177,14 @@ export function ContactView() {
                 <FormTextField
                   control={form.control}
                   name="name"
-                  label="Name"
+                  label={t('name')}
                   autoComplete="name"
                   inputClassName="h-12 rounded-xl bg-background px-2.5"
                 />
                 <FormTextField
                   control={form.control}
                   name="email"
-                  label="Email"
+                  label={t('email')}
                   type="email"
                   autoComplete="email"
                   inputClassName="h-12 rounded-xl bg-background px-2.5"
@@ -237,8 +237,8 @@ export function ContactView() {
                 <FormTextField
                   control={form.control}
                   name="subject"
-                  label="Subject"
-                  placeholder="Brief summary of the issue"
+                  label={t('subject')}
+                  placeholder={t('subjectPlaceholder')}
                   inputClassName="h-12 rounded-xl bg-background px-2.5"
                 />
               </div>
@@ -254,7 +254,7 @@ export function ContactView() {
                         {...field}
                         id="message"
                         rows={7}
-                        placeholder="Describe what happened, what you expected, and any order or asset details."
+                        placeholder={t('messagePlaceholder')}
                         aria-invalid={fieldState.invalid}
                         className={cn(
                           'border-input bg-background placeholder:text-muted-foreground focus-visible:border-input aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:bg-input/30 w-full min-w-0 resize-y rounded-xl border px-2.5 py-3 text-sm transition-colors outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:ring-3',
@@ -282,7 +282,7 @@ export function ContactView() {
                   className="rounded-xl px-5"
                   disabled={pending}
                 >
-                  {pending ? 'Sending…' : 'Send message'}
+                  {pending ? tCommon('sendingEllipsis') : t('sendMessage')}
                 </Button>
               </div>
             </form>

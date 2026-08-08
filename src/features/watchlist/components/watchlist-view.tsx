@@ -1,7 +1,8 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useState, useTransition } from 'react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -21,6 +22,7 @@ function summaryFromItems(items: WatchlistItem[]) {
 }
 
 export function WatchlistView({ initialData }: { initialData: WatchlistData }) {
+  const t = useTranslations('Watchlist');
   const [items, setItems] = useState(initialData.items);
   const [summary, setSummary] = useState(initialData.summary);
   const [removingId, setRemovingId] = useState<number | null>(null);
@@ -43,22 +45,22 @@ export function WatchlistView({ initialData }: { initialData: WatchlistData }) {
         return next;
       });
       setRemovingId(null);
-      toast.success('Removed from watchlist.');
+      toast.success(t('toastRemoved'));
     });
   }
 
   return (
     <div className="flex w-full min-w-0 flex-col gap-4 sm:gap-5">
       <PageHeader
-        title="Watchlist"
-        description="Assets you follow across markets."
+        title={t('title')}
+        description={t('description')}
         actions={
           <Button
             variant="outline"
             className="rounded-xl"
             render={<Link href="/markets" />}
           >
-            Browse Markets
+            {t('browseMarkets')}
           </Button>
         }
       />
@@ -69,7 +71,7 @@ export function WatchlistView({ initialData }: { initialData: WatchlistData }) {
         <CardContent className="p-0">
           {items.length === 0 ? (
             <p className="text-muted-foreground px-5 py-10 text-center text-sm">
-              Your watchlist is empty.
+              {t('empty')}
             </p>
           ) : (
             <ul className="divide-border divide-y">

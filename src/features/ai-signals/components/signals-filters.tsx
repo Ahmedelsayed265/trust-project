@@ -1,3 +1,6 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import { Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -47,18 +50,58 @@ export function SignalsFilters({
   onSymbolDraftChange,
   onSymbolSubmit,
 }: SignalsFiltersProps) {
+  const t = useTranslations('AiSignals');
+  const tCommon = useTranslations('Common');
+
+  const statusLabels: Record<(typeof STATUS_OPTIONS)[number]['value'], string> =
+    {
+      active: t('statusActive'),
+      closed: t('statusClosed'),
+      expired: t('statusExpired'),
+      all: t('statusAll'),
+    };
+
+  const sideLabels: Record<(typeof SIDE_OPTIONS)[number]['value'], string> = {
+    all: t('sideAll'),
+    buy: t('sideBuy'),
+    sell: t('sideSell'),
+  };
+
+  const strengthLabels: Record<
+    (typeof STRENGTH_OPTIONS)[number]['value'],
+    string
+  > = {
+    all: t('strengthAll'),
+    strong: t('strengthStrong'),
+    moderate: t('strengthModerate'),
+    watch: t('strengthWatch'),
+  };
+
+  const statusItems = STATUS_OPTIONS.map((option) => ({
+    value: option.value,
+    label: statusLabels[option.value],
+  }));
+  const sideItems = SIDE_OPTIONS.map((option) => ({
+    value: option.value,
+    label: sideLabels[option.value],
+  }));
+  const strengthItems = STRENGTH_OPTIONS.map((option) => ({
+    value: option.value,
+    label: strengthLabels[option.value],
+  }));
+
   return (
     <Card>
       <CardContent className="grid gap-3 pt-4 sm:grid-cols-2 lg:grid-cols-4">
         <Field>
-          <FieldLabel htmlFor="signal-status">Status</FieldLabel>
+          <FieldLabel htmlFor="signal-status">{t('status')}</FieldLabel>
           <FieldContent>
             <Select
               value={status}
               onValueChange={(value) => {
                 if (value) onStatusChange(value as SignalStatus);
               }}
-              items={[...STATUS_OPTIONS]}
+              items={statusItems}
             >
               <SelectTrigger id="signal-status" className={selectTriggerClass}>
                 <SelectValue />
@@ -66,7 +109,7 @@ export function SignalsFilters({
               <SelectContent align="start" alignItemWithTrigger={false}>
                 {STATUS_OPTIONS.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
-                    {option.label}
+                    {statusLabels[option.value]}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -75,14 +118,14 @@ export function SignalsFilters({
         </Field>
 
         <Field>
-          <FieldLabel htmlFor="signal-side">Side</FieldLabel>
+          <FieldLabel htmlFor="signal-side">{tCommon('side')}</FieldLabel>
           <FieldContent>
             <Select
               value={side}
               onValueChange={(value) => {
                 if (value) onSideChange(value as 'all' | SignalSide);
               }}
-              items={[...SIDE_OPTIONS]}
+              items={sideItems}
             >
               <SelectTrigger id="signal-side" className={selectTriggerClass}>
                 <SelectValue />
@@ -90,7 +133,7 @@ export function SignalsFilters({
               <SelectContent align="start" alignItemWithTrigger={false}>
                 {SIDE_OPTIONS.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
-                    {option.label}
+                    {sideLabels[option.value]}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -99,14 +142,14 @@ export function SignalsFilters({
         </Field>
 
         <Field>
-          <FieldLabel htmlFor="signal-strength">Strength</FieldLabel>
+          <FieldLabel htmlFor="signal-strength">{t('strength')}</FieldLabel>
           <FieldContent>
             <Select
               value={strength}
               onValueChange={(value) => {
                 if (value) onStrengthChange(value as 'all' | SignalStrength);
               }}
-              items={[...STRENGTH_OPTIONS]}
+              items={strengthItems}
             >
               <SelectTrigger
                 id="signal-strength"
@@ -117,7 +160,7 @@ export function SignalsFilters({
               <SelectContent align="start" alignItemWithTrigger={false}>
                 {STRENGTH_OPTIONS.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
-                    {option.label}
+                    {strengthLabels[option.value]}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -127,13 +170,13 @@ export function SignalsFilters({
 
         <form onSubmit={onSymbolSubmit}>
           <Field>
-            <FieldLabel htmlFor="signal-symbol">Symbol</FieldLabel>
+            <FieldLabel htmlFor="signal-symbol">{t('symbol')}</FieldLabel>
             <FieldContent className="flex flex-row items-center gap-2">
               <Input
                 id="signal-symbol"
                 value={symbolDraft}
                 onChange={(event) => onSymbolDraftChange(event.target.value)}
-                placeholder="BTCUSDT"
+                placeholder={t('symbolPlaceholder')}
                 className="h-10 min-w-0 flex-1 rounded-md"
               />
               <Button
@@ -141,7 +184,7 @@ export function SignalsFilters({
                 variant="outline"
                 size="icon"
                 className="size-10 shrink-0 rounded-md"
-                aria-label="Filter by symbol"
+                aria-label={t('filterBySymbol')}
               >
                 <Search className="size-4" />
               </Button>

@@ -17,33 +17,47 @@ import {
 } from 'lucide-react';
 
 export type NavItem = {
-  label: string;
+  labelKey:
+    | 'home'
+    | 'markets'
+    | 'trade'
+    | 'orders'
+    | 'portfolio'
+    | 'accounts'
+    | 'aiSignals'
+    | 'watchlist'
+    | 'news'
+    | 'calendar'
+    | 'profile'
+    | 'settings'
+    | 'helpCenter'
+    | 'logOut';
   href: string;
   icon: LucideIcon;
   action?: 'logout';
 };
 
 export const primaryNav: NavItem[] = [
-  { label: 'Home', icon: Home, href: '/' },
-  { label: 'Markets', icon: LineChart, href: '/markets' },
-  { label: 'Trade', icon: ArrowLeftRight, href: '/trades' },
-  { label: 'Orders', icon: ClipboardList, href: '/orders' },
-  { label: 'Portfolio', icon: Briefcase, href: '/portfolio' },
-  { label: 'Accounts', icon: Link2, href: '/accounts' },
-  { label: 'AI Signals', icon: Sparkles, href: '/ai-signals' },
+  { labelKey: 'home', icon: Home, href: '/' },
+  { labelKey: 'markets', icon: LineChart, href: '/markets' },
+  { labelKey: 'trade', icon: ArrowLeftRight, href: '/trades' },
+  { labelKey: 'orders', icon: ClipboardList, href: '/orders' },
+  { labelKey: 'portfolio', icon: Briefcase, href: '/portfolio' },
+  { labelKey: 'accounts', icon: Link2, href: '/accounts' },
+  { labelKey: 'aiSignals', icon: Sparkles, href: '/ai-signals' },
 ];
 
 export const secondaryNav: NavItem[] = [
-  { label: 'Watchlist', icon: Star, href: '/watchlist' },
-  { label: 'News', icon: Newspaper, href: '/news' },
-  { label: 'Calendar', icon: CalendarDays, href: '/calendar' },
+  { labelKey: 'watchlist', icon: Star, href: '/watchlist' },
+  { labelKey: 'news', icon: Newspaper, href: '/news' },
+  { labelKey: 'calendar', icon: CalendarDays, href: '/calendar' },
 ];
 
 export const systemNav: NavItem[] = [
-  { label: 'Profile', icon: UserRound, href: '/profile' },
-  { label: 'Settings', icon: Settings, href: '/settings' },
-  { label: 'Help Center', icon: HelpCircle, href: '/help' },
-  { label: 'Log Out', icon: LogOut, href: '/login', action: 'logout' },
+  { labelKey: 'profile', icon: UserRound, href: '/profile' },
+  { labelKey: 'settings', icon: Settings, href: '/settings' },
+  { labelKey: 'helpCenter', icon: HelpCircle, href: '/help' },
+  { labelKey: 'logOut', icon: LogOut, href: '/login', action: 'logout' },
 ];
 
 export function isNavActive(pathname: string, href: string) {

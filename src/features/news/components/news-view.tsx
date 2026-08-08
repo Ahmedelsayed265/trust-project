@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { PageHeader } from '@/shared/components/page-header';
 import { NewsFilters } from '@/features/news/components/news-filters';
 import { NewsList } from '@/features/news/components/news-list';
@@ -8,6 +9,7 @@ import { useNewsList } from '@/features/news/hooks/use-news-list';
 import type { NewsListData } from '@/features/news/types';
 
 export function NewsView({ initialData }: { initialData: NewsListData }) {
+  const t = useTranslations('News');
   const {
     tag,
     changeTag,
@@ -22,10 +24,7 @@ export function NewsView({ initialData }: { initialData: NewsListData }) {
 
   return (
     <div className="flex w-full min-w-0 flex-col gap-4 sm:gap-5">
-      <PageHeader
-        title="News"
-        description="Market headlines curated for active traders."
-      />
+      <PageHeader title={t('title')} description={t('description')} />
 
       <NewsFilters
         tag={tag}

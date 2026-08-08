@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Check, Copy } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -22,6 +23,8 @@ export function RecoveryCodesSheet({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const t = useTranslations('Security');
+  const tCommon = useTranslations('Common');
   const [copied, setCopied] = useState(false);
 
   async function copyAll() {
@@ -31,7 +34,7 @@ export function RecoveryCodesSheet({
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1600);
     } catch {
-      toast.error('Could not copy recovery codes.');
+      toast.error(t('toastCopyCodesFailed'));
     }
   }
 
@@ -39,11 +42,8 @@ export function RecoveryCodesSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="flex w-full flex-col sm:max-w-md" side="right">
         <SheetHeader>
-          <SheetTitle>Save your recovery codes</SheetTitle>
-          <SheetDescription>
-            These codes are shown once. Store them somewhere safe — each can be
-            used only once.
-          </SheetDescription>
+          <SheetTitle>{t('recoveryTitle')}</SheetTitle>
+          <SheetDescription>{t('recoveryDesc')}</SheetDescription>
         </SheetHeader>
 
         <div className="space-y-4 overflow-y-auto px-4 py-2">
@@ -71,14 +71,14 @@ export function RecoveryCodesSheet({
             ) : (
               <Copy className="size-4" />
             )}
-            {copied ? 'Copied' : 'Copy codes'}
+            {copied ? tCommon('copied') : t('copyCodes')}
           </Button>
           <Button
             type="button"
             className="rounded-xl"
             onClick={() => onOpenChange(false)}
           >
-            I&apos;ve saved them
+            {t('iveSavedThem')}
           </Button>
         </SheetFooter>
       </SheetContent>

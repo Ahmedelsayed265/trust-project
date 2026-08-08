@@ -1,3 +1,4 @@
+import { getTranslations } from 'next-intl/server';
 import { getSettingsAction } from '@/features/app-settings/actions/get-settings';
 import { DEFAULT_APP_SETTINGS } from '@/features/app-settings/types';
 
@@ -17,6 +18,7 @@ export async function LegalDocument({
   intro: string;
   sections: LegalSection[];
 }) {
+  const t = await getTranslations('Legal');
   const settingsResult = await getSettingsAction();
   const supportEmail = settingsResult.ok
     ? settingsResult.data.support_email
@@ -29,7 +31,7 @@ export async function LegalDocument({
           {title}
         </h1>
         <p className="text-muted-foreground text-sm">
-          Last updated {updatedAt}
+          {t('lastUpdated', { date: updatedAt })}
         </p>
         <p className="text-muted-foreground max-w-2xl text-sm leading-relaxed">
           {intro}
@@ -55,14 +57,16 @@ export async function LegalDocument({
       </div>
 
       <p className="border-border text-muted-foreground border-t pt-6 text-sm">
-        Questions? Email{' '}
-        <a
-          href={`mailto:${supportEmail}`}
-          className="text-primary font-medium hover:underline"
-        >
-          {supportEmail}
-        </a>
-        .
+        {t.rich('questionsEmail', {
+          email: (chunks) => (
+            <a
+              href={`mailto:${supportEmail}`}
+              className="text-primary font-medium hover:underline"
+            >
+              {chunks}
+            </a>
+          ),
+        })}
       </p>
     </article>
   );

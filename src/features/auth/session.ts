@@ -1,5 +1,5 @@
 import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
+import { redirect } from '@/i18n/redirect';
 
 const AUTH_TOKEN_COOKIE = 'trustai_token';
 const REMEMBER_MAX_AGE = 60 * 60 * 24 * 30;
@@ -36,6 +36,8 @@ export async function clearAuthToken() {
 
 export async function requireAuth() {
   const token = await getAuthToken();
-  if (!token) redirect('/login');
+  if (!token) {
+    return await redirect('/login');
+  }
   return token;
 }

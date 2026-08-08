@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import { useLocale, useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/navigation';
 import { Check, KeyRound } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -20,6 +21,9 @@ export function ChangePasswordForm({
 }: {
   passwordChangedAt: string | null;
 }) {
+  const t = useTranslations('Security');
+  const tCommon = useTranslations('Common');
+  const locale = useLocale();
   const router = useRouter();
   const [saved, setSaved] = useState(false);
   const [pending, startTransition] = useTransition();
@@ -33,7 +37,7 @@ export function ChangePasswordForm({
   });
 
   const changedLabel = passwordChangedAt
-    ? new Intl.DateTimeFormat('en-US', {
+    ? new Intl.DateTimeFormat(locale, {
         month: 'short',
         day: 'numeric',
         year: 'numeric',
@@ -62,7 +66,7 @@ export function ChangePasswordForm({
       form.reset();
       setSaved(true);
       window.setTimeout(() => setSaved(false), 2500);
-      toast.success('Password updated. Other devices were signed out.');
+      toast.success(t('toastPasswordUpdated'));
       router.refresh();
     });
   }
@@ -75,11 +79,11 @@ export function ChangePasswordForm({
             <KeyRound className="size-5" />
           </div>
           <div>
-            <CardTitle>Change password</CardTitle>
+            <CardTitle>{t('changePassword')}</CardTitle>
             <p className="text-muted-foreground mt-1 text-sm">
               {changedLabel
-                ? `Last changed ${changedLabel}. Other devices will be signed out.`
-                : "Use a strong password you don't reuse elsewhere."}
+                ? t('lastChanged', { date: changedLabel })
+                : t('changePasswordHint')}
             </p>
           </div>
         </div>
@@ -89,7 +93,7 @@ export function ChangePasswordForm({
           <FormTextField
             control={form.control}
             name="current_password"
-            label="Current password"
+            label={t('currentPassword')}
             type="password"
             autoComplete="current-password"
             inputClassName="h-12 rounded-xl bg-background px-2.5"
@@ -97,7 +101,7 @@ export function ChangePasswordForm({
           <FormTextField
             control={form.control}
             name="password"
-            label="New password"
+            label={t('newPassword')}
             type="password"
             autoComplete="new-password"
             inputClassName="h-12 rounded-xl bg-background px-2.5"
@@ -105,7 +109,7 @@ export function ChangePasswordForm({
           <FormTextField
             control={form.control}
             name="password_confirmation"
-            label="Confirm new password"
+            label={t('confirmNewPassword')}
             type="password"
             autoComplete="new-password"
             inputClassName="h-12 rounded-xl bg-background px-2.5"
@@ -115,12 +119,12 @@ export function ChangePasswordForm({
               {saved ? (
                 <p className="text-success inline-flex items-center gap-1.5 text-sm font-medium">
                   <Check className="size-4" />
-                  Password updated
+                  {t('passwordUpdated')}
                 </p>
               ) : null}
             </div>
             <Button type="submit" className="rounded-xl" disabled={pending}>
-              {pending ? 'Updating…' : 'Update password'}
+              {pending ? tCommon('updating') : t('updatePassword')}
             </Button>
           </div>
         </form>

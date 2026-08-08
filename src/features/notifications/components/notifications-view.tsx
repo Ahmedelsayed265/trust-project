@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useEffect, useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -19,11 +20,11 @@ import { cn } from '@/lib/utils';
 
 type Filter = 'all' | 'unread' | NotificationType;
 
-const TYPE_FILTERS: { id: NotificationType; label: string }[] = [
-  { id: 'trade', label: 'Trade' },
-  { id: 'signal', label: 'Signal' },
-  { id: 'account', label: 'Account' },
-  { id: 'system', label: 'System' },
+const TYPE_FILTERS: NotificationType[] = [
+  'trade',
+  'signal',
+  'account',
+  'system',
 ];
 
 function queryForFilter(filter: Filter) {
@@ -38,6 +39,8 @@ export function NotificationsView({
 }: {
   initialData: NotificationsListData;
 }) {
+  const t = useTranslations('Notifications');
+  const tCommon = useTranslations('Common');
   const [filter, setFilter] = useState<Filter>('all');
   const [items, setItems] = useState(initialData.items);
   const [unreadCount, setUnreadCount] = useState(initialData.unread_count);
@@ -45,6 +48,13 @@ export function NotificationsView({
   const [loading, startLoad] = useTransition();
   const [markingAll, startMarkAll] = useTransition();
   const [deleting, startDelete] = useTransition();
+
+  const typeLabels: Record<NotificationType, string> = {
+    trade: t('filterTrade'),
+    signal: t('filterSignal'),
+    account: t('filterAccount'),
+    system: t('filterSystem'),
+  };
 
   useEffect(() => {
     startLoad(async () => {
@@ -93,7 +103,7 @@ export function NotificationsView({
         );
       }
       setUnreadCount(result.data.unread_count);
-      toast.success('All notifications marked as read.');
+      toast.success(t('toastMarkedAll'));
     });
   }
 
@@ -120,19 +130,22 @@ export function NotificationsView({
   }
 
   const tabs: { id: Filter; label: string }[] = [
-    { id: 'all', label: 'All' },
-    { id: 'unread', label: `Unread (${unreadCount})` },
-    ...TYPE_FILTERS.map((tab) => ({
-      id: tab.id as Filter,
-      label: `${tab.label} (${counts[tab.id] ?? 0})`,
+    { id: 'all', label: tCommon('all') },
+    { id: 'unread', label: t('unreadCount', { count: unreadCount }) },
+    ...TYPE_FILTERS.map((id) => ({
+      id: id as Filter,
+      label: t('filterCount', {
+        label: typeLabels[id],
+        count: counts[id] ?? 0,
+      }),
     })),
   ];
 
   return (
     <div className="flex w-full min-w-0 flex-col gap-4 sm:gap-5">
       <PageHeader
-        title="Notifications"
-        description="Trade alerts, AI signals, and account updates."
+        title={t('title')}
+        description={t('description')}
         actions={
           unreadCount > 0 ? (
             <Button
@@ -142,7 +155,7 @@ export function NotificationsView({
               disabled={markingAll || deleting || loading}
               onClick={onMarkAllRead}
             >
-              {markingAll ? 'Marking...' : 'Mark all as read'}
+              {markingAll ? t('marking') : t('markAllAsRead')}
             </Button>
           ) : null
         }
@@ -170,11 +183,9 @@ export function NotificationsView({
         {items.length === 0 ? (
           <div className="border-border bg-card rounded-lg border px-4 py-10 text-center">
             <p className="text-foreground text-sm font-medium">
-              You&apos;re all caught up
+              {t('caughtUpTitle')}
             </p>
-            <p className="text-muted-foreground mt-1 text-sm">
-              No notifications in this view.
-            </p>
+            <p className="text-muted-foreground mt-1 text-sm">{t('empty')}</p>
           </div>
         ) : (
           items.map((notification) => (

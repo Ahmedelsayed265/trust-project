@@ -1,7 +1,7 @@
 'use client';
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { Link, usePathname } from '@/i18n/navigation';
 import { Logo } from '@/shared/components/logo';
 import { ThemeToggle } from '@/shared/components/theme-toggle';
 import { LogoutButton } from '@/features/auth/components/logout-button';
@@ -29,10 +29,12 @@ import {
 
 function NavLink({
   item,
+  label,
   collapsed,
   onNavigate,
 }: {
   item: NavItem;
+  label: string;
   collapsed?: boolean;
   onNavigate?: () => void;
 }) {
@@ -45,7 +47,7 @@ function NavLink({
       <LogoutButton
         collapsed={collapsed}
         icon={Icon}
-        label={item.label}
+        label={label}
         onComplete={onNavigate}
       />
     );
@@ -57,7 +59,7 @@ function NavLink({
         <TooltipTrigger render={<div className="w-full" />}>
           {button}
         </TooltipTrigger>
-        <TooltipContent side="right">{item.label}</TooltipContent>
+        <TooltipContent side="right">{label}</TooltipContent>
       </Tooltip>
     );
   }
@@ -73,8 +75,8 @@ function NavLink({
   const link = (
     <Link href={item.href} onClick={onNavigate} className={className}>
       <Icon className="size-4 shrink-0" />
-      {!collapsed && <span className="truncate">{item.label}</span>}
-      {collapsed && <span className="sr-only">{item.label}</span>}
+      {!collapsed && <span className="truncate">{label}</span>}
+      {collapsed && <span className="sr-only">{label}</span>}
     </Link>
   );
 
@@ -88,9 +90,9 @@ function NavLink({
         }
       >
         <Icon className="size-4 shrink-0" />
-        <span className="sr-only">{item.label}</span>
+        <span className="sr-only">{label}</span>
       </TooltipTrigger>
-      <TooltipContent side="right">{item.label}</TooltipContent>
+      <TooltipContent side="right">{label}</TooltipContent>
     </Tooltip>
   );
 }
@@ -103,6 +105,8 @@ function SidebarContent({
   onNavigate?: () => void;
   showCollapseControl?: boolean;
 }) {
+  const t = useTranslations('Nav');
+
   return (
     <div className="flex h-full min-h-0 flex-col overflow-hidden">
       <div
@@ -120,8 +124,9 @@ function SidebarContent({
         <div className="space-y-0.5">
           {primaryNav.map((item) => (
             <NavLink
-              key={item.label}
+              key={item.labelKey}
               item={item}
+              label={t(item.labelKey)}
               collapsed={collapsed}
               onNavigate={onNavigate}
             />
@@ -133,8 +138,9 @@ function SidebarContent({
         <div className="space-y-0.5">
           {secondaryNav.map((item) => (
             <NavLink
-              key={item.label}
+              key={item.labelKey}
               item={item}
+              label={t(item.labelKey)}
               collapsed={collapsed}
               onNavigate={onNavigate}
             />
@@ -146,8 +152,9 @@ function SidebarContent({
         <div className="space-y-0.5">
           {systemNav.map((item) => (
             <NavLink
-              key={item.label}
+              key={item.labelKey}
               item={item}
+              label={t(item.labelKey)}
               collapsed={collapsed}
               onNavigate={onNavigate}
             />
@@ -163,6 +170,7 @@ function SidebarContent({
 }
 
 export function AppSidebar() {
+  const t = useTranslations('Nav');
   const { collapsed, mobileOpen, setMobileOpen } = useSidebar();
 
   return (
@@ -183,7 +191,7 @@ export function AppSidebar() {
           showCloseButton={false}
         >
           <SheetHeader className="sr-only">
-            <SheetTitle>Navigation</SheetTitle>
+            <SheetTitle>{t('navigation')}</SheetTitle>
           </SheetHeader>
           <SidebarContent
             collapsed={false}

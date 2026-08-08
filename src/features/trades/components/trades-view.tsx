@@ -8,8 +8,8 @@ import {
   useState,
   useTransition,
 } from 'react';
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { Link, usePathname, useRouter } from '@/i18n/navigation';
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -121,6 +121,8 @@ function TradeOrderPanel({
 }
 
 export function TradesView({ initialData }: { initialData: TradesPageData }) {
+  const t = useTranslations('Trades');
+  const tCommon = useTranslations('Common');
   const router = useRouter();
   const pathname = usePathname();
   const [tab, setTab] = useState<'trade' | 'positions'>('trade');
@@ -136,9 +138,7 @@ export function TradesView({ initialData }: { initialData: TradesPageData }) {
   );
   const [signal, setSignal] = useState<Signal | null>(initialData.signal);
   const [portfolioError, setPortfolioError] = useState<string | null>(
-    initialData.initialProviderId
-      ? null
-      : 'Connect a provider to view equity and trade.',
+    initialData.initialProviderId ? null : t('connectProviderHint'),
   );
   const [loadingPortfolio, startPortfolioLoad] = useTransition();
   const [loadingMarkets, startMarketsLoad] = useTransition();
@@ -196,7 +196,7 @@ export function TradesView({ initialData }: { initialData: TradesPageData }) {
     if (!nextProviderId) {
       setPortfolio(null);
       setPositions([]);
-      setPortfolioError('Connect a provider to view equity and trade.');
+      setPortfolioError(t('connectProviderHint'));
       return;
     }
 
@@ -277,9 +277,7 @@ export function TradesView({ initialData }: { initialData: TradesPageData }) {
       );
 
       if (!match) {
-        toast.error(
-          `${symbol} is not available on your connected trading accounts.`,
-        );
+        toast.error(t('toastSymbolUnavailable', { symbol }));
         return;
       }
 
@@ -290,7 +288,9 @@ export function TradesView({ initialData }: { initialData: TradesPageData }) {
           )?.label ?? match.provider_id;
         setProviderId(match.provider_id);
         refreshPortfolio(match.provider_id);
-        toast.info(`Switched to ${accountLabel} for ${symbol}.`);
+        toast.info(
+          t('toastSwitchedAccount', { account: accountLabel, symbol }),
+        );
       }
 
       const scoped = await getMarketsAction({
@@ -354,7 +354,7 @@ export function TradesView({ initialData }: { initialData: TradesPageData }) {
       form.setValue('orderType', 'market');
     }
     setTab('trade');
-    toast.success('Signal applied to the order ticket.');
+    toast.success(t('toastSignalApplied'));
   }
 
   const [focusToken, setFocusToken] = useState(0);
@@ -376,9 +376,7 @@ export function TradesView({ initialData }: { initialData: TradesPageData }) {
     setTab('trade');
     setFocusToken((value) => value + 1);
     toast.success(
-      orderType === 'limit'
-        ? 'New limit order ready — enter amount and confirm.'
-        : 'New market order ready — enter amount and confirm.',
+      orderType === 'limit' ? t('toastLimitReady') : t('toastMarketReady'),
     );
   }
 
@@ -401,17 +399,21 @@ export function TradesView({ initialData }: { initialData: TradesPageData }) {
     syncTicketToScopedMarket(selectedSymbol, selectedQuote, providerId);
   }, [selectedSymbol, selectedQuote, pair, providerId]);
 
-  const accountTriggerLabel = selectedAccount?.label ?? 'All Accounts';
+  const accountTriggerLabel = selectedAccount?.label ?? t('allAccounts');
+  const tabLabels = {
+    trade: t('tabTrade'),
+    positions: t('tabPositions'),
+  } as const;
 
   return (
     <div className="flex flex-col gap-4 sm:gap-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-foreground text-xl font-bold tracking-tight sm:text-2xl">
-            Trades
+            {t('title')}
           </h1>
           <p className="text-muted-foreground mt-1 text-sm">
-            Place new trades and manage your positions.
+            {t('description')}
           </p>
         </div>
         <Button
@@ -420,7 +422,7 @@ export function TradesView({ initialData }: { initialData: TradesPageData }) {
           render={<Link href="/orders" />}
         >
           <History />
-          Trade History
+          {t('tradeHistory')}
         </Button>
       </div>
 
@@ -439,13 +441,13 @@ export function TradesView({ initialData }: { initialData: TradesPageData }) {
               type="button"
               onClick={() => setTab(item)}
               className={cn(
-                'rounded-lg px-3.5 py-1.5 text-sm font-semibold capitalize transition-colors',
+                'rounded-lg px-3.5 py-1.5 text-sm font-semibold transition-colors',
                 tab === item
                   ? 'bg-card text-foreground'
                   : 'text-muted-foreground hover:text-foreground',
               )}
             >
-              {item}
+              {tabLabels[item]}
             </button>
           ))}
         </div>
@@ -465,7 +467,7 @@ export function TradesView({ initialData }: { initialData: TradesPageData }) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="min-w-56 rounded-xl">
               <DropdownMenuGroup>
-                <DropdownMenuLabel>Trading account</DropdownMenuLabel>
+                <DropdownMenuLabel>{t('tradingAccount')}</DropdownMenuLabel>
                 {connectedAccounts.length > 0 ? (
                   <DropdownMenuRadioGroup
                     value={providerId ?? undefined}
@@ -485,7 +487,9 @@ export function TradesView({ initialData }: { initialData: TradesPageData }) {
                           </span>
                           <span className="text-muted-foreground text-xs capitalize">
                             {account.environment}
-                            {account.is_default ? ' · Default' : ''}
+                            {account.is_default
+                              ? ` · ${tCommon('default')}`
+                              : ''}
                           </span>
                         </span>
                       </DropdownMenuRadioItem>
@@ -493,7 +497,7 @@ export function TradesView({ initialData }: { initialData: TradesPageData }) {
                   </DropdownMenuRadioGroup>
                 ) : (
                   <DropdownMenuItem disabled className="rounded-lg">
-                    No connected accounts
+                    {t('noConnectedAccounts')}
                   </DropdownMenuItem>
                 )}
               </DropdownMenuGroup>
@@ -503,7 +507,7 @@ export function TradesView({ initialData }: { initialData: TradesPageData }) {
                 onClick={() => router.push('/accounts')}
               >
                 <Link2 className="size-4" />
-                Manage accounts
+                {tCommon('manageAccounts')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -514,7 +518,7 @@ export function TradesView({ initialData }: { initialData: TradesPageData }) {
                 <Button
                   size="icon"
                   className="size-10 shrink-0 rounded-[12px]!"
-                  aria-label="New trade"
+                  aria-label={t('newTradeAria')}
                 />
               }
             >
@@ -522,28 +526,30 @@ export function TradesView({ initialData }: { initialData: TradesPageData }) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="min-w-52 rounded-xl">
               <DropdownMenuGroup>
-                <DropdownMenuLabel>Start a new trade</DropdownMenuLabel>
+                <DropdownMenuLabel>{t('startNewTrade')}</DropdownMenuLabel>
                 <DropdownMenuItem
                   className="rounded-lg"
                   onClick={() => startNewTrade('market')}
                 >
                   <Rocket className="size-4" />
-                  New market order
+                  {t('newMarketOrder')}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className="rounded-lg"
                   onClick={() => startNewTrade('limit')}
                 >
                   <SlidersHorizontal className="size-4" />
-                  New limit order
+                  {t('newLimitOrder')}
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               {selectedMarket ? (
                 <>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem disabled className="rounded-lg text-xs">
-                    Using{' '}
-                    {selectedMarket.display_symbol || selectedMarket.symbol}
+                    {t('usingMarket', {
+                      symbol:
+                        selectedMarket.display_symbol || selectedMarket.symbol,
+                    })}
                   </DropdownMenuItem>
                 </>
               ) : null}
@@ -584,7 +590,7 @@ export function TradesView({ initialData }: { initialData: TradesPageData }) {
       </FormProvider>
 
       {loadingMarkets ? (
-        <p className="text-muted-foreground text-xs">Updating markets…</p>
+        <p className="text-muted-foreground text-xs">{t('updatingMarkets')}</p>
       ) : null}
     </div>
   );

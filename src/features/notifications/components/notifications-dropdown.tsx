@@ -1,6 +1,7 @@
 'use client';
 
 import type { Notification } from '@/features/notifications/types';
+import { useTranslations } from 'next-intl';
 import { useEffect, useState, useTransition } from 'react';
 import { Bell } from 'lucide-react';
 import { toast } from 'sonner';
@@ -19,9 +20,12 @@ import {
   getNotificationsAction,
   markAllNotificationsReadAction,
 } from '@/features/notifications/actions/notifications';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 
 export function NotificationsDropdown() {
+  const t = useTranslations('Notifications');
+  const tCommon = useTranslations('Common');
+  const tNav = useTranslations('Nav');
   const user = useCurrentUser();
   const [items, setItems] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(user.unread_notifications);
@@ -88,7 +92,7 @@ export function NotificationsDropdown() {
       }}
     >
       <DropdownMenuTrigger
-        aria-label="Notifications"
+        aria-label={tNav('notificationsAria')}
         className={cn(
           buttonVariants({ variant: 'ghost', size: 'icon' }),
           'text-muted-foreground relative shrink-0',
@@ -108,7 +112,7 @@ export function NotificationsDropdown() {
         className="w-[min(100vw-1.5rem,360px)] min-w-75 overflow-hidden p-0"
       >
         <div className="flex items-center justify-between gap-3 px-4 py-3">
-          <p className="text-foreground text-sm font-semibold">Notifications</p>
+          <p className="text-foreground text-sm font-semibold">{t('title')}</p>
           {unreadCount > 0 ? (
             <button
               type="button"
@@ -116,10 +120,12 @@ export function NotificationsDropdown() {
               disabled={markingAll}
               className="text-primary text-xs font-medium hover:underline disabled:opacity-60"
             >
-              {markingAll ? 'Marking...' : 'Mark all read'}
+              {markingAll ? t('marking') : t('markAllRead')}
             </button>
           ) : (
-            <span className="text-muted-foreground text-xs">All caught up</span>
+            <span className="text-muted-foreground text-xs">
+              {t('allCaughtUp')}
+            </span>
           )}
         </div>
 
@@ -128,11 +134,11 @@ export function NotificationsDropdown() {
         <DropdownMenuGroup className="max-h-80 scrollbar-none overflow-y-auto">
           {loading && !loaded ? (
             <p className="text-muted-foreground px-4 py-8 text-center text-sm">
-              Loading...
+              {tCommon('loading')}
             </p>
           ) : preview.length === 0 ? (
             <p className="text-muted-foreground px-4 py-8 text-center text-sm">
-              No notifications yet.
+              {t('emptyDropdown')}
             </p>
           ) : (
             preview.map((notification, index) => (
@@ -158,7 +164,7 @@ export function NotificationsDropdown() {
             href="/notifications"
             className="text-primary hover:bg-muted flex w-full items-center justify-center rounded-md px-3 py-2.5 text-sm font-semibold transition-colors"
           >
-            View all notifications
+            {t('viewAll')}
           </Link>
         </div>
       </DropdownMenuContent>

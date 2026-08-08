@@ -1,4 +1,7 @@
-import Link from 'next/link';
+'use client';
+
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { sentimentBadgeClass } from '@/features/news/lib/news-display';
@@ -6,6 +9,8 @@ import type { NewsItem } from '@/features/news/types';
 import { cn } from '@/lib/utils';
 
 export function NewsCard({ article }: { article: NewsItem }) {
+  const t = useTranslations('News');
+
   return (
     <Link href={`/news/${article.slug}`} className="group block">
       <Card
@@ -28,7 +33,7 @@ export function NewsCard({ article }: { article: NewsItem }) {
               {article.sentiment}
             </Badge>
             {article.is_featured ? (
-              <Badge className="border-0">Featured</Badge>
+              <Badge className="border-0">{t('featured')}</Badge>
             ) : null}
             <span className="text-muted-foreground text-xs">
               {article.time}

@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { useRouter } from '@/i18n/navigation';
 import { Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -14,7 +15,6 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 import { subscribePlanAction } from '@/features/plans/actions/get-plans';
-import { planActionLabel } from '@/features/plans/components/plan-features';
 import type { BillingCycle, Plan } from '@/features/plans/types';
 import { cn } from '@/lib/utils';
 
@@ -32,11 +32,20 @@ export function SubscribePlanButton({
   className,
   fullWidth = true,
 }: SubscribePlanButtonProps) {
+  const t = useTranslations('Plans');
+  const tCommon = useTranslations('Common');
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [billingCycle, setBillingCycle] = useState<BillingCycle>('monthly');
   const [autoRenew, setAutoRenew] = useState(true);
   const [pending, startTransition] = useTransition();
+
+  const actionLabel =
+    plan.action === 'upgrade'
+      ? t('upgrade')
+      : plan.action === 'downgrade'
+        ? t('downgrade')
+        : t('currentPlan');
 
   if (plan.action === 'current') {
     return (
@@ -50,14 +59,13 @@ export function SubscribePlanButton({
         disabled
       >
         <Check className="size-4" strokeWidth={2.5} />
-        Current Plan
+        {t('currentPlan')}
       </Button>
     );
   }
 
   const price =
     billingCycle === 'yearly' ? plan.price_yearly : plan.price_monthly;
-  const actionLabel = planActionLabel(plan.action);
 
   function onConfirm() {
     startTransition(async () => {
@@ -74,8 +82,8 @@ export function SubscribePlanButton({
 
       toast.success(
         plan.action === 'downgrade'
-          ? `Downgraded to ${plan.name}.`
-          : `Subscribed to ${plan.name}.`,
+          ? t('toastDowngraded', { name: plan.name })
+          : t('toastSubscribed', { name: plan.name }),
       );
       setOpen(false);
       router.refresh();
@@ -97,11 +105,9 @@ export function SubscribePlanButton({
         <SheetContent className="w-full sm:max-w-md">
           <SheetHeader>
             <SheetTitle>
-              {actionLabel} to {plan.name}
+              {t('subscribeTitle', { action: actionLabel, name: plan.name })}
             </SheetTitle>
-            <SheetDescription>
-              Choose billing cycle and confirm your subscription.
-            </SheetDescription>
+            <SheetDescription>{t('subscribeDesc')}</SheetDescription>
           </SheetHeader>
 
           <div className="space-y-4 px-4 py-2">
@@ -110,13 +116,15 @@ export function SubscribePlanButton({
                 [
                   {
                     value: 'monthly' as const,
-                    label: 'Monthly',
+                    label: t('monthly'),
                     price: plan.price_monthly,
+                    unit: t('perMonth'),
                   },
                   {
                     value: 'yearly' as const,
-                    label: 'Yearly',
+                    label: t('yearly'),
                     price: plan.price_yearly,
+                    unit: t('perYear'),
                   },
                 ] as const
               ).map((option) => (
@@ -135,8 +143,7 @@ export function SubscribePlanButton({
                     {option.label}
                   </p>
                   <p className="text-muted-foreground mt-1 text-xs">
-                    ${option.price}/
-                    {option.value === 'yearly' ? 'year' : 'month'}
+                    ${option.price}/{option.unit}
                   </p>
                 </button>
               ))}
@@ -149,15 +156,17 @@ export function SubscribePlanButton({
                 onChange={(event) => setAutoRenew(event.target.checked)}
                 className="accent-primary size-4 rounded"
               />
-              <span className="text-foreground">Auto-renew</span>
+              <span className="text-foreground">{t('autoRenew')}</span>
             </label>
 
             <p className="text-muted-foreground text-sm">
-              You&apos;ll be billed{' '}
-              <span className="text-foreground font-semibold">
-                ${price} {plan.currency}
-              </span>{' '}
-              {billingCycle === 'yearly' ? 'per year' : 'per month'}.
+              {t('billedAmount', {
+                amount: `$${price} ${plan.currency}`,
+                cycle:
+                  billingCycle === 'yearly'
+                    ? t('perYearPhrase')
+                    : t('perMonthPhrase'),
+              })}
             </p>
           </div>
 
@@ -168,14 +177,16 @@ export function SubscribePlanButton({
               disabled={pending}
               onClick={() => setOpen(false)}
             >
-              Cancel
+              {tCommon('cancel')}
             </Button>
             <Button
               className="rounded-xl"
               disabled={pending}
               onClick={onConfirm}
             >
-              {pending ? 'Processing…' : `Confirm ${actionLabel.toLowerCase()}`}
+              {pending
+                ? t('processing')
+                : t('confirmAction', { action: actionLabel })}
             </Button>
           </SheetFooter>
         </SheetContent>

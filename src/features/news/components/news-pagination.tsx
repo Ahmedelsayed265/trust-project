@@ -1,3 +1,6 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { NewsPagination } from '@/features/news/types';
@@ -11,13 +14,21 @@ export function NewsPaginationBar({
   pagination,
   onPageChange,
 }: NewsPaginationBarProps) {
+  const t = useTranslations('News');
+  const tCommon = useTranslations('Common');
+
   if (pagination.last_page <= 1) return null;
 
   return (
     <div className="flex items-center justify-between gap-3">
       <p className="text-muted-foreground text-sm">
-        Page {pagination.current_page} of {pagination.last_page}
-        {pagination.total > 0 ? ` · ${pagination.total} total` : null}
+        {t('pageOf', {
+          current: pagination.current_page,
+          last: pagination.last_page,
+        })}
+        {pagination.total > 0
+          ? ` ${t('totalSuffix', { total: pagination.total })}`
+          : null}
       </p>
       <div className="flex gap-2">
         <Button
@@ -29,7 +40,7 @@ export function NewsPaginationBar({
           onClick={() => onPageChange(Math.max(1, pagination.current_page - 1))}
         >
           <ChevronLeft className="size-4" />
-          Prev
+          {tCommon('previous')}
         </Button>
         <Button
           type="button"
@@ -39,7 +50,7 @@ export function NewsPaginationBar({
           disabled={!pagination.next_page_url}
           onClick={() => onPageChange(pagination.current_page + 1)}
         >
-          Next
+          {tCommon('next')}
           <ChevronRight className="size-4" />
         </Button>
       </div>

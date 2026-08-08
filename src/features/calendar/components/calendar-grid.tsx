@@ -1,8 +1,9 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-
-const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 type CalendarGridProps = {
   monthLabel: string;
@@ -25,6 +26,9 @@ export function CalendarGrid({
   onPrevMonth,
   onNextMonth,
 }: CalendarGridProps) {
+  const t = useTranslations('Calendar');
+  const tCommon = useTranslations('Common');
+  const weekdays = t.raw('weekdays') as string[];
   const highlighted = new Set(highlightedDays);
   const blanks = Array.from({ length: Math.max(0, startsOn) }, (_, i) => i);
   const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
@@ -41,7 +45,7 @@ export function CalendarGrid({
             className="rounded-xl"
             onClick={onPrevMonth}
           >
-            Prev
+            {tCommon('previous')}
           </Button>
           <Button
             type="button"
@@ -50,13 +54,13 @@ export function CalendarGrid({
             className="rounded-xl"
             onClick={onNextMonth}
           >
-            Next
+            {tCommon('next')}
           </Button>
         </div>
       </CardHeader>
       <CardContent>
         <div className="text-muted-foreground mb-2 grid grid-cols-7 gap-1 text-center text-xs font-medium">
-          {WEEKDAYS.map((day) => (
+          {weekdays.map((day) => (
             <div key={day} className="py-2">
               {day}
             </div>

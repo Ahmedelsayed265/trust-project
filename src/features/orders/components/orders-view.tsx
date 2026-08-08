@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,6 +21,7 @@ export function OrdersView({
   initialData: OrdersData;
   initialFills: OrderFill[];
 }) {
+  const t = useTranslations('Orders');
   const [tab, setTab] = useState<Tab>('open');
   const [showSearch, setShowSearch] = useState(false);
   const {
@@ -33,9 +35,9 @@ export function OrdersView({
   } = useOrders(initialData, initialFills);
 
   const tabs: { id: Tab; label: string }[] = [
-    { id: 'open', label: `Open Orders (${openOrders.length})` },
-    { id: 'history', label: 'Order History' },
-    { id: 'trades', label: 'Trade History' },
+    { id: 'open', label: t('openOrdersTab', { count: openOrders.length }) },
+    { id: 'history', label: t('orderHistory') },
+    { id: 'trades', label: t('tradeHistory') },
   ];
 
   return (
@@ -43,10 +45,10 @@ export function OrdersView({
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-foreground text-xl font-bold tracking-tight sm:text-2xl">
-            Orders
+            {t('title')}
           </h1>
           <p className="text-muted-foreground mt-1 text-sm">
-            Track and manage all your orders.
+            {t('description')}
           </p>
         </div>
         <Button
@@ -54,7 +56,7 @@ export function OrdersView({
           variant="outline"
           size="icon"
           className="rounded-xl"
-          aria-label="Search orders"
+          aria-label={t('searchAria')}
           onClick={() => setShowSearch((value) => !value)}
         >
           <Search />
@@ -65,7 +67,7 @@ export function OrdersView({
         <Input
           value={query}
           onChange={(event) => setQuery(event.target.value)}
-          placeholder="Search by symbol or account..."
+          placeholder={t('searchPlaceholder')}
           className="bg-card h-10 rounded-xl"
         />
       ) : null}
@@ -93,10 +95,10 @@ export function OrdersView({
       {tab === 'open' ? (
         <section className="space-y-3">
           <h2 className="text-foreground text-base font-semibold">
-            Open Orders
+            {t('summaryOpenOrders')}
           </h2>
           {openOrders.length === 0 ? (
-            <CardEmpty message="No open orders" />
+            <CardEmpty message={t('noOpenOrders')} />
           ) : (
             <div className="space-y-3">
               {openOrders.map((order) => (
@@ -118,10 +120,10 @@ export function OrdersView({
       {tab === 'history' ? (
         <section className="space-y-3">
           <h2 className="text-foreground text-base font-semibold">
-            Order History
+            {t('orderHistory')}
           </h2>
           {historyOrders.length === 0 ? (
-            <CardEmpty message="No order history" />
+            <CardEmpty message={t('noOrderHistory')} />
           ) : (
             <div className="space-y-3">
               {historyOrders.map((order) => (
@@ -133,7 +135,7 @@ export function OrdersView({
       ) : null}
 
       {tab === 'trades' ? (
-        <RecentFills fills={fills} title="Trade History" />
+        <RecentFills fills={fills} title={t('tradeHistory')} />
       ) : null}
     </div>
   );

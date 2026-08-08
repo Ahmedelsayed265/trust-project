@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { createElement } from 'react';
 import { BadgeCheck, Building2, FileText, Scale } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,50 +8,50 @@ import { Badge } from '@/components/ui/badge';
 import { PageHeader } from '@/shared/components/page-header';
 import { useAppSettings } from '@/shared/providers/app-settings-provider';
 
-const highlights = [
-  {
-    title: 'AI-first trading',
-    description:
-      'TrustAI combines market data with model-driven signals to help you act with more confidence.',
-    icon: BadgeCheck,
-  },
-  {
-    title: 'Built for active traders',
-    description:
-      'Portfolio tracking, provider balances, and order history stay in one place so you can move faster.',
-    icon: Building2,
-  },
-  {
-    title: 'Transparent product updates',
-    description:
-      'We ship improvements continuously and document major changes in Help Center release notes.',
-    icon: FileText,
-  },
-];
-
 export function AboutView() {
+  const t = useTranslations('About');
   const settings = useAppSettings();
+
+  const highlights = [
+    {
+      title: t('highlightAiTitle'),
+      description: t('highlightAiDesc'),
+      icon: BadgeCheck,
+    },
+    {
+      title: t('highlightTradersTitle'),
+      description: t('highlightTradersDesc'),
+      icon: Building2,
+    },
+    {
+      title: t('highlightUpdatesTitle'),
+      description: t('highlightUpdatesDesc'),
+      icon: FileText,
+    },
+  ];
 
   return (
     <div className="flex w-full min-w-0 flex-col gap-4 sm:gap-5">
       <PageHeader
-        title={`About ${settings.app_name}`}
-        description="Learn more about the product, version, and company details."
+        title={t('title', { appName: settings.app_name })}
+        description={t('description')}
       />
 
       <Card>
         <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-muted-foreground text-sm">Current version</p>
+            <p className="text-muted-foreground text-sm">
+              {t('currentVersion')}
+            </p>
             <p className="text-foreground mt-1 text-2xl font-bold tracking-tight">
-              {settings.app_name} 1.0.0
+              {t('versionLine', { appName: settings.app_name })}
             </p>
             <p className="text-muted-foreground mt-1 text-sm">
-              AI Trading Platform · Released March 2026
+              {t('releasedLine')}
             </p>
           </div>
           <Badge className="bg-primary/10 text-primary hover:bg-primary/10 w-fit border-0">
-            Stable
+            {t('stable')}
           </Badge>
         </CardContent>
       </Card>
@@ -80,20 +81,18 @@ export function AboutView() {
               <Scale className="size-5" />
             </div>
             <div>
-              <CardTitle>Legal & compliance</CardTitle>
+              <CardTitle>{t('legalTitle')}</CardTitle>
               <p className="text-muted-foreground mt-1 text-sm">
-                {settings.app_name} provides market tools and AI insights.
-                Trading involves risk and past performance is not a guarantee of
-                future results.
+                {t('legalDesc', { appName: settings.app_name })}
               </p>
             </div>
           </div>
         </CardHeader>
         <CardContent className="grid gap-3 sm:grid-cols-3">
           {[
-            ['Company', `${settings.app_name} Markets Ltd.`],
-            ['Support', settings.support_email],
-            ['Website', 'trustai.app'],
+            [t('company'), `${settings.app_name} Markets Ltd.`],
+            [t('support'), settings.support_email],
+            [t('website'), 'trustai.app'],
           ].map(([label, value]) => (
             <div
               key={label}

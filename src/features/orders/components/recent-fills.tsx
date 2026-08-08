@@ -1,3 +1,6 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import {
   Card,
   CardAction,
@@ -20,16 +23,20 @@ import { formatMoney } from '@/shared/trading';
 export function RecentFills({
   fills,
   onViewAll,
-  title = 'Recent Fills',
+  title,
 }: {
   fills: OrderFill[];
   onViewAll?: () => void;
   title?: string;
 }) {
+  const t = useTranslations('Orders');
+  const tCommon = useTranslations('Common');
+  const heading = title ?? t('recentFills');
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{title}</CardTitle>
+        <CardTitle>{heading}</CardTitle>
         {onViewAll ? (
           <CardAction>
             <button
@@ -37,7 +44,7 @@ export function RecentFills({
               className="text-primary text-sm font-medium hover:underline"
               onClick={onViewAll}
             >
-              View All
+              {tCommon('viewAll')}
             </button>
           </CardAction>
         ) : null}
@@ -45,17 +52,17 @@ export function RecentFills({
       <CardContent className="space-y-1">
         {fills.length === 0 ? (
           <p className="text-muted-foreground py-6 text-center text-sm">
-            No fills yet.
+            {t('noFills')}
           </p>
         ) : (
           <>
             <div className="border-border text-muted-foreground hidden grid-cols-[1.4fr_0.7fr_1fr_1fr_1fr_1fr] gap-3 border-b px-1 pb-2 text-xs font-medium md:grid">
-              <span>Asset</span>
-              <span>Side</span>
-              <span>Amount</span>
-              <span>Price</span>
-              <span>Fee</span>
-              <span className="text-right">Time</span>
+              <span>{t('colAsset')}</span>
+              <span>{tCommon('side')}</span>
+              <span>{t('amount')}</span>
+              <span>{t('price')}</span>
+              <span>{t('fee')}</span>
+              <span className="text-right">{t('colTime')}</span>
             </div>
 
             {fills.map((fill) => (
@@ -80,14 +87,14 @@ export function RecentFills({
 
                 <div className="flex items-center justify-between md:block">
                   <span className="text-muted-foreground text-xs md:hidden">
-                    Side
+                    {tCommon('side')}
                   </span>
                   <SideBadge side={fill.side} />
                 </div>
 
                 <div className="flex items-center justify-between md:block">
                   <span className="text-muted-foreground text-xs md:hidden">
-                    Amount
+                    {t('amount')}
                   </span>
                   <p className="text-foreground text-sm font-medium">
                     {formatOrderQty(fill.qty)}
@@ -96,7 +103,7 @@ export function RecentFills({
 
                 <div className="flex items-center justify-between md:block">
                   <span className="text-muted-foreground text-xs md:hidden">
-                    Price
+                    {t('price')}
                   </span>
                   <p className="text-foreground text-sm font-medium">
                     {formatOrderPrice(fill.price)}
@@ -105,7 +112,7 @@ export function RecentFills({
 
                 <div className="flex items-center justify-between md:block">
                   <span className="text-muted-foreground text-xs md:hidden">
-                    Fee
+                    {t('fee')}
                   </span>
                   <p className="text-muted-foreground text-sm">
                     {formatMoney(fill.fee)} {fill.fee_asset}
@@ -114,7 +121,7 @@ export function RecentFills({
 
                 <div className="flex items-center justify-between md:justify-end">
                   <span className="text-muted-foreground text-xs md:hidden">
-                    Time
+                    {t('colTime')}
                   </span>
                   <p className="text-muted-foreground text-xs md:text-sm">
                     {formatOrderDate(fill.created_at)}

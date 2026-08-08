@@ -1,7 +1,7 @@
 'use server';
 
 import type { ApiSuccessResponse } from '@/features/auth/types';
-import { redirect } from 'next/navigation';
+import { redirect } from '@/i18n/redirect';
 import { api, mapActionError, type ActionResult } from '@/shared/lib/api';
 import { clearAuthToken, requireAuth } from '@/features/auth/session';
 import {
@@ -37,5 +37,5 @@ export async function deleteAccountAction(input: {
   await clearAuthToken();
   await clearPendingVerification();
   await clearPendingPasswordReset();
-  redirect('/login');
+  return await redirect('/login');
 }

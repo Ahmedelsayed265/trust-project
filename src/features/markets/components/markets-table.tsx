@@ -1,8 +1,8 @@
 'use client';
 
 import { useMemo, useState, useTransition } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { Link, useRouter } from '@/i18n/navigation';
 import {
   ArrowLeftRight,
   ChevronLeft,
@@ -24,7 +24,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { MarketsToolbar } from '@/features/markets/components/markets-toolbar';
 import {
-  assetClassLabel,
   formatCompactMoney,
   isWatchlisted,
   marketIconBg,
@@ -49,6 +48,22 @@ type MarketsTableProps = {
   onPageChange: (page: number) => void;
 };
 
+function useAssetClassLabel() {
+  const t = useTranslations('Markets');
+  return (assetClass: string) => {
+    if (
+      assetClass === 'crypto' ||
+      assetClass === 'stocks' ||
+      assetClass === 'metals' ||
+      assetClass === 'forex' ||
+      assetClass === 'indices'
+    ) {
+      return t(`assetClass.${assetClass}`);
+    }
+    return assetClass;
+  };
+}
+
 export function MarketsTable({
   items,
   pagination,
@@ -58,6 +73,8 @@ export function MarketsTable({
   onDirectionChange,
   onPageChange,
 }: MarketsTableProps) {
+  const t = useTranslations('Markets');
+  const tCommon = useTranslations('Common');
   const [starred, setStarred] = useState<Record<string, boolean>>({});
   const [gainersOnly, setGainersOnly] = useState(false);
   const [losersOnly, setLosersOnly] = useState(false);
@@ -136,13 +153,13 @@ export function MarketsTable({
           <table className="w-full min-w-[720px] text-left md:min-w-[860px]">
             <thead>
               <tr className="border-border text-muted-foreground border-b text-xs font-medium">
-                <th className="px-4 py-3 font-medium">Asset</th>
-                <th className="px-4 py-3 font-medium">Price</th>
-                <th className="px-4 py-3 font-medium">24h Change</th>
-                <th className="px-4 py-3 font-medium">Market Cap</th>
-                <th className="px-4 py-3 font-medium">Chart</th>
+                <th className="px-4 py-3 font-medium">{t('colAsset')}</th>
+                <th className="px-4 py-3 font-medium">{t('colPrice')}</th>
+                <th className="px-4 py-3 font-medium">{t('colChange')}</th>
+                <th className="px-4 py-3 font-medium">{t('colMarketCap')}</th>
+                <th className="px-4 py-3 font-medium">{t('colChart')}</th>
                 <th className="px-4 py-3 font-medium">
-                  <span className="sr-only">Actions</span>
+                  <span className="sr-only">{tCommon('actions')}</span>
                 </th>
               </tr>
             </thead>
@@ -153,7 +170,7 @@ export function MarketsTable({
                     colSpan={6}
                     className="text-muted-foreground px-4 py-10 text-center text-sm"
                   >
-                    No markets match your search or filters.
+                    {t('empty')}
                   </td>
                 </tr>
               ) : (
@@ -176,7 +193,10 @@ export function MarketsTable({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-muted-foreground flex items-center gap-1.5 text-xs">
           <RefreshCw className="size-3.5" />
-          Showing {filtered.length} of {pagination.total} markets
+          {t('showingCount', {
+            filtered: filtered.length,
+            total: pagination.total,
+          })}
         </p>
 
         {pagination.last_page > 1 ? (
@@ -192,7 +212,7 @@ export function MarketsTable({
               }
             >
               <ChevronLeft className="size-4" />
-              Prev
+              {tCommon('previous')}
             </Button>
             <Button
               type="button"
@@ -202,7 +222,7 @@ export function MarketsTable({
               disabled={!pagination.next_page_url}
               onClick={() => onPageChange(pagination.current_page + 1)}
             >
-              Next
+              {tCommon('next')}
               <ChevronRight className="size-4" />
             </Button>
           </div>
@@ -225,6 +245,9 @@ function MarketRow({
   onToggleStar: () => void;
   onCopy: () => void;
 }) {
+  const t = useTranslations('Markets');
+  const tCommon = useTranslations('Common');
+  const assetClassLabel = useAssetClassLabel();
   const router = useRouter();
   const href = `/markets/${encodeURIComponent(item.symbol)}`;
 
@@ -272,7 +295,7 @@ function MarketRow({
                     ? 'text-primary'
                     : 'text-muted-foreground/50 hover:text-primary',
                 )}
-                aria-label="Toggle watchlist"
+                aria-label={t('toggleWatchlist')}
               >
                 <Star
                   className="size-3.5"
@@ -332,7 +355,7 @@ function MarketRow({
               <button
                 type="button"
                 className="text-muted-foreground hover:bg-muted hover:text-foreground rounded-lg p-1.5 transition-colors"
-                aria-label={`Actions for ${item.symbol}`}
+                aria-label={t('actionsFor', { symbol: item.symbol })}
               />
             }
           >
@@ -340,7 +363,7 @@ function MarketRow({
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="min-w-44">
             <DropdownMenuItem render={<Link href={href} />}>
-              View details
+              {t('viewDetails')}
             </DropdownMenuItem>
             <DropdownMenuItem
               render={
@@ -350,26 +373,26 @@ function MarketRow({
               }
             >
               <ArrowLeftRight className="size-4" />
-              Trade
+              {t('trade')}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={onToggleStar}>
               <Star className="size-4" />
-              {starred ? 'Remove from watchlist' : 'Add to watchlist'}
+              {starred ? t('removeFromWatchlist') : t('addToWatchlist')}
             </DropdownMenuItem>
             <DropdownMenuItem
               render={
                 <Link
-                  href={`/ai-chat?q=${encodeURIComponent(`Analyze ${item.display_symbol || item.symbol}`)}`}
+                  href={`/ai-chat?q=${encodeURIComponent(t('analyzeQuery', { symbol: item.display_symbol || item.symbol }))}`}
                 />
               }
             >
               <Sparkles className="size-4" />
-              Ask AI
+              {t('askAi')}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={onCopy}>
               <Copy className="size-4" />
-              {copied ? 'Copied' : 'Copy symbol'}
+              {copied ? tCommon('copied') : t('copySymbol')}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

@@ -1,11 +1,11 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import { CalendarDays, Crown } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { BillingHistorySheet } from '@/features/plans/components/billing-history-sheet';
 import { CancelSubscriptionButton } from '@/features/plans/components/cancel-subscription-button';
-import {
-  billingCycleLabel,
-  SubscriptionStatusBadge,
-} from '@/features/plans/lib/subscription-display';
+import { SubscriptionStatusBadge } from '@/features/plans/lib/subscription-display';
 import type { Plan, Subscription } from '@/features/plans/types';
 
 type CurrentPlanCardProps = {
@@ -19,12 +19,14 @@ export function CurrentPlanCard({
   subscription,
   history,
 }: CurrentPlanCardProps) {
+  const t = useTranslations('Plans');
   const name = subscription?.plan_name ?? plan?.name;
   const description = subscription?.description ?? plan?.description;
   const price = subscription?.price ?? plan?.price_monthly;
   const currency = subscription?.currency ?? plan?.currency;
   const cycle = subscription?.billing_cycle ?? 'monthly';
   const status = subscription?.status ?? (plan ? 'active' : null);
+  const cycleUnit = cycle === 'yearly' ? t('perYear') : t('perMonth');
   const canCancel =
     !!subscription &&
     (subscription.is_usable || subscription.status.toLowerCase() === 'active');
@@ -40,13 +42,13 @@ export function CurrentPlanCard({
               </div>
               <div className="min-w-0">
                 <p className="text-muted-foreground text-sm font-medium">
-                  Current Plan
+                  {t('currentPlan')}
                 </p>
                 <h2 className="text-foreground mt-1 text-xl font-bold tracking-tight">
-                  No active plan
+                  {t('noActivePlan')}
                 </h2>
                 <p className="text-muted-foreground mt-2 max-w-xl text-sm leading-relaxed">
-                  Choose a plan below to unlock AI signals and trading tools.
+                  {t('noActivePlanDesc')}
                 </p>
               </div>
             </div>
@@ -67,7 +69,7 @@ export function CurrentPlanCard({
             </div>
             <div className="min-w-0">
               <p className="text-muted-foreground text-sm font-medium">
-                Current Plan
+                {t('currentPlan')}
               </p>
               <div className="mt-1 flex flex-wrap items-center gap-2">
                 <h2 className="text-foreground text-xl font-bold tracking-tight">
@@ -78,17 +80,14 @@ export function CurrentPlanCard({
               {price != null ? (
                 <p className="text-muted-foreground mt-1 text-sm">
                   ${price}
-                  <span className="text-muted-foreground">
-                    {' '}
-                    /{billingCycleLabel(cycle)}
-                  </span>
+                  <span className="text-muted-foreground"> /{cycleUnit}</span>
                   {currency ? ` · ${currency}` : null}
-                  {subscription?.auto_renew ? ' · Auto-renew on' : null}
+                  {subscription?.auto_renew ? ` · ${t('autoRenewOn')}` : null}
                 </p>
               ) : null}
               {subscription?.renews_at_label ? (
                 <p className="text-muted-foreground mt-1 text-sm">
-                  Renews {subscription.renews_at_label}
+                  {t('renews', { date: subscription.renews_at_label })}
                 </p>
               ) : null}
               {description ? (
@@ -104,10 +103,7 @@ export function CurrentPlanCard({
               <div className="bg-muted/50 text-muted-foreground flex items-center gap-2 rounded-xl px-3 py-2 text-sm">
                 <CalendarDays className="text-primary size-4 shrink-0" />
                 <span>
-                  Next billing date{' '}
-                  <span className="text-foreground font-semibold">
-                    {subscription.renews_at_label}
-                  </span>
+                  {t('nextBilling', { date: subscription.renews_at_label })}
                 </span>
               </div>
             ) : null}

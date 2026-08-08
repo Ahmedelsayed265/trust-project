@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { inviteByEmailAction } from '@/features/invite/actions/referrals';
 import type { ReferralInvite, ReferralStats } from '@/features/invite/types';
@@ -14,6 +15,7 @@ export function useInviteFriends({
   initialInvites,
   initialStats,
 }: UseInviteFriendsArgs) {
+  const t = useTranslations('Invite');
   const [copied, setCopied] = useState<'code' | 'link' | null>(null);
   const [invites, setInvites] = useState(initialInvites);
   const [stats, setStats] = useState(initialStats);
@@ -27,7 +29,7 @@ export function useInviteFriends({
       setCopied(type);
       window.setTimeout(() => setCopied(null), 1600);
     } catch {
-      toast.error('Could not copy to clipboard.');
+      toast.error(t('toastCopiedFail'));
     }
   }
 
@@ -35,7 +37,7 @@ export function useInviteFriends({
     e.preventDefault();
     const trimmedEmail = email.trim();
     if (!trimmedEmail) {
-      toast.error('Enter an email address.');
+      toast.error(t('toastEnterEmail'));
       return;
     }
 
@@ -60,7 +62,7 @@ export function useInviteFriends({
       }));
       setEmail('');
       setName('');
-      toast.success('Invitation sent.');
+      toast.success(t('toastSent'));
     });
   }
 

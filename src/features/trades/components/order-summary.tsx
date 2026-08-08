@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import type { OrderSummaryPreviewState } from '@/features/trades/hooks/use-order-summary-preview';
@@ -11,44 +12,50 @@ export function OrderSummary({
 }: {
   preview: OrderSummaryPreviewState;
 }) {
+  const t = useTranslations('Trades');
+  const tCommon = useTranslations('Common');
   const { summary, error, loading } = preview;
 
   const rows = summary
     ? [
-        { label: 'Pair', value: summary.display_symbol || summary.symbol },
         {
-          label: 'Order Type',
-          value: summary.type === 'limit' ? 'Limit' : 'Market',
+          label: tCommon('pair'),
+          value: summary.display_symbol || summary.symbol,
         },
         {
-          label: 'Side',
+          label: t('orderType'),
+          value:
+            summary.type === 'limit' ? tCommon('limit') : tCommon('market'),
+        },
+        {
+          label: t('side'),
           value: summary.side.toUpperCase(),
           className:
             summary.side === 'buy' ? 'text-success' : 'text-destructive',
         },
         {
-          label: 'Est. Quantity',
+          label: t('estQuantity'),
           value: summary.qty_label,
         },
         {
-          label: 'Est. Price',
+          label: t('estPrice'),
           value: formatMoney(summary.price, summary.currency),
         },
         {
-          label: 'Subtotal',
+          label: t('subtotal'),
           value: formatMoney(summary.subtotal, summary.currency),
         },
         {
-          label: `Fee (${summary.fee_rate_pct}%)`,
+          label: t('feeWithRate', { rate: summary.fee_rate_pct }),
           value: formatMoney(summary.fee, summary.currency),
         },
         {
-          label: 'Est. Total',
+          label: t('estTotal'),
           value: formatMoney(summary.total, summary.currency),
           bold: true,
         },
         {
-          label: 'Buying Power',
+          label: t('buyingPower'),
           value: formatMoney(summary.buying_power, summary.currency),
         },
       ]
@@ -58,10 +65,10 @@ export function OrderSummary({
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center justify-between gap-2">
-          <span>Order Summary</span>
+          <span>{t('orderSummary')}</span>
           {loading ? (
             <span className="text-muted-foreground text-xs font-normal">
-              Updating…
+              {tCommon('updating')}
             </span>
           ) : null}
         </CardTitle>
@@ -69,7 +76,7 @@ export function OrderSummary({
       <CardContent className="space-y-0 pt-0">
         {!summary && !error ? (
           <p className="text-muted-foreground py-4 text-sm">
-            Enter an amount to preview fees and totals.
+            {t('enterAmountPreview')}
           </p>
         ) : null}
 

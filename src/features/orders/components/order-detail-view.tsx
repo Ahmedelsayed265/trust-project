@@ -1,6 +1,7 @@
 'use client';
 
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import { ArrowLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -20,28 +21,31 @@ import type { Order } from '@/features/orders/types';
 import { formatMoney } from '@/shared/trading';
 
 export function OrderDetailView({ order }: { order: Order }) {
+  const t = useTranslations('Orders');
+  const tCommon = useTranslations('Common');
+
   const stats = [
-    { label: 'Quantity', value: formatOrderQty(order.qty) },
-    { label: 'Filled', value: formatOrderQty(order.filled_qty) },
-    { label: 'Remaining', value: formatOrderQty(order.remaining_qty) },
+    { label: t('quantity'), value: formatOrderQty(order.qty) },
+    { label: t('filled'), value: formatOrderQty(order.filled_qty) },
+    { label: t('remaining'), value: formatOrderQty(order.remaining_qty) },
     {
-      label: 'Limit price',
+      label: t('limitPrice'),
       value: formatOrderPrice(order.limit_price),
     },
     {
-      label: 'Avg fill',
+      label: t('avgFill'),
       value: formatOrderPrice(order.avg_fill_price),
     },
     {
-      label: order.is_open ? 'Est. total' : 'Total',
+      label: order.is_open ? t('estTotal') : t('total'),
       value: formatMoney(order.quote_amount),
     },
     {
-      label: 'Fee',
+      label: t('fee'),
       value:
         order.fee > 0 ? `${formatMoney(order.fee)} ${order.fee_asset}` : '—',
     },
-    { label: 'Type', value: order.type },
+    { label: t('type'), value: order.type },
   ];
 
   return (
@@ -54,7 +58,7 @@ export function OrderDetailView({ order }: { order: Order }) {
           render={<Link href="/orders" />}
         >
           <ArrowLeft className="size-3.5" />
-          Back to orders
+          {t('backToOrders')}
         </Button>
         <div className="flex flex-wrap items-center gap-2">
           <h1 className="text-foreground text-xl font-bold tracking-tight sm:text-2xl">
@@ -65,10 +69,10 @@ export function OrderDetailView({ order }: { order: Order }) {
         </div>
         <nav
           className="text-muted-foreground mt-1.5 flex flex-wrap items-center gap-1 text-sm"
-          aria-label="Breadcrumb"
+          aria-label={tCommon('breadcrumb')}
         >
           <Link href="/orders" className="hover:text-foreground">
-            Orders
+            {t('title')}
           </Link>
           <ChevronRight className="size-3.5" />
           <span className="text-foreground font-medium">#{order.id}</span>
@@ -112,20 +116,20 @@ export function OrderDetailView({ order }: { order: Order }) {
 
           <div className="text-muted-foreground grid gap-2 text-sm sm:grid-cols-2">
             <p>
-              Created{' '}
+              {t('created')}{' '}
               <span className="text-foreground font-medium">
                 {formatOrderDate(order.created_at)}
               </span>
             </p>
             <p>
-              Updated{' '}
+              {t('updated')}{' '}
               <span className="text-foreground font-medium">
                 {formatOrderDate(order.updated_at)}
               </span>
             </p>
             {order.client_order_id ? (
               <p className="sm:col-span-2">
-                Client order id{' '}
+                {t('clientOrderId')}{' '}
                 <span className="text-foreground font-medium">
                   {order.client_order_id}
                 </span>
@@ -133,7 +137,7 @@ export function OrderDetailView({ order }: { order: Order }) {
             ) : null}
             {order.reject_reason ? (
               <p className="text-destructive sm:col-span-2">
-                Reject reason: {order.reject_reason}
+                {t('rejectReason', { reason: order.reject_reason })}
               </p>
             ) : null}
           </div>

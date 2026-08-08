@@ -1,3 +1,6 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -12,6 +15,7 @@ export function PortfolioBalances({
   balances: PortfolioBalancesData | null;
   providerLabel: string | null;
 }) {
+  const t = useTranslations('Portfolio');
   const rows = balances?.balances ?? [];
   const currency = balances?.currency ?? 'USD';
   const lockedValue = rows.reduce((sum, balance) => {
@@ -24,7 +28,7 @@ export function PortfolioBalances({
   return (
     <Card>
       <CardHeader className="flex-row items-center justify-between gap-3">
-        <CardTitle>Balances</CardTitle>
+        <CardTitle>{t('balances')}</CardTitle>
         {providerLabel && (
           <Badge variant="secondary" className="border-0">
             {providerLabel}
@@ -34,9 +38,7 @@ export function PortfolioBalances({
 
       <CardContent className="space-y-3">
         {rows.length === 0 ? (
-          <p className="text-muted-foreground text-sm">
-            No balances available for this provider.
-          </p>
+          <p className="text-muted-foreground text-sm">{t('noBalances')}</p>
         ) : (
           <>
             <ul className="space-y-2.5">
@@ -59,9 +61,9 @@ export function PortfolioBalances({
                         {balance.asset}
                       </p>
                       <p className="text-muted-foreground truncate text-xs">
-                        {formatQty(balance.free)} free
+                        {t('freeAmount', { qty: formatQty(balance.free) })}
                         {balance.locked > 0
-                          ? ` · ${formatQty(balance.locked)} locked`
+                          ? ` · ${t('lockedAmount', { qty: formatQty(balance.locked) })}`
                           : ''}
                       </p>
                     </div>
@@ -74,7 +76,7 @@ export function PortfolioBalances({
                         : '—'}
                     </p>
                     <p className="text-muted-foreground text-xs">
-                      {formatQty(balance.total)} total
+                      {t('totalAmount', { qty: formatQty(balance.total) })}
                     </p>
                   </div>
                 </li>
@@ -83,8 +85,10 @@ export function PortfolioBalances({
 
             <p className="text-muted-foreground border-border border-t pt-3 text-xs">
               {lockedValue > 0
-                ? `${formatMoney(lockedValue, currency)} reserved by resting orders.`
-                : 'Nothing reserved by resting orders.'}
+                ? t('reservedByOrders', {
+                    amount: formatMoney(lockedValue, currency),
+                  })
+                : t('nothingReserved')}
             </p>
           </>
         )}

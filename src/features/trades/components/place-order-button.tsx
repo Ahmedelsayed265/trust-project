@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { Link, useRouter } from '@/i18n/navigation';
 import { useFormContext } from 'react-hook-form';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -38,6 +38,8 @@ export function PlaceOrderButton({
   disabledLabel?: string;
   onPlaced?: () => void;
 }) {
+  const t = useTranslations('Trades');
+  const tCommon = useTranslations('Common');
   const form = useFormContext<OrderFormValues>();
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -49,11 +51,11 @@ export function PlaceOrderButton({
   function openReview() {
     void form.handleSubmit(() => {
       if (!providerId) {
-        toast.error('Connect a trading account first.');
+        toast.error(t('toastConnectFirst'));
         return;
       }
       if (loading) {
-        toast.error('Wait for the order preview to finish updating.');
+        toast.error(t('toastWaitPreview'));
         return;
       }
       if (error) {
@@ -61,9 +63,7 @@ export function PlaceOrderButton({
         return;
       }
       if (!summary || summary.price <= 0) {
-        toast.error(
-          'No market price available for this symbol on the selected account.',
-        );
+        toast.error(t('toastNoMarketPrice'));
         return;
       }
       setOpen(true);
@@ -97,12 +97,14 @@ export function PlaceOrderButton({
       const order = result.data;
       toast.success(
         <span>
-          Order placed for {order.display_symbol || order.symbol}.{' '}
+          {t('toastOrderPlaced', {
+            symbol: order.display_symbol || order.symbol,
+          })}{' '}
           <Link
             href={`/orders/${encodeURIComponent(order.id)}?provider_id=${encodeURIComponent(order.provider_id)}`}
             className="underline"
           >
-            View order
+            {t('viewOrder')}
           </Link>
         </span>,
       );
@@ -124,52 +126,53 @@ export function PlaceOrderButton({
       >
         {disabledLabel ??
           (loading
-            ? 'Updating preview…'
+            ? t('updatingPreview')
             : error
-              ? 'Preview unavailable'
+              ? t('previewUnavailable')
               : summary && summary.price <= 0
-                ? 'No price available'
-                : 'Review Order')}
+                ? t('noPriceAvailable')
+                : t('reviewOrder'))}
       </Button>
 
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent className="w-full sm:max-w-md">
           <SheetHeader>
-            <SheetTitle>Confirm order</SheetTitle>
-            <SheetDescription>
-              Review the preview below, then place the order on your connected
-              account.
-            </SheetDescription>
+            <SheetTitle>{t('confirmOrder')}</SheetTitle>
+            <SheetDescription>{t('confirmDescription')}</SheetDescription>
           </SheetHeader>
 
           {summary ? (
             <div className="space-y-3 px-4 py-2 text-sm">
               <Row
-                label="Pair"
+                label={tCommon('pair')}
                 value={summary.display_symbol || summary.symbol}
               />
               <Row
-                label="Side"
+                label={tCommon('side')}
                 value={summary.side.toUpperCase()}
                 className={
                   summary.side === 'buy' ? 'text-success' : 'text-destructive'
                 }
               />
               <Row
-                label="Type"
-                value={summary.type === 'limit' ? 'Limit' : 'Market'}
+                label={tCommon('type')}
+                value={
+                  summary.type === 'limit'
+                    ? tCommon('limit')
+                    : tCommon('market')
+                }
               />
-              <Row label="Quantity" value={summary.qty_label} />
+              <Row label={tCommon('quantity')} value={summary.qty_label} />
               <Row
-                label="Price"
+                label={tCommon('price')}
                 value={formatMoney(summary.price, summary.currency)}
               />
               <Row
-                label={`Fee (${summary.fee_rate_pct}%)`}
+                label={t('feeWithRate', { rate: summary.fee_rate_pct })}
                 value={formatMoney(summary.fee, summary.currency)}
               />
               <Row
-                label="Total"
+                label={tCommon('total')}
                 value={formatMoney(summary.total, summary.currency)}
                 bold
               />
@@ -183,14 +186,14 @@ export function PlaceOrderButton({
               disabled={pending}
               onClick={() => setOpen(false)}
             >
-              Back
+              {tCommon('back')}
             </Button>
             <Button
               className="rounded-xl"
               disabled={pending || !previewReady}
               onClick={onConfirm}
             >
-              {pending ? 'Placing…' : 'Place Order'}
+              {pending ? t('placing') : t('placeOrder')}
             </Button>
           </SheetFooter>
         </SheetContent>

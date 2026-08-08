@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { Badge } from '@/components/ui/badge';
 import { InviteList } from '@/features/invite/components/invite-list';
 import { InviteRewardsCard } from '@/features/invite/components/invite-rewards-card';
@@ -15,6 +16,7 @@ type InviteFriendsViewProps = {
 };
 
 export function InviteFriendsView({ data }: InviteFriendsViewProps) {
+  const t = useTranslations('Invite');
   const user = useCurrentUser();
   const invite = useInviteFriends({
     initialInvites: data.invites,
@@ -24,11 +26,11 @@ export function InviteFriendsView({ data }: InviteFriendsViewProps) {
   return (
     <div className="flex w-full min-w-0 flex-col gap-4 sm:gap-5">
       <PageHeader
-        title="Invite Friends"
-        description="Share TrustAI and earn rewards when friends get started."
+        title={t('title')}
+        description={t('description')}
         actions={
           <Badge className="text-success border-0 bg-emerald-50 hover:bg-emerald-50 dark:bg-emerald-950/40">
-            Rewards
+            {t('rewardsBadge')}
           </Badge>
         }
       />

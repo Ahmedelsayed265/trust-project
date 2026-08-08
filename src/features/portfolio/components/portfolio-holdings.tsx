@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { HoldingsFilterTabs } from '@/features/portfolio/components/holdings-filter-tabs';
 import { HoldingsRow } from '@/features/portfolio/components/holdings-row';
@@ -14,13 +15,14 @@ export function PortfolioHoldings({
   holdings: Holding[];
   currency: string;
 }) {
+  const t = useTranslations('Portfolio');
   const { filter, setFilter, sortKey, toggleSort, rows } =
     useHoldingsTable(holdings);
 
   return (
     <Card>
       <CardHeader className="flex-row items-center justify-between gap-3">
-        <CardTitle>Holdings</CardTitle>
+        <CardTitle>{t('holdings')}</CardTitle>
         <HoldingsFilterTabs value={filter} onChange={setFilter} />
       </CardHeader>
 
@@ -36,7 +38,7 @@ export function PortfolioHoldings({
                     colSpan={9}
                     className="text-muted-foreground px-4 py-10 text-center text-sm"
                   >
-                    No holdings in this view.
+                    {t('noHoldings')}
                   </td>
                 </tr>
               ) : (

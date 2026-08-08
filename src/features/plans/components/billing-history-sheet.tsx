@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { History } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -12,13 +13,13 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 import {
-  billingCycleLabel,
   formatSubscriptionDate,
   SubscriptionStatusBadge,
 } from '@/features/plans/lib/subscription-display';
 import type { Subscription } from '@/features/plans/types';
 
 export function BillingHistorySheet({ history }: { history: Subscription[] }) {
+  const t = useTranslations('Plans');
   const [open, setOpen] = useState(false);
 
   return (
@@ -29,22 +30,20 @@ export function BillingHistorySheet({ history }: { history: Subscription[] }) {
         onClick={() => setOpen(true)}
       >
         <History />
-        Billing History
+        {t('billingHistory')}
       </Button>
 
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent className="w-full sm:max-w-md">
           <SheetHeader>
-            <SheetTitle>Billing History</SheetTitle>
-            <SheetDescription>
-              Past and current subscriptions on your account.
-            </SheetDescription>
+            <SheetTitle>{t('billingHistory')}</SheetTitle>
+            <SheetDescription>{t('billingHistoryDesc')}</SheetDescription>
           </SheetHeader>
 
           <div className="mt-4 space-y-3 overflow-y-auto px-4 pb-6">
             {history.length === 0 ? (
               <p className="text-muted-foreground py-8 text-center text-sm">
-                No billing history yet.
+                {t('noBillingHistory')}
               </p>
             ) : (
               history.map((item) => {
@@ -52,6 +51,10 @@ export function BillingHistorySheet({ history }: { history: Subscription[] }) {
                 const ended =
                   formatSubscriptionDate(item.ends_at) ??
                   formatSubscriptionDate(item.cancelled_at);
+                const cycleUnit =
+                  item.billing_cycle === 'yearly'
+                    ? t('perYear')
+                    : t('perMonth');
 
                 return (
                   <Card key={item.id} className="gap-0 py-0">
@@ -62,18 +65,16 @@ export function BillingHistorySheet({ history }: { history: Subscription[] }) {
                             {item.plan_name}
                           </p>
                           <p className="text-muted-foreground mt-0.5 text-xs capitalize">
-                            ${item.price}/
-                            {billingCycleLabel(item.billing_cycle)} ·{' '}
-                            {item.currency}
+                            ${item.price}/{cycleUnit} · {item.currency}
                           </p>
                         </div>
                         <SubscriptionStatusBadge status={item.status} />
                       </div>
                       <p className="text-muted-foreground text-xs">
-                        {started ? `Started ${started}` : null}
-                        {ended ? ` · Ended ${ended}` : null}
+                        {started ? t('started', { date: started }) : null}
+                        {ended ? ` · ${t('ended', { date: ended })}` : null}
                         {!ended && item.renews_at_label
-                          ? ` · Renews ${item.renews_at_label}`
+                          ? ` · ${t('renews', { date: item.renews_at_label })}`
                           : null}
                       </p>
                     </CardContent>

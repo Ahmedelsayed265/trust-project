@@ -1,4 +1,7 @@
-import Link from 'next/link';
+'use client';
+
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import { ArrowLeft, ChevronRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -10,6 +13,8 @@ import type { Plan } from '@/features/plans/types';
 import { cn } from '@/lib/utils';
 
 export function PlanDetailView({ plan }: { plan: Plan }) {
+  const t = useTranslations('Plans');
+  const tCommon = useTranslations('Common');
   const isHighlighted = plan.is_current || plan.is_popular;
 
   return (
@@ -22,21 +27,21 @@ export function PlanDetailView({ plan }: { plan: Plan }) {
           render={<Link href="/profile/plans" />}
         >
           <ArrowLeft className="size-3.5" />
-          Back to plans
+          {t('backToPlans')}
         </Button>
         <h1 className="text-foreground text-xl font-bold tracking-tight sm:text-2xl">
           {plan.name}
         </h1>
         <nav
           className="text-muted-foreground mt-1.5 flex flex-wrap items-center gap-1 text-sm"
-          aria-label="Breadcrumb"
+          aria-label={tCommon('breadcrumb')}
         >
           <Link href="/profile" className="hover:text-foreground">
-            Profile
+            {t('breadcrumbProfile')}
           </Link>
           <ChevronRight className="size-3.5" />
           <Link href="/profile/plans" className="hover:text-foreground">
-            Manage Plans
+            {t('title')}
           </Link>
           <ChevronRight className="size-3.5" />
           <span className="text-foreground font-medium">{plan.name}</span>
@@ -52,7 +57,7 @@ export function PlanDetailView({ plan }: { plan: Plan }) {
         >
           {plan.is_popular ? (
             <div className="bg-primary text-primary-foreground px-3 py-2 text-center text-[11px] font-bold tracking-[0.14em] uppercase">
-              Most Popular
+              {t('mostPopular')}
             </div>
           ) : null}
 
@@ -71,11 +76,11 @@ export function PlanDetailView({ plan }: { plan: Plan }) {
               <div className="flex flex-wrap justify-end gap-1.5">
                 {plan.is_current ? (
                   <Badge className="bg-primary/10 text-primary border-0">
-                    Active
+                    {t('active')}
                   </Badge>
                 ) : null}
                 <Badge variant="secondary" className="border-0 capitalize">
-                  Tier {plan.tier}
+                  {t('tier', { tier: plan.tier })}
                 </Badge>
               </div>
             </div>
@@ -92,11 +97,14 @@ export function PlanDetailView({ plan }: { plan: Plan }) {
                 ${plan.price_monthly}
                 <span className="text-muted-foreground text-sm font-medium">
                   {' '}
-                  /month
+                  /{t('perMonth')}
                 </span>
               </p>
               <p className="text-muted-foreground pb-1 text-sm">
-                or ${plan.price_yearly}/year · {plan.currency}
+                {t('orYearly', {
+                  price: plan.price_yearly,
+                  currency: plan.currency,
+                })}
               </p>
             </div>
 
@@ -116,7 +124,7 @@ export function PlanDetailView({ plan }: { plan: Plan }) {
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">What&apos;s included</CardTitle>
+            <CardTitle className="text-base">{t('whatsIncluded')}</CardTitle>
           </CardHeader>
           <CardContent>
             <PlanFeaturesList features={plan.features} />

@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import type { SecurityOverview } from '@/features/security/types';
 import { ChangePasswordForm } from '@/features/security/components/change-password-form';
 import { RecentActivityCard } from '@/features/security/components/recent-activity-card';
@@ -8,12 +9,11 @@ import { TwoFactorSection } from '@/features/security/components/two-factor-sect
 import { PageHeader } from '@/shared/components/page-header';
 
 export function SecurityView({ data }: { data: SecurityOverview }) {
+  const t = useTranslations('Security');
+
   return (
     <div className="flex w-full min-w-0 flex-col gap-4 sm:gap-5">
-      <PageHeader
-        title="Security"
-        description="Manage password protection, sessions, and two-factor authentication."
-      />
+      <PageHeader title={t('title')} description={t('description')} />
 
       <TwoFactorSection data={data} />
 

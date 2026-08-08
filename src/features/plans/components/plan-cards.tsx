@@ -1,4 +1,7 @@
-import Link from 'next/link';
+'use client';
+
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import {
   Card,
   CardContent,
@@ -13,6 +16,7 @@ import type { Plan } from '@/features/plans/types';
 import { cn } from '@/lib/utils';
 
 function PlanCard({ plan }: { plan: Plan }) {
+  const t = useTranslations('Plans');
   const isHighlighted = plan.is_current || plan.is_popular;
   const href = `/profile/plans/${encodeURIComponent(plan.key)}`;
 
@@ -27,7 +31,7 @@ function PlanCard({ plan }: { plan: Plan }) {
     >
       {plan.is_popular ? (
         <div className="bg-primary text-primary-foreground px-3 py-2 text-center text-[11px] font-bold tracking-[0.14em] uppercase">
-          Most Popular
+          {t('mostPopular')}
         </div>
       ) : null}
 
@@ -46,7 +50,7 @@ function PlanCard({ plan }: { plan: Plan }) {
             </div>
             {plan.is_current ? (
               <span className="border-primary/20 bg-primary/10 text-primary rounded-md border px-2 py-0.5 text-[11px] font-semibold">
-                Active
+                {t('active')}
               </span>
             ) : null}
           </div>
@@ -64,7 +68,7 @@ function PlanCard({ plan }: { plan: Plan }) {
             ${plan.price_monthly}
             <span className="text-muted-foreground text-sm font-medium">
               {' '}
-              /month
+              /{t('perMonth')}
             </span>
           </p>
         </Link>
@@ -82,10 +86,12 @@ function PlanCard({ plan }: { plan: Plan }) {
 }
 
 export function PlanCards({ plans }: { plans: Plan[] }) {
+  const t = useTranslations('Plans');
+
   return (
     <section className="space-y-4">
       <h2 className="text-foreground text-base font-semibold sm:text-lg">
-        Choose the plan that fits your trading journey.
+        {t('choosePlanHeading')}
       </h2>
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {plans.map((plan) => (

@@ -1,7 +1,8 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useEffect, useState, useTransition } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -36,6 +37,8 @@ export function VerifyEmailForm({
   email: string;
   purpose: 'signup' | 'reset';
 }) {
+  const t = useTranslations('AuthVerifyEmail');
+  const tCommon = useTranslations('Common');
   const router = useRouter();
   const [code, setCode] = useState('');
   const [secondsLeft, setSecondsLeft] = useState(RESEND_SECONDS);
@@ -54,7 +57,7 @@ export function VerifyEmailForm({
 
   function onVerify(nextCode = code) {
     if (nextCode.length !== 6) {
-      toast.error('Enter the 6-digit code.');
+      toast.error(t('errorEnterCode'));
       return;
     }
 
@@ -68,9 +71,7 @@ export function VerifyEmailForm({
         return;
       }
 
-      toast.success(
-        isReset ? 'Code verified. Set your new password.' : 'Email verified.',
-      );
+      toast.success(isReset ? t('toastCodeVerified') : t('toastEmailVerified'));
       router.push(result.data.next);
       router.refresh();
     });
@@ -91,7 +92,7 @@ export function VerifyEmailForm({
 
       setCode('');
       setSecondsLeft(RESEND_SECONDS);
-      toast.success('A new code was sent to your email.');
+      toast.success(t('toastResent'));
     });
   }
 
@@ -117,17 +118,15 @@ export function VerifyEmailForm({
         className="text-muted-foreground hover:text-foreground mb-6 inline-flex items-center gap-1.5 text-sm font-medium disabled:opacity-60"
       >
         <ArrowLeft className="size-4" />
-        Back
+        {tCommon('back')}
       </button>
 
       <div className="mb-8 space-y-2">
         <h2 className="text-foreground text-2xl font-bold tracking-tight">
-          {isReset ? 'Enter reset code' : 'Verify your email'}
+          {isReset ? t('titleReset') : t('titleSignup')}
         </h2>
         <p className="text-muted-foreground text-sm">
-          {isReset
-            ? 'Enter the 6-digit code we sent to reset your password'
-            : 'Enter the code we sent to finish signing in'}
+          {isReset ? t('subtitleReset') : t('subtitleSignup')}
         </p>
       </div>
 
@@ -139,9 +138,7 @@ export function VerifyEmailForm({
         }}
       >
         <p className="text-muted-foreground text-sm leading-relaxed">
-          We sent a 6-digit code to{' '}
-          <span className="text-foreground font-medium">{email}</span>. Enter it
-          below to continue.
+          {t('sentTo', { email })}
         </p>
 
         <div className="flex justify-center">
@@ -167,15 +164,15 @@ export function VerifyEmailForm({
 
         <SubmitButton
           loading={pending}
-          loadingText="Verifying..."
+          loadingText={t('submitting')}
           disabled={code.length !== 6}
         >
-          Continue
+          {t('submit')}
         </SubmitButton>
 
         <p className="text-muted-foreground text-center text-sm">
           {secondsLeft > 0 ? (
-            <>Resend code in {formatTimer(secondsLeft)}</>
+            <>{t('resendIn', { time: formatTimer(secondsLeft) })}</>
           ) : (
             <button
               type="button"
@@ -183,7 +180,7 @@ export function VerifyEmailForm({
               disabled={resending}
               className="text-primary font-medium hover:underline disabled:opacity-60"
             >
-              {resending ? 'Sending...' : 'Resend code'}
+              {resending ? t('resending') : t('resend')}
             </button>
           )}
         </p>

@@ -1,13 +1,30 @@
-import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
+import { Link } from '@/i18n/navigation';
 import { ArrowLeft, Eye } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { PageHeader } from '@/shared/components/page-header';
 import { HelpIcon } from '@/features/help/lib/help-icons';
-import { HELP_CATEGORY_LABELS, type HelpArticle } from '@/features/help/types';
+import { type HelpArticle } from '@/features/help/types';
 
-export function HelpDetailView({ article }: { article: HelpArticle }) {
+const HELP_CATEGORY_KEY_MAP: Record<string, string> = {
+  'getting-started': 'gettingStarted',
+  trading: 'trading',
+  security: 'security',
+  billing: 'billing',
+};
+
+export async function HelpDetailView({ article }: { article: HelpArticle }) {
+  const t = await getTranslations('Help');
+  const tCommon = await getTranslations('Common');
+
+  const messageKey = HELP_CATEGORY_KEY_MAP[article.category];
+  const categoryLabel =
+    messageKey && t.has(`categories.${messageKey}`)
+      ? t(`categories.${messageKey}` as 'categories.trading')
+      : article.category;
+
   const paragraphs = article.body
     .split(/\n+/)
     .map((part) => part.trim())
@@ -25,7 +42,7 @@ export function HelpDetailView({ article }: { article: HelpArticle }) {
             render={<Link href="/help" />}
           >
             <ArrowLeft className="size-4" />
-            Back
+            {tCommon('back')}
           </Button>
         }
       />
@@ -37,7 +54,7 @@ export function HelpDetailView({ article }: { article: HelpArticle }) {
               <HelpIcon name={article.icon} className="size-5" />
             </div>
             <Badge variant="secondary" className="border-0 capitalize">
-              {HELP_CATEGORY_LABELS[article.category] ?? article.category}
+              {categoryLabel}
             </Badge>
             <Badge variant="secondary" className="gap-1 border-0">
               <Eye className="size-3.5" />
@@ -62,10 +79,10 @@ export function HelpDetailView({ article }: { article: HelpArticle }) {
         <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-foreground text-base font-semibold">
-              Still need help?
+              {t('stillNeedHelp')}
             </p>
             <p className="text-muted-foreground mt-1 text-sm">
-              Browse more guides or send us a message.
+              {t('stillNeedHelpDesc')}
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -75,14 +92,14 @@ export function HelpDetailView({ article }: { article: HelpArticle }) {
               nativeButton={false}
               render={<Link href="/help" />}
             >
-              All guides
+              {t('allGuides')}
             </Button>
             <Button
               className="rounded-xl"
               nativeButton={false}
               render={<Link href="/contact" />}
             >
-              Contact Support
+              {t('contactSupport')}
             </Button>
           </div>
         </CardContent>

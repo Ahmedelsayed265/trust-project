@@ -1,4 +1,7 @@
-import Link from 'next/link';
+'use client';
+
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import { ArrowRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,15 +20,18 @@ export function PortfolioOpenOrders({
   orders: Order[];
   currency: string;
 }) {
+  const t = useTranslations('Portfolio');
+  const tCommon = useTranslations('Common');
+
   return (
     <Card>
       <CardHeader className="flex-row items-center justify-between gap-3">
-        <CardTitle>Open orders</CardTitle>
+        <CardTitle>{t('openOrders')}</CardTitle>
         <Link
           href="/orders"
           className="text-primary inline-flex shrink-0 items-center gap-1 text-xs font-medium hover:underline"
         >
-          View all
+          {tCommon('viewAll')}
           <ArrowRight className="size-3.5" />
         </Link>
       </CardHeader>
@@ -33,7 +39,7 @@ export function PortfolioOpenOrders({
       <CardContent className="space-y-2.5">
         {orders.length === 0 ? (
           <p className="text-muted-foreground text-sm">
-            No working orders at the provider.
+            {t('noWorkingOrders')}
           </p>
         ) : (
           orders.map((order) => (
@@ -52,7 +58,7 @@ export function PortfolioOpenOrders({
                         : 'bg-destructive/12 text-destructive',
                     )}
                   >
-                    {order.side}
+                    {order.side === 'buy' ? tCommon('buy') : tCommon('sell')}
                   </Badge>
                   <p className="text-foreground truncate text-sm font-semibold">
                     {order.display_symbol || order.symbol}
@@ -60,8 +66,10 @@ export function PortfolioOpenOrders({
                 </div>
                 <p className="text-muted-foreground mt-1 text-xs">
                   {order.type === 'limit' && order.limit_price != null
-                    ? `Limit ${formatMoney(order.limit_price, currency)}`
-                    : 'Market'}{' '}
+                    ? t('limitAt', {
+                        price: formatMoney(order.limit_price, currency),
+                      })
+                    : tCommon('market')}{' '}
                   · {formatRelativeTime(order.created_at)}
                 </p>
               </div>
@@ -71,7 +79,7 @@ export function PortfolioOpenOrders({
                   {formatQty(order.qty)}
                 </p>
                 <p className="text-muted-foreground text-xs">
-                  {formatQty(order.filled_qty)} filled
+                  {t('filledQty', { qty: formatQty(order.filled_qty) })}
                 </p>
               </div>
             </div>

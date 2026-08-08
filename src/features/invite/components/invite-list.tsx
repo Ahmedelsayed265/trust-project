@@ -1,3 +1,6 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { ReferralInvite } from '@/features/invite/types';
 
@@ -6,15 +9,17 @@ type InviteListProps = {
 };
 
 export function InviteList({ invites }: InviteListProps) {
+  const t = useTranslations('Invite');
+
   return (
     <Card>
       <CardHeader className="border-border border-b">
-        <CardTitle>Recent invites</CardTitle>
+        <CardTitle>{t('recentInvites')}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-1 pt-1">
         {invites.length === 0 ? (
           <p className="text-muted-foreground px-2 py-6 text-center text-sm">
-            No invitations yet. Share your link or invite someone by email.
+            {t('emptyList')}
           </p>
         ) : (
           invites.map((invite) => <InviteRow key={invite.id} invite={invite} />)

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { getOrdersAction } from '@/features/orders/actions/get-orders';
 import type { Order } from '@/features/orders/types';
@@ -24,6 +25,7 @@ export function usePortfolio({
   initialAllocation,
   initialOrders,
 }: UsePortfolioArgs) {
+  const t = useTranslations('Portfolio');
   const [portfolio, setPortfolio] = useState(initialPortfolio);
   const [allocation, setAllocation] = useState(initialAllocation);
   const [orders, setOrders] = useState(initialOrders);
@@ -46,7 +48,7 @@ export function usePortfolio({
       setPortfolio(portfolioResult.data);
       if (allocationResult.ok) setAllocation(allocationResult.data);
       if (ordersResult.ok) setOrders(ordersResult.data.items);
-      toast.success('Portfolio synced.');
+      toast.success(t('toastSynced'));
     });
   }
 

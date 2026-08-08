@@ -1,4 +1,5 @@
-import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
+import { Link } from '@/i18n/navigation';
 import type { HomeActivity } from '@/features/dashboard/types';
 import { formatRelativeTime } from '@/features/portfolio/lib/portfolio-data';
 import { cn } from '@/lib/utils';
@@ -8,25 +9,26 @@ type RecentActivityProps = {
   items: HomeActivity[];
 };
 
-export function RecentActivity({ items }: RecentActivityProps) {
+export async function RecentActivity({ items }: RecentActivityProps) {
+  const t = await getTranslations('Dashboard');
+  const tCommon = await getTranslations('Common');
+
   return (
     <div className="border-border bg-card rounded-lg border p-5">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-foreground text-base font-semibold">
-          Recent Activity
+          {t('recentActivity')}
         </h2>
         <Link
           href="/orders"
           className="text-primary text-sm font-medium hover:underline"
         >
-          See All
+          {tCommon('seeAll')}
         </Link>
       </div>
 
       {items.length === 0 ? (
-        <p className="text-muted-foreground text-sm">
-          No recent fills yet. Place a trade to see activity here.
-        </p>
+        <p className="text-muted-foreground text-sm">{t('noRecentFills')}</p>
       ) : (
         <ul className="space-y-1">
           {items.map((item) => {

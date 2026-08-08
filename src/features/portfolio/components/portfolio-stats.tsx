@@ -1,3 +1,6 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import {
   Banknote,
   Layers,
@@ -11,6 +14,8 @@ import { formatMoney, formatPct, formatSignedMoney } from '@/shared/trading';
 import type { PortfolioData } from '@/features/portfolio/types';
 
 export function PortfolioStats({ portfolio }: { portfolio: PortfolioData }) {
+  const t = useTranslations('Portfolio');
+  const tCommon = useTranslations('Common');
   const { currency, equity, buying_power, day_pnl, day_pnl_pct, open_pnl } =
     portfolio;
 
@@ -26,44 +31,43 @@ export function PortfolioStats({ portfolio }: { portfolio: PortfolioData }) {
 
   const stats = [
     {
-      label: 'Total equity',
+      label: t('totalEquity'),
       icon: Wallet,
       value: formatMoney(equity, currency),
       hint: (
         <span className={dayPositive ? 'text-success' : 'text-destructive'}>
           {formatSignedMoney(day_pnl, currency)} ({formatPct(day_pnl_pct)}){' '}
-          <span className="text-muted-foreground">today</span>
+          <span className="text-muted-foreground">{tCommon('today')}</span>
         </span>
       ),
     },
     {
-      label: 'Positions value',
+      label: t('positionsValue'),
       icon: Layers,
       value: formatMoney(invested, currency),
       hint: (
         <span className="text-muted-foreground">
-          {positionsCount} open{' '}
-          {positionsCount === 1 ? 'position' : 'positions'}
+          {t('openPositionsHint', { count: positionsCount })}
         </span>
       ),
     },
     {
-      label: 'Unrealized P&L',
+      label: t('unrealizedPnl'),
       icon: pnlPositive ? TrendingUp : TrendingDown,
       value: formatSignedMoney(open_pnl, currency),
       valueClassName: pnlPositive ? 'text-success' : 'text-destructive',
       hint: (
         <span className={pnlPositive ? 'text-success' : 'text-destructive'}>
           {formatPct(openPnlPct)}{' '}
-          <span className="text-muted-foreground">on cost</span>
+          <span className="text-muted-foreground">{t('onCost')}</span>
         </span>
       ),
     },
     {
-      label: 'Buying power',
+      label: t('buyingPower'),
       icon: Banknote,
       value: formatMoney(buying_power, currency),
-      hint: <span className="text-muted-foreground">Free cash available</span>,
+      hint: <span className="text-muted-foreground">{t('freeCash')}</span>,
     },
   ];
 

@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { ChevronDown, Filter, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -31,6 +32,15 @@ type MarketsToolbarProps = {
   onClearFilters: () => void;
 };
 
+const SORT_LABEL_KEYS = {
+  default: 'sortDefault',
+  change: 'sortChange',
+  price: 'sortPrice',
+  volume: 'sortVolume',
+  name: 'sortName',
+  market_cap: 'sortMarketCap',
+} as const;
+
 export function MarketsToolbar({
   gainersOnly,
   losersOnly,
@@ -44,6 +54,9 @@ export function MarketsToolbar({
   onDirectionChange,
   onClearFilters,
 }: MarketsToolbarProps) {
+  const t = useTranslations('Markets');
+  const sortLabel = t(SORT_LABEL_KEYS[sort]);
+
   return (
     <div className="flex flex-wrap items-center justify-between gap-3">
       <div className="flex items-center gap-2">
@@ -57,12 +70,12 @@ export function MarketsToolbar({
             }
           >
             <Filter className="text-muted-foreground size-4" />
-            Filters
+            {t('filters')}
             <ChevronDown className="text-muted-foreground size-3.5" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="min-w-48">
             <DropdownMenuGroup>
-              <DropdownMenuLabel>Performance</DropdownMenuLabel>
+              <DropdownMenuLabel>{t('performance')}</DropdownMenuLabel>
               <DropdownMenuCheckboxItem
                 checked={gainersOnly}
                 onCheckedChange={(checked) => {
@@ -70,7 +83,7 @@ export function MarketsToolbar({
                   if (checked) onLosersOnlyChange(false);
                 }}
               >
-                Gainers only
+                {t('gainersOnly')}
               </DropdownMenuCheckboxItem>
               <DropdownMenuCheckboxItem
                 checked={losersOnly}
@@ -79,7 +92,7 @@ export function MarketsToolbar({
                   if (checked) onGainersOnlyChange(false);
                 }}
               >
-                Losers only
+                {t('losersOnly')}
               </DropdownMenuCheckboxItem>
               <DropdownMenuCheckboxItem
                 checked={watchlistOnly}
@@ -87,12 +100,12 @@ export function MarketsToolbar({
                   onWatchlistOnlyChange(checked === true)
                 }
               >
-                Watchlist only
+                {t('watchlistOnly')}
               </DropdownMenuCheckboxItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={onClearFilters}>
-              Clear filters
+              {t('clearFilters')}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -111,7 +124,7 @@ export function MarketsToolbar({
             className="size-4"
             fill={watchlistOnly ? 'currentColor' : 'none'}
           />
-          Watchlist
+          {t('watchlist')}
         </button>
       </div>
 
@@ -125,7 +138,7 @@ export function MarketsToolbar({
               />
             }
           >
-            Sort: {sort === 'default' ? 'Default' : sort}
+            {t('sortPrefix')} {sortLabel}
             <ChevronDown className="text-muted-foreground size-3.5" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="min-w-40">
@@ -136,18 +149,22 @@ export function MarketsToolbar({
               }
             >
               <DropdownMenuRadioItem value="default">
-                Default
+                {t('sortDefault')}
               </DropdownMenuRadioItem>
               <DropdownMenuRadioItem value="change">
-                Change
+                {t('sortChange')}
               </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="price">Price</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="price">
+                {t('sortPrice')}
+              </DropdownMenuRadioItem>
               <DropdownMenuRadioItem value="volume">
-                Volume
+                {t('sortVolume')}
               </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="name">Name</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="name">
+                {t('sortName')}
+              </DropdownMenuRadioItem>
               <DropdownMenuRadioItem value="market_cap">
-                Market cap
+                {t('sortMarketCap')}
               </DropdownMenuRadioItem>
             </DropdownMenuRadioGroup>
           </DropdownMenuContent>
@@ -163,7 +180,7 @@ export function MarketsToolbar({
               />
             }
           >
-            {direction === 'desc' ? 'Desc' : 'Asc'}
+            {direction === 'desc' ? t('desc') : t('asc')}
             <ChevronDown className="text-muted-foreground size-3.5" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="min-w-28">
@@ -173,8 +190,12 @@ export function MarketsToolbar({
                 onDirectionChange(value as 'asc' | 'desc')
               }
             >
-              <DropdownMenuRadioItem value="desc">Desc</DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="asc">Asc</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="desc">
+                {t('desc')}
+              </DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="asc">
+                {t('asc')}
+              </DropdownMenuRadioItem>
             </DropdownMenuRadioGroup>
           </DropdownMenuContent>
         </DropdownMenu>

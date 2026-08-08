@@ -1,7 +1,7 @@
 'use client';
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { Link, usePathname } from '@/i18n/navigation';
 import {
   ArrowLeftRight,
   ClipboardList,
@@ -13,14 +13,15 @@ import { cn } from '@/lib/utils';
 import { useSidebar } from '@/shared/providers/sidebar-provider';
 
 const items = [
-  { label: 'Home', href: '/', icon: Home },
-  { label: 'Markets', href: '/markets', icon: LineChart },
-  { label: 'Trade', href: '/trades', icon: ArrowLeftRight },
-  { label: 'Orders', href: '/orders', icon: ClipboardList },
-  { label: 'Profile', href: '/profile', icon: UserRound },
+  { labelKey: 'home' as const, href: '/', icon: Home },
+  { labelKey: 'markets' as const, href: '/markets', icon: LineChart },
+  { labelKey: 'trade' as const, href: '/trades', icon: ArrowLeftRight },
+  { labelKey: 'orders' as const, href: '/orders', icon: ClipboardList },
+  { labelKey: 'profile' as const, href: '/profile', icon: UserRound },
 ];
 
 export function MobileBottomNav() {
+  const t = useTranslations('Nav');
   const pathname = usePathname();
   const { setMobileOpen } = useSidebar();
 
@@ -29,13 +30,14 @@ export function MobileBottomNav() {
       <ul className="mx-auto flex max-w-lg items-stretch justify-between gap-0">
         {items.map((item) => {
           const Icon = item.icon;
+          const label = t(item.labelKey);
           const active =
             item.href === '/'
               ? pathname === '/'
               : pathname.startsWith(item.href);
 
           return (
-            <li key={item.label} className="min-w-0 flex-1">
+            <li key={item.labelKey} className="min-w-0 flex-1">
               <Link
                 href={item.href}
                 onClick={() => setMobileOpen(false)}
@@ -47,7 +49,7 @@ export function MobileBottomNav() {
                 )}
               >
                 <Icon className="size-5 shrink-0" />
-                <span className="truncate">{item.label}</span>
+                <span className="truncate">{label}</span>
               </Link>
             </li>
           );

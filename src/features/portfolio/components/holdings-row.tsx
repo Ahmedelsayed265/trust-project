@@ -1,4 +1,7 @@
-import Link from 'next/link';
+'use client';
+
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import { ArrowLeftRight } from 'lucide-react';
 import { Sparkline } from '@/shared/components/sparkline';
 import { cn } from '@/lib/utils';
@@ -16,6 +19,8 @@ export function HoldingsRow({
   holding: Holding;
   currency: string;
 }) {
+  const t = useTranslations('Portfolio');
+  const tCommon = useTranslations('Common');
   const positive = holding.positive;
 
   return (
@@ -36,8 +41,8 @@ export function HoldingsRow({
             </p>
             <p className="text-muted-foreground text-xs capitalize">
               {holding.kind === 'cash'
-                ? 'Free balance'
-                : `${holding.side ?? 'Long'} position`}
+                ? t('freeBalance')
+                : t('positionKind', { side: holding.side ?? 'Long' })}
             </p>
           </div>
         </div>
@@ -119,7 +124,7 @@ export function HoldingsRow({
           className="text-muted-foreground hover:bg-muted hover:text-foreground inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs font-medium transition-colors"
         >
           <ArrowLeftRight className="size-3.5" />
-          Trade
+          {tCommon('trade')}
         </Link>
       </td>
     </tr>

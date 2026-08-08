@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { ArrowUpDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { HoldingsSortKey } from '@/features/portfolio/hooks/use-holdings-table';
@@ -11,6 +12,9 @@ export function HoldingsTableHead({
   sortKey: HoldingsSortKey;
   onSort: (key: HoldingsSortKey) => void;
 }) {
+  const t = useTranslations('Portfolio');
+  const tCommon = useTranslations('Common');
+
   const sortable = (
     key: HoldingsSortKey,
     label: string,
@@ -34,23 +38,27 @@ export function HoldingsTableHead({
     <thead>
       <tr className="border-border text-muted-foreground border-b text-xs font-medium">
         <th className="px-4 py-2.5 font-medium">
-          {sortable('asset', 'Asset', 'left')}
-        </th>
-        <th className="px-4 py-2.5 text-right font-medium">Quantity</th>
-        <th className="px-4 py-2.5 text-right font-medium">Avg entry</th>
-        <th className="px-4 py-2.5 text-right font-medium">Mark</th>
-        <th className="px-4 py-2.5 font-medium">
-          {sortable('allocation', 'Allocation', 'left')}
+          {sortable('asset', t('colAsset'), 'left')}
         </th>
         <th className="px-4 py-2.5 text-right font-medium">
-          {sortable('value', 'Value', 'right')}
+          {t('colQuantity')}
         </th>
         <th className="px-4 py-2.5 text-right font-medium">
-          {sortable('pnl', 'Unrealized P&L', 'right')}
+          {t('colAvgEntry')}
         </th>
-        <th className="px-4 py-2.5 font-medium">Trend</th>
+        <th className="px-4 py-2.5 text-right font-medium">{t('colMark')}</th>
         <th className="px-4 py-2.5 font-medium">
-          <span className="sr-only">Actions</span>
+          {sortable('allocation', t('colAllocation'), 'left')}
+        </th>
+        <th className="px-4 py-2.5 text-right font-medium">
+          {sortable('value', t('colValue'), 'right')}
+        </th>
+        <th className="px-4 py-2.5 text-right font-medium">
+          {sortable('pnl', t('unrealizedPnl'), 'right')}
+        </th>
+        <th className="px-4 py-2.5 font-medium">{t('colTrend')}</th>
+        <th className="px-4 py-2.5 font-medium">
+          <span className="sr-only">{tCommon('actions')}</span>
         </th>
       </tr>
     </thead>

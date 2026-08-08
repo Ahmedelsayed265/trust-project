@@ -1,10 +1,9 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  categoryLabel,
-  impactBadgeClass,
-  impactLabel,
-} from '@/features/calendar/lib/calendar-display';
+import { impactBadgeClass } from '@/features/calendar/lib/calendar-display';
 import type { CalendarEvent } from '@/features/calendar/types';
 import { cn } from '@/lib/utils';
 
@@ -19,21 +18,40 @@ export function CalendarEvents({
   selectedDay,
   monthLabel,
 }: CalendarEventsProps) {
+  const t = useTranslations('Calendar');
+
+  function impactLabel(impact: string) {
+    if (impact === 'high') return t('high');
+    if (impact === 'medium') return t('medium');
+    if (impact === 'low') return t('low');
+    return impact;
+  }
+
+  function categoryLabel(category: string) {
+    if (category === 'economic') return t('economic');
+    if (category === 'earnings') return t('earnings');
+    if (category === 'crypto') return t('crypto');
+    if (category === 'dividend') return t('dividend');
+    if (category === 'ipo') return t('ipo');
+    return category;
+  }
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>
           {selectedDay != null
-            ? `Events · ${monthLabel.split(' ')[0]} ${selectedDay}`
-            : 'Upcoming Events'}
+            ? t('eventsDay', {
+                month: monthLabel.split(' ')[0],
+                day: selectedDay,
+              })
+            : t('upcomingEvents')}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
         {events.length === 0 ? (
           <p className="text-muted-foreground py-6 text-center text-sm">
-            {selectedDay != null
-              ? 'No events for this day.'
-              : 'No upcoming events.'}
+            {selectedDay != null ? t('noEventsDay') : t('noUpcoming')}
           </p>
         ) : (
           events.map((event) => (
@@ -72,17 +90,17 @@ export function CalendarEvents({
                 </Badge>
                 {event.forecast ? (
                   <Badge variant="outline" className="font-normal">
-                    F: {event.forecast}
+                    {t('forecastShort', { value: event.forecast })}
                   </Badge>
                 ) : null}
                 {event.previous ? (
                   <Badge variant="outline" className="font-normal">
-                    P: {event.previous}
+                    {t('previousShort', { value: event.previous })}
                   </Badge>
                 ) : null}
                 {event.actual ? (
                   <Badge variant="outline" className="font-normal">
-                    A: {event.actual}
+                    {t('actualShort', { value: event.actual })}
                   </Badge>
                 ) : null}
               </div>

@@ -1,10 +1,20 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import {
   HOLDINGS_FILTERS,
   type HoldingsFilter,
 } from '@/features/portfolio/hooks/use-holdings-table';
+
+const FILTER_KEYS: Record<
+  HoldingsFilter,
+  'filterAll' | 'filterPositions' | 'filterCash'
+> = {
+  all: 'filterAll',
+  position: 'filterPositions',
+  cash: 'filterCash',
+};
 
 export function HoldingsFilterTabs({
   value,
@@ -13,6 +23,8 @@ export function HoldingsFilterTabs({
   value: HoldingsFilter;
   onChange: (filter: HoldingsFilter) => void;
 }) {
+  const t = useTranslations('Portfolio');
+
   return (
     <div className="bg-muted flex shrink-0 items-center gap-0.5 rounded-lg p-0.5">
       {HOLDINGS_FILTERS.map((item) => (
@@ -27,7 +39,7 @@ export function HoldingsFilterTabs({
               : 'text-muted-foreground hover:text-foreground',
           )}
         >
-          {item.label}
+          {t(FILTER_KEYS[item.id])}
         </button>
       ))}
     </div>

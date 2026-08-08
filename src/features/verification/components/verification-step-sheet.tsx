@@ -1,6 +1,7 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { useRouter } from '@/i18n/navigation';
 import {
   Sheet,
   SheetContent,
@@ -27,6 +28,7 @@ export function VerificationStepSheet({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const t = useTranslations('Verification');
   const router = useRouter();
   const stepKey = step?.key as VerificationStepKey | undefined;
 
@@ -39,10 +41,9 @@ export function VerificationStepSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="flex w-full flex-col sm:max-w-md" side="right">
         <SheetHeader>
-          <SheetTitle>{step?.title ?? 'Verification step'}</SheetTitle>
+          <SheetTitle>{step?.title ?? t('stepFallbackTitle')}</SheetTitle>
           <SheetDescription>
-            {step?.description ??
-              'Submit the required details for this KYC step.'}
+            {step?.description ?? t('stepFallbackDesc')}
           </SheetDescription>
         </SheetHeader>
 

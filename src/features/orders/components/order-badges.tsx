@@ -1,3 +1,6 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import {
   isCanceledStatus,
@@ -7,6 +10,8 @@ import {
 import type { OrderSide, OrderStatus } from '@/features/orders/types';
 
 export function SideBadge({ side }: { side: OrderSide }) {
+  const tCommon = useTranslations('Common');
+
   return (
     <span
       className={cn(
@@ -16,13 +21,27 @@ export function SideBadge({ side }: { side: OrderSide }) {
           : 'text-destructive bg-red-50 dark:bg-red-950/40',
       )}
     >
-      {side}
+      {side === 'buy' ? tCommon('buy') : tCommon('sell')}
     </span>
   );
 }
 
 export function StatusBadge({ status }: { status: OrderStatus }) {
+  const t = useTranslations('Orders');
   const normalized = String(status).toLowerCase();
+
+  const label =
+    normalized === 'new' || normalized === 'pending'
+      ? t('status.open')
+      : normalized === 'partially_filled'
+        ? t('status.partiallyFilled')
+        : normalized === 'filled'
+          ? t('status.filled')
+          : isCanceledStatus(status)
+            ? t('status.canceled')
+            : normalized === 'rejected'
+              ? t('status.rejected')
+              : statusLabel(status);
 
   return (
     <span
@@ -38,7 +57,7 @@ export function StatusBadge({ status }: { status: OrderStatus }) {
         normalized === 'rejected' && 'bg-destructive/10 text-destructive',
       )}
     >
-      {statusLabel(status)}
+      {label}
     </span>
   );
 }

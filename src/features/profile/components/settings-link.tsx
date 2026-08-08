@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import type { LucideIcon } from 'lucide-react';
 import { ChevronRight, Loader2 } from 'lucide-react';
 import { useTransition } from 'react';

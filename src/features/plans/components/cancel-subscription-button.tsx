@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { useRouter } from '@/i18n/navigation';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import {
@@ -15,6 +16,7 @@ import {
 import { cancelSubscriptionAction } from '@/features/plans/actions/get-plans';
 
 export function CancelSubscriptionButton({ planName }: { planName: string }) {
+  const t = useTranslations('Plans');
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition();
@@ -28,7 +30,7 @@ export function CancelSubscriptionButton({ planName }: { planName: string }) {
         return;
       }
 
-      toast.success('Subscription cancelled.');
+      toast.success(t('toastCancelled'));
       setOpen(false);
       router.refresh();
     });
@@ -41,17 +43,14 @@ export function CancelSubscriptionButton({ planName }: { planName: string }) {
         className="text-destructive hover:bg-destructive/10 hover:text-destructive rounded-xl"
         onClick={() => setOpen(true)}
       >
-        Cancel subscription
+        {t('cancelButton')}
       </Button>
 
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent className="w-full sm:max-w-md" side="right">
           <SheetHeader>
-            <SheetTitle>Cancel subscription?</SheetTitle>
-            <SheetDescription>
-              This will cancel {planName}. You may lose access to paid features
-              at the end of the current billing period.
-            </SheetDescription>
+            <SheetTitle>{t('cancelTitle')}</SheetTitle>
+            <SheetDescription>{t('cancelDesc', { planName })}</SheetDescription>
           </SheetHeader>
 
           <SheetFooter className="mt-auto gap-2 border-t px-4 py-4 sm:flex-row">
@@ -61,7 +60,7 @@ export function CancelSubscriptionButton({ planName }: { planName: string }) {
               disabled={pending}
               onClick={() => setOpen(false)}
             >
-              Keep plan
+              {t('keepPlan')}
             </Button>
             <Button
               variant="destructive"
@@ -69,7 +68,7 @@ export function CancelSubscriptionButton({ planName }: { planName: string }) {
               disabled={pending}
               onClick={onConfirm}
             >
-              {pending ? 'Cancelling…' : 'Confirm cancel'}
+              {pending ? t('cancelling') : t('cancelSubscription')}
             </Button>
           </SheetFooter>
         </SheetContent>

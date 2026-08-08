@@ -1,3 +1,6 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatMoney } from '@/shared/trading';
 import type { PortfolioAllocationSlice } from '@/features/portfolio/types';
@@ -19,6 +22,7 @@ export function PortfolioAllocation({
   allocation: PortfolioAllocationSlice[];
   currency: string;
 }) {
+  const t = useTranslations('Portfolio');
   const ranked = [...allocation].sort((a, b) => b.percent - a.percent);
   const top = ranked.slice(0, MAX_SLICES);
   const rest = ranked.slice(MAX_SLICES);
@@ -27,7 +31,7 @@ export function PortfolioAllocation({
     ...top.map((item, index) => ({
       key: item.symbol,
       label: item.display_symbol || item.symbol,
-      caption: item.symbol === 'CASH' ? 'Idle funds' : item.symbol,
+      caption: item.symbol === 'CASH' ? t('idleFunds') : item.symbol,
       value: item.value,
       percent: item.percent,
       color: PALETTE[index % PALETTE.length],
@@ -36,8 +40,8 @@ export function PortfolioAllocation({
       ? [
           {
             key: 'other',
-            label: 'Other',
-            caption: `${rest.length} assets`,
+            label: t('otherSlice'),
+            caption: t('assetsCount', { count: rest.length }),
             value: rest.reduce((sum, item) => sum + item.value, 0),
             percent: rest.reduce((sum, item) => sum + item.percent, 0),
             color: 'var(--muted-foreground)',
@@ -49,13 +53,13 @@ export function PortfolioAllocation({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Allocation</CardTitle>
+        <CardTitle>{t('allocation')}</CardTitle>
       </CardHeader>
 
       <CardContent className="space-y-4">
         {slices.length === 0 ? (
           <p className="text-muted-foreground text-sm">
-            No holdings to allocate yet.
+            {t('allocationEmpty')}
           </p>
         ) : (
           <>

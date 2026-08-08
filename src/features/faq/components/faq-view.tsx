@@ -1,7 +1,8 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useEffect, useMemo, useState, useTransition } from 'react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { MessageCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -14,16 +15,23 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PageHeader } from '@/shared/components/page-header';
 import { getFaqsAction } from '@/features/faq/actions/get-faqs';
-import {
-  FAQ_CATEGORY_LABELS,
-  type FaqItem,
-  type FaqsData,
-} from '@/features/faq/types';
+import { type FaqItem, type FaqsData } from '@/features/faq/types';
 import { cn } from '@/lib/utils';
 
 type Filter = 'all' | string;
 
-function groupByCategory(items: FaqItem[]) {
+const FAQ_CATEGORY_KEYS = [
+  'general',
+  'trading',
+  'account',
+  'billing',
+  'security',
+] as const;
+
+function groupByCategory(
+  items: FaqItem[],
+  labelFor: (category: string) => string,
+) {
   const groups = new Map<string, FaqItem[]>();
 
   for (const item of items) {
@@ -35,16 +43,29 @@ function groupByCategory(items: FaqItem[]) {
 
   return [...groups.entries()].map(([category, faqs]) => ({
     category,
-    title: FAQ_CATEGORY_LABELS[category] ?? category,
+    title: labelFor(category),
     items: faqs,
   }));
 }
 
 export function FaqView({ initialData }: { initialData: FaqsData }) {
+  const t = useTranslations('Faq');
+  const tHelp = useTranslations('Help');
+  const tCommon = useTranslations('Common');
   const [filter, setFilter] = useState<Filter>('all');
   const [items, setItems] = useState(initialData.items);
   const [categories, setCategories] = useState(initialData.categories);
   const [loading, startLoad] = useTransition();
+
+  function categoryLabel(category: string) {
+    if (
+      (FAQ_CATEGORY_KEYS as readonly string[]).includes(category) &&
+      t.has(`categories.${category}`)
+    ) {
+      return t(`categories.${category}` as 'categories.general');
+    }
+    return category;
+  }
 
   useEffect(() => {
     startLoad(async () => {
@@ -62,21 +83,32 @@ export function FaqView({ initialData }: { initialData: FaqsData }) {
     });
   }, [filter]);
 
-  const sections = useMemo(() => groupByCategory(items), [items]);
+  const sections = useMemo(() => {
+    function labelFor(category: string) {
+      if (
+        (FAQ_CATEGORY_KEYS as readonly string[]).includes(category) &&
+        t.has(`categories.${category}`)
+      ) {
+        return t(`categories.${category}` as 'categories.general');
+      }
+      return category;
+    }
+    return groupByCategory(items, labelFor);
+  }, [items, t]);
 
   const tabs: { id: Filter; label: string }[] = [
-    { id: 'all', label: 'All' },
+    { id: 'all', label: tCommon('all') },
     ...categories.map((category) => ({
       id: category,
-      label: FAQ_CATEGORY_LABELS[category] ?? category,
+      label: categoryLabel(category),
     })),
   ];
 
   return (
     <div className="flex w-full min-w-0 flex-col gap-4 sm:gap-5">
       <PageHeader
-        title="FAQs"
-        description="Answers about connecting providers, trading, and account security."
+        title={t('title')}
+        description={t('description')}
         actions={
           <Button
             className="rounded-xl"
@@ -84,7 +116,7 @@ export function FaqView({ initialData }: { initialData: FaqsData }) {
             render={<Link href="/contact" />}
           >
             <MessageCircle />
-            Contact Support
+            {tHelp('contactSupport')}
           </Button>
         }
       />
@@ -112,7 +144,7 @@ export function FaqView({ initialData }: { initialData: FaqsData }) {
           <Card>
             <CardContent className="py-10 text-center">
               <p className="text-foreground text-sm font-medium">
-                No FAQs in this category
+                {t('empty')}
               </p>
               <p className="text-muted-foreground mt-1 text-sm">
                 Try another filter or contact support.
@@ -148,10 +180,10 @@ export function FaqView({ initialData }: { initialData: FaqsData }) {
         <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-foreground text-base font-semibold">
-              Still need help?
+              {tHelp('stillNeedHelp')}
             </p>
             <p className="text-muted-foreground mt-1 text-sm">
-              Browse guides in Help Center or send us a message.
+              {tHelp('stillNeedHelpDesc')}
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -161,14 +193,14 @@ export function FaqView({ initialData }: { initialData: FaqsData }) {
               nativeButton={false}
               render={<Link href="/help" />}
             >
-              Help Center
+              {tHelp('title')}
             </Button>
             <Button
               className="rounded-xl"
               nativeButton={false}
               render={<Link href="/contact" />}
             >
-              Contact Support
+              {tHelp('contactSupport')}
             </Button>
           </div>
         </CardContent>

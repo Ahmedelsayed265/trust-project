@@ -1,6 +1,7 @@
 'use client';
 
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import { ArrowDownRight, ArrowUpRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -11,10 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import {
-  isBuySide,
-  strengthLabel,
-} from '@/features/ai-signals/lib/signal-display';
+import { isBuySide } from '@/features/ai-signals/lib/signal-display';
 import type { Signal } from '@/features/ai-signals/types';
 import { cn } from '@/lib/utils';
 
@@ -25,22 +23,24 @@ export function TradeAiSignal({
   signal: Signal | null;
   onApply?: (signal: Signal) => void;
 }) {
+  const t = useTranslations('Trades');
+  const tCommon = useTranslations('Common');
+  const tSignals = useTranslations('AiSignals');
+
   if (!signal) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>AI Signal</CardTitle>
+          <CardTitle>{t('aiSignal')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <p className="text-muted-foreground text-sm">
-            No active AI signal for this market right now.
-          </p>
+          <p className="text-muted-foreground text-sm">{t('noActiveSignal')}</p>
           <Button
             variant="outline"
             className="rounded-xl"
             render={<Link href="/ai-signals" />}
           >
-            Browse signals
+            {t('browseSignals')}
           </Button>
         </CardContent>
       </Card>
@@ -48,16 +48,24 @@ export function TradeAiSignal({
   }
 
   const buy = isBuySide(signal.side);
+  const strengthKey =
+    signal.strength === 'strong'
+      ? 'strengthStrong'
+      : signal.strength === 'moderate'
+        ? 'strengthModerate'
+        : signal.strength === 'watch'
+          ? 'strengthWatch'
+          : null;
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>AI Signal</CardTitle>
+        <CardTitle>{t('aiSignal')}</CardTitle>
         <CardAction>
           <span className="text-muted-foreground text-xs">
             {signal.updated_label
-              ? `Updated ${signal.updated_label}`
-              : 'Active'}
+              ? t('signalUpdated', { label: signal.updated_label })
+              : tSignals('statusActive')}
           </span>
         </CardAction>
       </CardHeader>
@@ -101,7 +109,7 @@ export function TradeAiSignal({
                     : 'bg-muted text-muted-foreground',
                 )}
               >
-                {strengthLabel(String(signal.strength))}
+                {strengthKey ? tSignals(strengthKey) : String(signal.strength)}
               </Badge>
             </div>
             <p className="text-muted-foreground text-sm">
@@ -113,7 +121,9 @@ export function TradeAiSignal({
 
         <div>
           <div className="mb-1.5 flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">Confidence</span>
+            <span className="text-muted-foreground">
+              {tCommon('confidence')}
+            </span>
             <span className="text-foreground font-semibold">
               {Math.round(signal.confidence)}%
             </span>
@@ -135,7 +145,7 @@ export function TradeAiSignal({
               onClick={() => onApply(signal)}
               disabled={signal.is_locked}
             >
-              Apply to order
+              {t('applyToOrder')}
             </Button>
           ) : null}
           <Button
@@ -143,7 +153,7 @@ export function TradeAiSignal({
             className="rounded-xl"
             render={<Link href="/ai-signals" />}
           >
-            View signals
+            {t('viewSignals')}
           </Button>
         </div>
       </CardContent>

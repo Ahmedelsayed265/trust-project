@@ -1,3 +1,6 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import { Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,6 +23,8 @@ export function NewsFilters({
   onSearchDraftChange,
   onSearchSubmit,
 }: NewsFiltersProps) {
+  const t = useTranslations('News');
+  const tCommon = useTranslations('Common');
   const tabs = ['all', ...tags];
 
   return (
@@ -39,7 +44,7 @@ export function NewsFilters({
                   : 'bg-muted text-muted-foreground hover:text-foreground',
               )}
             >
-              {item === 'all' ? 'All' : item}
+              {item === 'all' ? tCommon('all') : item}
             </button>
           );
         })}
@@ -52,16 +57,16 @@ export function NewsFilters({
         <Input
           value={searchDraft}
           onChange={(event) => onSearchDraftChange(event.target.value)}
-          placeholder="Search headlines"
+          placeholder={t('searchPlaceholder')}
           className="h-10 rounded-md"
-          aria-label="Search news by title"
+          aria-label={t('searchAria')}
         />
         <Button
           type="submit"
           variant="outline"
           size="icon"
           className="size-10 shrink-0 rounded-md"
-          aria-label="Search news"
+          aria-label={t('searchButtonAria')}
         >
           <Search className="size-4" />
         </Button>

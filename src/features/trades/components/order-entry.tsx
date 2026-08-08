@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 import { useFormContext, Controller } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -46,6 +47,9 @@ export function OrderEntry({
   onSymbolChange: (symbol: string) => void;
   onPlaced?: () => void;
 }) {
+  const t = useTranslations('Trades');
+  const tCommon = useTranslations('Common');
+  const tValidation = useTranslations('Validation');
   const form = useFormContext<OrderFormValues>();
   const { summary } = preview;
   const side = form.watch('side');
@@ -156,8 +160,8 @@ export function OrderEntry({
               <p className="text-muted-foreground mt-1 text-xs">
                 {market?.name ??
                   (markets.length === 0
-                    ? 'No tradable markets loaded'
-                    : 'Select a market')}
+                    ? t('noTradableMarkets')
+                    : tValidation('selectMarket'))}
               </p>
             </div>
           </div>
@@ -190,7 +194,9 @@ export function OrderEntry({
 
       <CardContent className="space-y-4">
         <div>
-          <p className="text-foreground mb-2 text-sm font-medium">Order Type</p>
+          <p className="text-foreground mb-2 text-sm font-medium">
+            {t('orderType')}
+          </p>
           <div className="bg-muted grid grid-cols-2 gap-2 rounded-xl p-1">
             {(['market', 'limit'] as const).map((type) => (
               <button
@@ -198,20 +204,22 @@ export function OrderEntry({
                 type="button"
                 onClick={() => form.setValue('orderType', type)}
                 className={cn(
-                  'rounded-lg px-3 py-2 text-sm font-semibold capitalize transition-colors',
+                  'rounded-lg px-3 py-2 text-sm font-semibold transition-colors',
                   orderType === type
                     ? 'bg-card text-foreground'
                     : 'text-muted-foreground hover:text-foreground',
                 )}
               >
-                {type}
+                {type === 'market' ? tCommon('market') : tCommon('limit')}
               </button>
             ))}
           </div>
         </div>
 
         <div>
-          <p className="text-foreground mb-2 text-sm font-medium">Side</p>
+          <p className="text-foreground mb-2 text-sm font-medium">
+            {t('side')}
+          </p>
           <div className="grid grid-cols-2 gap-2">
             <button
               type="button"
@@ -223,7 +231,7 @@ export function OrderEntry({
                   : 'border-border text-muted-foreground hover:border-success/50',
               )}
             >
-              Buy
+              {tCommon('buy')}
             </button>
             <button
               type="button"
@@ -235,7 +243,7 @@ export function OrderEntry({
                   : 'border-border text-muted-foreground hover:border-destructive/50',
               )}
             >
-              Sell
+              {tCommon('sell')}
             </button>
           </div>
         </div>
@@ -246,7 +254,7 @@ export function OrderEntry({
             name="limitPrice"
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid || undefined}>
-                <FieldLabel htmlFor="limitPrice">Limit Price</FieldLabel>
+                <FieldLabel htmlFor="limitPrice">{t('limitPrice')}</FieldLabel>
                 <FieldContent>
                   <Input
                     {...field}
@@ -269,7 +277,7 @@ export function OrderEntry({
           name="amount"
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid || undefined}>
-              <FieldLabel htmlFor="amount">Amount</FieldLabel>
+              <FieldLabel htmlFor="amount">{t('amount')}</FieldLabel>
               <FieldContent>
                 <div className="relative flex items-center">
                   <Input
@@ -319,7 +327,9 @@ export function OrderEntry({
 
         <div>
           <div className="mb-2 flex items-center justify-between text-sm">
-            <span className="text-foreground font-medium">Amount %</span>
+            <span className="text-foreground font-medium">
+              {t('amountPercent')}
+            </span>
             <span className="text-muted-foreground">{percent}%</span>
           </div>
           <input
@@ -351,15 +361,17 @@ export function OrderEntry({
             ))}
           </div>
           <p className="text-muted-foreground mt-2 text-xs">
-            Buying power: {formatMoney(power, displayCurrency)}
+            {t('buyingPower')}: {formatMoney(power, displayCurrency)}
             {currency !== quoteAsset
-              ? ` · Amount in ${currency}`
-              : ` · Quote ${quoteAsset}`}
+              ? ` · ${t('amountIn', { currency })}`
+              : ` · ${t('quoteAsset', { asset: quoteAsset })}`}
           </p>
         </div>
 
         <div className="bg-muted/60 rounded-xl px-3 py-2.5 text-sm">
-          <span className="text-muted-foreground">Estimated Quantity: </span>
+          <span className="text-muted-foreground">
+            {t('estimatedQuantity')}{' '}
+          </span>
           <span className="text-foreground font-semibold">
             {summary?.qty_label ?? '—'}
           </span>
@@ -372,11 +384,11 @@ export function OrderEntry({
           disabled={!canTrade}
           disabledLabel={
             !providerId
-              ? 'Connect provider to trade'
+              ? t('connectToTrade')
               : !market
-                ? 'Select a market'
+                ? tValidation('selectMarket')
                 : !marketMatchesProvider
-                  ? 'Switch account for this market'
+                  ? t('switchAccountForMarket')
                   : undefined
           }
           onPlaced={onPlaced}

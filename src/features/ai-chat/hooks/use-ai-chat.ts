@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useTransition } from 'react';
+import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { chatMessageSuggestions } from '@/features/ai-chat/types';
 import {
@@ -24,13 +25,16 @@ export function useAiChat({
   initialSuggestions: ChatSuggestionsData;
   initialQuery?: string;
 }) {
+  const t = useTranslations('AiChat');
   const defaultSuggestions = initialList.suggestions.length
     ? initialList.suggestions
     : initialSuggestions.suggestions;
 
   const [conversations, setConversations] = useState(initialList.items);
   const [suggestions, setSuggestions] = useState(defaultSuggestions);
-  const [greeting] = useState(initialSuggestions.greeting);
+  const [greeting] = useState(
+    initialSuggestions.greeting || t('defaultGreeting'),
+  );
   const [activeId, setActiveId] = useState<number | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState(initialQuery);
@@ -102,7 +106,7 @@ export function useAiChat({
 
       setConversations((prev) => prev.filter((item) => item.id !== id));
       if (activeId === id) resetToEmpty();
-      toast.success('Conversation deleted.');
+      toast.success(t('toastDeleted'));
     });
   }
 
@@ -142,7 +146,7 @@ export function useAiChat({
             (trimmed.length > 40 ? `${trimmed.slice(0, 40)}…` : trimmed),
           messages_count: (existing?.messages_count ?? 0) + 2,
           last_message_at: reply.created_at,
-          last_message_label: 'Just now',
+          last_message_label: t('justNow'),
           created_at: existing?.created_at ?? reply.created_at,
         };
         return [summary, ...prev.filter((item) => item.id !== conversation_id)];

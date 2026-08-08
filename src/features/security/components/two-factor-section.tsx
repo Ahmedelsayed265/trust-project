@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/navigation';
 import { toast } from 'sonner';
 import { AuthenticatorAppCard } from '@/features/security/components/authenticator-app-card';
 import { DisableTwoFactorSheet } from '@/features/security/components/disable-two-factor-sheet';

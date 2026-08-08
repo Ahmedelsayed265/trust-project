@@ -1,4 +1,5 @@
-import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
+import { Link } from '@/i18n/navigation';
 import { Star } from 'lucide-react';
 import type { WatchlistItem } from '@/features/watchlist/types';
 import { Sparkline } from '@/shared/components/sparkline';
@@ -9,24 +10,28 @@ type WatchlistProps = {
   items: WatchlistItem[];
 };
 
-export function Watchlist({ items }: WatchlistProps) {
+export async function Watchlist({ items }: WatchlistProps) {
+  const t = await getTranslations('Dashboard');
+
   return (
     <div className="border-border bg-card h-full rounded-lg border p-5">
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-foreground text-base font-semibold">Watchlist</h2>
+        <h2 className="text-foreground text-base font-semibold">
+          {t('watchlist')}
+        </h2>
         <Link
           href="/watchlist"
           className="text-primary text-sm font-medium hover:underline"
         >
-          Edit
+          {t('edit')}
         </Link>
       </div>
 
       {items.length === 0 ? (
         <p className="text-muted-foreground text-sm">
-          No watchlist symbols yet.{' '}
+          {t('noWatchlistSymbols')}{' '}
           <Link href="/markets" className="text-primary hover:underline">
-            Browse markets
+            {t('browseMarkets')}
           </Link>
         </p>
       ) : (

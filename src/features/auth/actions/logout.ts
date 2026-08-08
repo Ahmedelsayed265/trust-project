@@ -1,7 +1,7 @@
 'use server';
 
 import type { ApiSuccessResponse } from '@/features/auth/types';
-import { redirect } from 'next/navigation';
+import { redirect } from '@/i18n/redirect';
 import { api } from '@/shared/lib/api';
 import { clearAuthToken, getAuthToken } from '@/features/auth/session';
 
@@ -21,5 +21,5 @@ export async function logoutAction() {
   }
 
   await clearAuthToken();
-  redirect('/login');
+  return await redirect('/login');
 }

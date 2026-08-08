@@ -1,3 +1,6 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import { Users } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { ReferralReward } from '@/features/invite/types';
@@ -7,6 +10,8 @@ type InviteRewardsCardProps = {
 };
 
 export function InviteRewardsCard({ rewards }: InviteRewardsCardProps) {
+  const t = useTranslations('Invite');
+
   return (
     <Card>
       <CardHeader className="border-border border-b">
@@ -15,9 +20,9 @@ export function InviteRewardsCard({ rewards }: InviteRewardsCardProps) {
             <Users className="size-5" />
           </div>
           <div>
-            <CardTitle>How rewards work</CardTitle>
+            <CardTitle>{t('howRewardsWork')}</CardTitle>
             <p className="text-muted-foreground mt-1 text-sm">
-              Simple steps for both you and your friends.
+              {t('howRewardsDesc')}
             </p>
           </div>
         </div>

@@ -1,7 +1,8 @@
 'use client';
 
 import { useTransition } from 'react';
-import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { useRouter } from '@/i18n/navigation';
 import { Laptop, MonitorSmartphone, Smartphone, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
@@ -21,6 +22,8 @@ function DeviceIcon({ type }: { type: string }) {
 }
 
 export function SessionsCard({ sessions }: { sessions: SecuritySession[] }) {
+  const t = useTranslations('Security');
+  const tCommon = useTranslations('Common');
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const otherCount = sessions.filter((session) => !session.is_current).length;
@@ -32,7 +35,7 @@ export function SessionsCard({ sessions }: { sessions: SecuritySession[] }) {
         toast.error(result.message);
         return;
       }
-      toast.success('Signed out other devices.');
+      toast.success(t('toastSignedOutOthers'));
       router.refresh();
     });
   }
@@ -44,7 +47,7 @@ export function SessionsCard({ sessions }: { sessions: SecuritySession[] }) {
         toast.error(result.message);
         return;
       }
-      toast.success('Session revoked.');
+      toast.success(t('toastSessionRevoked'));
       router.refresh();
     });
   }
@@ -54,10 +57,9 @@ export function SessionsCard({ sessions }: { sessions: SecuritySession[] }) {
       <CardHeader className="border-border border-b">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <CardTitle>Signed-in devices</CardTitle>
+            <CardTitle>{t('sessionsTitle')}</CardTitle>
             <p className="text-muted-foreground mt-1 text-sm">
-              Each session is a device token. Revoke any you don&apos;t
-              recognize.
+              {t('sessionsDesc')}
             </p>
           </div>
           <Button
@@ -67,14 +69,14 @@ export function SessionsCard({ sessions }: { sessions: SecuritySession[] }) {
             disabled={pending || otherCount === 0}
             onClick={revokeOthers}
           >
-            Sign out others
+            {t('signOutOthers')}
           </Button>
         </div>
       </CardHeader>
       <CardContent className="space-y-1 pt-1">
         {sessions.length === 0 ? (
           <p className="text-muted-foreground px-2 py-6 text-center text-sm">
-            No active sessions.
+            {t('noSessions')}
           </p>
         ) : (
           sessions.map((session) => (
@@ -93,15 +95,15 @@ export function SessionsCard({ sessions }: { sessions: SecuritySession[] }) {
                     </p>
                     {session.is_current ? (
                       <Badge className="text-success border-0 bg-emerald-50 hover:bg-emerald-50 dark:bg-emerald-950/40">
-                        Current
+                        {tCommon('current')}
                       </Badge>
                     ) : null}
                   </div>
                   <p className="text-muted-foreground mt-0.5 text-xs">
-                    {session.ip_address ?? 'Unknown IP'}
+                    {session.ip_address ?? t('unknownIp')}
                     {session.last_used_label
                       ? ` · ${session.last_used_label}`
-                      : ' · Never used'}
+                      : ` · ${t('neverUsed')}`}
                   </p>
                 </div>
               </div>
@@ -114,7 +116,9 @@ export function SessionsCard({ sessions }: { sessions: SecuritySession[] }) {
                     'text-muted-foreground hover:text-destructive size-8 shrink-0 rounded-lg',
                   )}
                   disabled={pending}
-                  aria-label={`Revoke ${session.device_name}`}
+                  aria-label={t('revokeAria', {
+                    name: session.device_name || session.name,
+                  })}
                   onClick={() => revokeOne(session.id)}
                 >
                   <Trash2 className="size-4" />

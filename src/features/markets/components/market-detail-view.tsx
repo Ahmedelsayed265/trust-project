@@ -1,14 +1,14 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import { ArrowLeft, ArrowLeftRight, Sparkles, Star } from 'lucide-react';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
-  assetClassLabel,
   formatCompactMoney,
   isWatchlisted,
   marketIconBg,
@@ -28,10 +28,25 @@ export function MarketDetailView({
 }: {
   initialData: MarketSymbolDetail;
 }) {
+  const t = useTranslations('Markets');
+  const tCommon = useTranslations('Common');
   const [watching, setWatching] = useState(
     isWatchlisted(initialData.is_watchlisted),
   );
   const [, startToggle] = useTransition();
+
+  function assetClassLabel(assetClass: string) {
+    if (
+      assetClass === 'crypto' ||
+      assetClass === 'stocks' ||
+      assetClass === 'metals' ||
+      assetClass === 'forex' ||
+      assetClass === 'indices'
+    ) {
+      return t(`assetClass.${assetClass}`);
+    }
+    return assetClass;
+  }
 
   function onToggleWatchlist() {
     const previous = watching;
@@ -51,17 +66,17 @@ export function MarketDetailView({
   }
 
   const stats = [
-    { label: '24h High', value: formatMoney(initialData.high_24h ?? 0) },
-    { label: '24h Low', value: formatMoney(initialData.low_24h ?? 0) },
+    { label: t('high24h'), value: formatMoney(initialData.high_24h ?? 0) },
+    { label: t('low24h'), value: formatMoney(initialData.low_24h ?? 0) },
     {
-      label: '24h Volume',
+      label: t('volume24h'),
       value:
         initialData.quote_volume_24h != null
           ? formatCompactMoney(initialData.quote_volume_24h)
           : '—',
     },
     {
-      label: 'Market Cap',
+      label: t('marketCap'),
       value:
         initialData.market_cap != null
           ? formatCompactMoney(initialData.market_cap)
@@ -81,7 +96,7 @@ export function MarketDetailView({
             render={<Link href="/markets" />}
           >
             <ArrowLeft className="size-4" />
-            Back
+            {tCommon('back')}
           </Button>
         }
       />
@@ -121,7 +136,7 @@ export function MarketDetailView({
                 ? 'text-primary'
                 : 'text-muted-foreground hover:text-primary',
             )}
-            aria-label="Toggle watchlist"
+            aria-label={t('toggleWatchlist')}
           >
             <Star
               className="size-5"
@@ -181,7 +196,7 @@ export function MarketDetailView({
                 }
               >
                 <ArrowLeftRight className="size-4" />
-                Trade
+                {t('trade')}
               </Button>
             ) : null}
             <Button
@@ -194,7 +209,7 @@ export function MarketDetailView({
               }
             >
               <Sparkles className="size-4" />
-              Signals ({initialData.active_signals})
+              {t('signalsCount', { count: initialData.active_signals })}
             </Button>
           </div>
         </CardContent>
@@ -203,7 +218,7 @@ export function MarketDetailView({
       {initialData.related.length > 0 ? (
         <div className="space-y-3">
           <h2 className="text-foreground text-sm font-semibold">
-            Related markets
+            {t('relatedMarkets')}
           </h2>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {initialData.related.map((item) => (

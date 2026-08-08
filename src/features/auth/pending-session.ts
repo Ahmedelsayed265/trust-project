@@ -1,5 +1,5 @@
 import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
+import { redirect } from '@/i18n/redirect';
 
 const PENDING_TOKEN_COOKIE = 'trustai_pending_token';
 const PENDING_EMAIL_COOKIE = 'trustai_pending_email';
@@ -118,12 +118,16 @@ export async function requirePendingOtp(): Promise<PendingOtp> {
     return { purpose: 'reset', email: reset.email };
   }
 
-  redirect('/login');
+  return await redirect('/login');
 }
 
 export async function requireVerifiedPasswordReset() {
   const pending = await getPendingPasswordReset();
-  if (!pending?.email) redirect('/forgot-password');
-  if (!pending.code) redirect('/verify-email');
+  if (!pending?.email) {
+    return await redirect('/forgot-password');
+  }
+  if (!pending.code) {
+    return await redirect('/verify-email');
+  }
   return { email: pending.email, code: pending.code };
 }

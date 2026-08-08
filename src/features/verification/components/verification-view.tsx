@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useLocale, useTranslations } from 'next-intl';
 import { AlertCircle, BadgeCheck, CheckCircle2, Clock3 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -16,43 +17,51 @@ import { PageHeader } from '@/shared/components/page-header';
 import { useCurrentUser } from '@/shared/providers/user-provider';
 import { cn } from '@/lib/utils';
 
-function formatDate(value: string | null) {
-  if (!value) return null;
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return null;
-  return new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  }).format(date);
-}
-
-function formatDocumentType(value: string | null) {
-  if (!value) return null;
-  return value
-    .split('_')
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(' ');
-}
-
-function stepStatusLabel(status: string) {
-  if (status === 'complete') return 'Complete';
-  if (status === 'rejected') return 'Rejected';
-  if (status === 'in_review') return 'In review';
-  if (status === 'pending') return 'Pending';
-  return status.replaceAll('_', ' ');
-}
-
-function stepActionLabel(status: string) {
-  if (status === 'rejected') return 'Fix & resubmit';
-  if (status === 'complete') return 'Update';
-  return 'Submit';
-}
-
 export function VerificationView({ data }: { data: UserVerification }) {
+  const t = useTranslations('Verification');
+  const locale = useLocale();
   const user = useCurrentUser();
   const [activeStep, setActiveStep] = useState<VerificationStep | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
+
+  function formatDate(value: string | null) {
+    if (!value) return null;
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return null;
+    return new Intl.DateTimeFormat(locale, {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    }).format(date);
+  }
+
+  function formatDocumentType(value: string | null) {
+    if (!value) return null;
+    if (value === 'passport') return t('docPassport');
+    if (value === 'national_id') return t('docNationalId');
+    if (value === 'driving_license') return t('docDrivingLicense');
+    if (value === 'utility_bill') return t('docUtilityBill');
+    if (value === 'bank_statement') return t('docBankStatement');
+    return value
+      .split('_')
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(' ');
+  }
+
+  function stepStatusLabel(status: string) {
+    if (status === 'complete') return t('statusComplete');
+    if (status === 'rejected') return t('statusRejected');
+    if (status === 'in_review') return t('statusInReview');
+    if (status === 'pending') return t('statusPending');
+    return status.replaceAll('_', ' ');
+  }
+
+  function stepActionLabel(status: string) {
+    if (status === 'rejected') return t('actionFix');
+    if (status === 'complete') return t('actionUpdate');
+    return t('actionSubmit');
+  }
+
   const reviewedAt = formatDate(data.reviewed_at);
   const submittedAt = formatDate(data.submitted_at);
   const progress = Math.min(100, Math.max(0, data.progress));
@@ -79,8 +88,8 @@ export function VerificationView({ data }: { data: UserVerification }) {
   return (
     <div className="flex w-full min-w-0 flex-col gap-4 sm:gap-5">
       <PageHeader
-        title="Verification"
-        description="Identity and KYC status for your TrustAI account."
+        title={t('title')}
+        description={t('description')}
         actions={
           <Badge
             className={cn(
@@ -113,22 +122,22 @@ export function VerificationView({ data }: { data: UserVerification }) {
               )}
             </div>
             <div>
-              <p className="text-muted-foreground text-sm">KYC status</p>
+              <p className="text-muted-foreground text-sm">{t('kycStatus')}</p>
               <p className="text-foreground mt-1 text-2xl font-bold tracking-tight">
                 {data.status_label}
               </p>
               <p className="text-muted-foreground mt-1 text-sm">
                 {user.name}
                 {reviewedAt
-                  ? ` · Reviewed ${reviewedAt}`
+                  ? ` · ${t('reviewed', { date: reviewedAt })}`
                   : submittedAt
-                    ? ` · Submitted ${submittedAt}`
+                    ? ` · ${t('submitted', { date: submittedAt })}`
                     : null}
               </p>
             </div>
           </div>
           <div className="border-border bg-muted/40 rounded-xl border px-3 py-2 text-sm">
-            <p className="text-muted-foreground">Review level</p>
+            <p className="text-muted-foreground">{t('reviewLevel')}</p>
             <p className="text-foreground mt-0.5 font-semibold">
               {data.level_label}
             </p>
@@ -139,9 +148,13 @@ export function VerificationView({ data }: { data: UserVerification }) {
       <Card>
         <CardContent className="space-y-3">
           <div className="flex items-center justify-between gap-3 text-sm">
-            <p className="text-muted-foreground">Verification progress</p>
+            <p className="text-muted-foreground">{t('progress')}</p>
             <p className="text-foreground font-semibold">
-              {data.approved_steps}/{data.total_steps} steps · {progress}%
+              {t('stepsProgress', {
+                approved: data.approved_steps,
+                total: data.total_steps,
+                percent: progress,
+              })}
             </p>
           </div>
           <div className="bg-muted h-2 overflow-hidden rounded-full">
@@ -164,7 +177,7 @@ export function VerificationView({ data }: { data: UserVerification }) {
             </div>
             <div>
               <p className="text-foreground text-sm font-semibold">
-                Action required
+                {t('actionRequired')}
               </p>
               <p className="text-muted-foreground mt-1 text-sm leading-relaxed">
                 {data.rejection_reason}
@@ -216,7 +229,7 @@ export function VerificationView({ data }: { data: UserVerification }) {
                   </p>
                   {documentLabel ? (
                     <p className="text-foreground mt-2 text-xs font-medium">
-                      Document: {documentLabel}
+                      {t('documentLabel', { type: documentLabel })}
                     </p>
                   ) : null}
                   {step.rejection_reason ? (
@@ -226,7 +239,7 @@ export function VerificationView({ data }: { data: UserVerification }) {
                   ) : null}
                   {completedAt ? (
                     <p className="text-muted-foreground mt-2 text-xs">
-                      Completed {completedAt}
+                      {t('completed', { date: completedAt })}
                     </p>
                   ) : null}
                 </div>
@@ -255,25 +268,22 @@ export function VerificationView({ data }: { data: UserVerification }) {
               <Clock3 className="size-5" />
             </div>
             <div>
-              <CardTitle>Need to update documents?</CardTitle>
+              <CardTitle>{t('updateDocsTitle')}</CardTitle>
               <p className="text-muted-foreground mt-1 text-sm">
-                If your ID expired or your address changed, submit updated
-                documents for re-review.
+                {t('updateDocsDesc')}
               </p>
             </div>
           </div>
         </CardHeader>
         <CardContent className="flex flex-wrap items-center justify-between gap-3">
-          <p className="text-muted-foreground text-sm">
-            Average review time is under 24 hours for Premium members.
-          </p>
+          <p className="text-muted-foreground text-sm">{t('reviewTimeHint')}</p>
           <Button
             type="button"
             variant="outline"
             className="rounded-xl"
             onClick={openFirstActionableStep}
           >
-            Resubmit documents
+            {t('resubmitDocuments')}
           </Button>
         </CardContent>
       </Card>

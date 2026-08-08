@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { Smartphone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,6 +17,8 @@ export function AuthenticatorAppCard({
   onEnable: () => void;
   onDisable: () => void;
 }) {
+  const t = useTranslations('Security');
+
   return (
     <Card>
       <CardHeader className="border-border border-b">
@@ -24,20 +27,20 @@ export function AuthenticatorAppCard({
             <Smartphone className="size-5" />
           </div>
           <div>
-            <CardTitle>Authenticator app</CardTitle>
+            <CardTitle>{t('authenticatorApp')}</CardTitle>
             <p className="text-muted-foreground mt-1 text-sm">
-              Use Google Authenticator, Authy, or 1Password.
+              {t('authenticatorDesc')}
             </p>
           </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="border-border bg-muted/40 rounded-xl border px-3 py-3 text-sm">
-          <p className="text-muted-foreground">Recovery codes left</p>
+          <p className="text-muted-foreground">{t('recoveryCodesLeft')}</p>
           <p className="text-foreground mt-1 font-semibold">
             {data.two_factor_enabled
-              ? `${data.recovery_codes_left} remaining`
-              : 'Enable 2FA to generate codes'}
+              ? t('codesRemaining', { count: data.recovery_codes_left })
+              : t('enableToGenerate')}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -49,7 +52,7 @@ export function AuthenticatorAppCard({
               disabled={pending}
               onClick={onDisable}
             >
-              Disable 2FA
+              {t('disable2fa')}
             </Button>
           ) : (
             <Button
@@ -58,7 +61,7 @@ export function AuthenticatorAppCard({
               disabled={pending}
               onClick={onEnable}
             >
-              {pending ? 'Starting…' : 'Enable 2FA'}
+              {pending ? t('starting') : t('enable2fa')}
             </Button>
           )}
         </div>

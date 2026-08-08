@@ -1,6 +1,9 @@
+import { getTranslations } from 'next-intl/server';
 import { Logo } from '@/shared/components/logo';
 
-export function AuthBrandPanel() {
+export async function AuthBrandPanel() {
+  const t = await getTranslations('AuthBrand');
+
   return (
     <div className="relative hidden h-full min-h-0 overflow-hidden lg:flex lg:w-[48%] lg:shrink-0 lg:flex-col">
       <div
@@ -22,11 +25,10 @@ export function AuthBrandPanel() {
 
         <div className="max-w-lg space-y-5">
           <h1 className="text-3xl font-bold tracking-tight text-white xl:text-[2.75rem] xl:leading-tight">
-            Trade smarter with AI signals
+            {t('headline')}
           </h1>
           <p className="max-w-md text-base leading-relaxed text-white/75 xl:text-lg">
-            Monitor markets, act on confidence-scored signals, and manage your
-            portfolio in one focused workspace.
+            {t('body')}
           </p>
 
           <svg
@@ -55,9 +57,7 @@ export function AuthBrandPanel() {
           </svg>
         </div>
 
-        <p className="text-sm text-white/50">
-          Trusted by traders who want clarity before every move.
-        </p>
+        <p className="text-sm text-white/50">{t('footer')}</p>
       </div>
     </div>
   );

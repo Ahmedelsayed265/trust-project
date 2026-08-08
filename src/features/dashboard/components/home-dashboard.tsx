@@ -11,7 +11,7 @@ type HomeDashboardProps = {
   data: HomeData;
 };
 
-export function HomeDashboard({ data }: HomeDashboardProps) {
+export async function HomeDashboard({ data }: HomeDashboardProps) {
   return (
     <div className="flex flex-col gap-4 lg:gap-5">
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(240px,280px)] lg:gap-5">

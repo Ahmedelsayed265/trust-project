@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState, useTransition } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   Check,
   KeyRound,
@@ -43,6 +44,8 @@ export function AccountsView({
 }: {
   initialData: AccountsListData;
 }) {
+  const t = useTranslations('Accounts');
+  const tCommon = useTranslations('Common');
   const [accounts, setAccounts] = useState(initialData.accounts);
   const [providers] = useState(initialData.providers);
   const [mode] = useState(initialData.mode);
@@ -141,7 +144,7 @@ export function AccountsView({
       upsertAccount(result.data);
       setApiKey('');
       setApiSecret('');
-      toast.success(`${result.data.label} connected.`);
+      toast.success(t('toastConnected', { label: result.data.label }));
     });
   }
 
@@ -163,7 +166,7 @@ export function AccountsView({
         }
         return next;
       });
-      toast.success('Provider data refreshed.');
+      toast.success(t('toastRefreshed'));
     });
   }
 
@@ -181,7 +184,7 @@ export function AccountsView({
         delete next[providerId];
         return next;
       });
-      toast.success('Provider disconnected.');
+      toast.success(t('toastDisconnected'));
     });
   }
 
@@ -194,20 +197,26 @@ export function AccountsView({
       }
 
       setAccounts(result.data);
-      toast.success('Default account updated.');
+      toast.success(t('toastDefaultUpdated'));
     });
+  }
+
+  function environmentLabel(env: string) {
+    if (env === 'paper') return tCommon('paper');
+    if (env === 'live') return tCommon('liveEnv');
+    return env;
   }
 
   return (
     <div className="flex w-full min-w-0 flex-col gap-4 sm:gap-5">
       <PageHeader
-        title="Connected Accounts"
-        description="Link Binance Spot or Alpaca. Balances, positions, and orders are read from the provider — TrustAI does not hold an internal wallet."
+        title={t('title')}
+        description={t('description')}
         actions={
           <div className="flex flex-wrap items-center gap-2">
             {mode && (
               <span className="bg-muted text-muted-foreground rounded-md px-2.5 py-1 text-xs font-medium capitalize">
-                Mode: {mode}
+                {t('mode', { mode })}
               </span>
             )}
             <Button
@@ -216,7 +225,7 @@ export function AccountsView({
               disabled={syncing}
               onClick={() => handleSync()}
             >
-              {syncing ? 'Syncing…' : 'Sync now'}
+              {syncing ? t('syncing') : t('syncNow')}
             </Button>
           </div>
         }
@@ -263,35 +272,44 @@ export function AccountsView({
                       {selectedAccount.is_default && (
                         <span className="text-primary bg-primary/10 inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[11px] font-semibold">
                           <Star className="size-3" />
-                          Default
+                          {tCommon('default')}
                         </span>
                       )}
                     </div>
                     <p className="text-muted-foreground">
-                      Environment: {selectedAccount.environment}
+                      {t('environmentValue', {
+                        env: selectedAccount.environment,
+                      })}
                     </p>
                     <p className="text-muted-foreground">
-                      API key: {selectedAccount.api_key_masked ?? '—'}
+                      {t('apiKeyMasked', {
+                        key: selectedAccount.api_key_masked ?? '—',
+                      })}
                     </p>
                     <p className="text-muted-foreground">
-                      Permissions:{' '}
-                      {selectedAccount.permissions.join(', ') || '—'}
+                      {t('permissions', {
+                        list: selectedAccount.permissions.join(', ') || '—',
+                      })}
                     </p>
                     <p className="text-muted-foreground">
-                      Last sync: {selectedAccount.last_synced_label ?? 'Never'}
+                      {selectedAccount.last_synced_label
+                        ? t('lastSync', {
+                            label: selectedAccount.last_synced_label,
+                          })
+                        : t('lastSyncNever')}
                     </p>
                     {selectedSnapshot && (
                       <p className="text-foreground mt-2 font-semibold">
-                        Equity{' '}
-                        {formatMoney(
-                          selectedSnapshot.equity,
-                          selectedSnapshot.currency,
-                        )}{' '}
-                        · Buying power{' '}
-                        {formatMoney(
-                          selectedSnapshot.buying_power,
-                          selectedSnapshot.currency,
-                        )}
+                        {t('equityBuyingPower', {
+                          equity: formatMoney(
+                            selectedSnapshot.equity,
+                            selectedSnapshot.currency,
+                          ),
+                          buyingPower: formatMoney(
+                            selectedSnapshot.buying_power,
+                            selectedSnapshot.currency,
+                          ),
+                        })}
                       </p>
                     )}
                     {selectedAccount.error_message && (
@@ -302,9 +320,7 @@ export function AccountsView({
                   </div>
 
                   <p className="text-muted-foreground text-xs">
-                    Fund or withdraw on the provider&apos;s site (Binance /
-                    Alpaca). This app does not custody funds or run internal
-                    deposits.
+                    {t('fundNote')}
                   </p>
 
                   <div className="grid gap-2">
@@ -314,7 +330,7 @@ export function AccountsView({
                       disabled={syncing}
                       onClick={() => handleSync(selectedId)}
                     >
-                      {syncing ? 'Syncing…' : 'Sync this account'}
+                      {syncing ? t('syncing') : t('syncThisAccount')}
                     </Button>
                     {!selectedAccount.is_default && (
                       <Button
@@ -324,7 +340,9 @@ export function AccountsView({
                         onClick={() => handleSetDefault(selectedId)}
                       >
                         <Star className="size-4" />
-                        {settingDefault ? 'Updating…' : 'Set as default'}
+                        {settingDefault
+                          ? tCommon('updating')
+                          : t('setAsDefault')}
                       </Button>
                     )}
                     <Button
@@ -334,13 +352,13 @@ export function AccountsView({
                       onClick={() => handleDisconnect(selectedId)}
                     >
                       <Link2Off className="size-4" />
-                      {disconnecting ? 'Disconnecting…' : 'Disconnect'}
+                      {disconnecting ? t('disconnecting') : t('disconnect')}
                     </Button>
                   </div>
 
                   <p className="text-success flex items-center gap-1.5 text-xs font-medium">
                     <Check className="size-3.5" />
-                    Credentials stored encrypted on the server
+                    {t('credentialsStored')}
                   </p>
                 </>
               ) : (
@@ -348,7 +366,7 @@ export function AccountsView({
                   {selectedProvider.environments.length > 1 && (
                     <Field>
                       <FieldLabel htmlFor="account-environment">
-                        Environment
+                        {t('environment')}
                       </FieldLabel>
                       <FieldContent>
                         <Select
@@ -358,12 +376,7 @@ export function AccountsView({
                           }}
                           items={selectedProvider.environments.map((env) => ({
                             value: env,
-                            label:
-                              env === 'paper'
-                                ? 'Paper'
-                                : env === 'live'
-                                  ? 'Live'
-                                  : env,
+                            label: environmentLabel(env),
                           }))}
                         >
                           <SelectTrigger
@@ -378,11 +391,7 @@ export function AccountsView({
                           >
                             {selectedProvider.environments.map((env) => (
                               <SelectItem key={env} value={env}>
-                                {env === 'paper'
-                                  ? 'Paper'
-                                  : env === 'live'
-                                    ? 'Live'
-                                    : env}
+                                {environmentLabel(env)}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -392,7 +401,7 @@ export function AccountsView({
                   )}
 
                   <Field>
-                    <FieldLabel>API Key</FieldLabel>
+                    <FieldLabel>{t('apiKey')}</FieldLabel>
                     <FieldContent>
                       <Input
                         value={apiKey}
@@ -406,7 +415,7 @@ export function AccountsView({
                   </Field>
 
                   <Field>
-                    <FieldLabel>API Secret</FieldLabel>
+                    <FieldLabel>{t('apiSecret')}</FieldLabel>
                     <FieldContent>
                       <Input
                         type="password"
@@ -426,12 +435,11 @@ export function AccountsView({
                     disabled={connecting}
                   >
                     <Plug className="size-4" />
-                    {connecting ? 'Connecting…' : 'Connect provider'}
+                    {connecting ? t('connecting') : t('connectProvider')}
                   </Button>
 
                   <p className="text-muted-foreground text-xs">
-                    Grant read + trade permission only. Never enable withdrawals
-                    — TrustAI does not use them.
+                    {t('permissionHint')}
                   </p>
                 </form>
               )}
@@ -454,6 +462,8 @@ function ProviderCard({
   active: boolean;
   onSelect: () => void;
 }) {
+  const t = useTranslations('Accounts');
+  const tCommon = useTranslations('Common');
   const connected = Boolean(account?.is_connected);
 
   return (
@@ -475,7 +485,7 @@ function ProviderCard({
             </p>
             {account?.is_default && (
               <span className="text-primary bg-primary/10 rounded-md px-2 py-0.5 text-[11px] font-semibold">
-                Default
+                {tCommon('default')}
               </span>
             )}
           </div>
@@ -494,7 +504,7 @@ function ProviderCard({
           </div>
           {account?.last_synced_label && connected && (
             <p className="text-muted-foreground mt-2 text-xs">
-              Synced {account.last_synced_label}
+              {t('synced', { label: account.last_synced_label })}
             </p>
           )}
         </div>
@@ -506,7 +516,7 @@ function ProviderCard({
               : 'bg-muted text-muted-foreground',
           )}
         >
-          {connected ? 'Connected' : 'Not connected'}
+          {connected ? tCommon('connected') : tCommon('notConnected')}
         </span>
       </div>
     </button>

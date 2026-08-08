@@ -1,6 +1,7 @@
 'use client';
 
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import { TrendingDown, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -20,18 +21,20 @@ export function AccountSummary({
   loading?: boolean;
   error?: string | null;
 }) {
+  const t = useTranslations('Trades');
+  const tCommon = useTranslations('Common');
   const currency = portfolio?.currency ?? account?.quote_asset ?? 'USD';
   const positive = (portfolio?.day_pnl ?? 0) >= 0;
   const PnlIcon = positive ? TrendingUp : TrendingDown;
 
   const metrics = [
     {
-      label: 'Buying Power',
+      label: t('buyingPower'),
       value:
         portfolio != null ? formatMoney(portfolio.buying_power, currency) : '—',
     },
     {
-      label: 'Open P&L',
+      label: t('openPnl'),
       value:
         portfolio != null
           ? formatSignedMoney(portfolio.open_pnl, currency)
@@ -39,7 +42,7 @@ export function AccountSummary({
       positive: (portfolio?.open_pnl ?? 0) >= 0,
     },
     {
-      label: 'Day P&L',
+      label: t('dayPnl'),
       value:
         portfolio != null
           ? formatSignedMoney(portfolio.day_pnl, currency)
@@ -54,7 +57,7 @@ export function AccountSummary({
         <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-muted-foreground text-sm">
-              Account equity
+              {t('accountEquity')}
               {account ? ` · ${account.label}` : ''}
             </p>
             <p className="text-foreground mt-1 text-2xl font-bold tracking-tight sm:text-3xl">
@@ -77,12 +80,14 @@ export function AccountSummary({
                   {formatSignedMoney(portfolio.day_pnl, currency)} (
                   {formatPct(portfolio.day_pnl_pct)})
                 </span>
-                <span className="text-muted-foreground font-normal">Today</span>
+                <span className="text-muted-foreground font-normal">
+                  {t('today')}
+                </span>
               </div>
             ) : (
               <div className="mt-2 flex flex-wrap items-center gap-2">
                 <p className="text-muted-foreground text-sm">
-                  {error ?? 'Connect a provider to view equity and trade.'}
+                  {error ?? t('connectProviderHint')}
                 </p>
                 <Button
                   size="sm"
@@ -90,7 +95,7 @@ export function AccountSummary({
                   className="rounded-xl"
                   render={<Link href="/accounts" />}
                 >
-                  Connect account
+                  {tCommon('connectAccount')}
                 </Button>
               </div>
             )}

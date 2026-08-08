@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { Activity, LogIn, LogOut, Shield } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { SecurityActivity } from '@/features/security/types';
@@ -15,6 +16,8 @@ export function RecentActivityCard({
 }: {
   activity: SecurityActivity[];
 }) {
+  const t = useTranslations('Security');
+
   return (
     <Card>
       <CardHeader className="border-border border-b">
@@ -23,9 +26,9 @@ export function RecentActivityCard({
             <Activity className="size-5" />
           </div>
           <div>
-            <CardTitle>Recent activity</CardTitle>
+            <CardTitle>{t('recentActivityTitle')}</CardTitle>
             <p className="text-muted-foreground mt-1 text-sm">
-              Latest sign-ins and security events on your account.
+              {t('recentActivityDesc')}
             </p>
           </div>
         </div>
@@ -33,7 +36,7 @@ export function RecentActivityCard({
       <CardContent className="space-y-1 pt-1">
         {activity.length === 0 ? (
           <p className="text-muted-foreground px-2 py-6 text-center text-sm">
-            No recent activity.
+            {t('noRecentActivity')}
           </p>
         ) : (
           activity.map((item) => (
@@ -54,7 +57,7 @@ export function RecentActivityCard({
                 <p className="text-muted-foreground mt-0.5 text-xs">
                   {[item.device, item.ip_address, item.location]
                     .filter(Boolean)
-                    .join(' · ') || 'Unknown device'}
+                    .join(' · ') || t('unknownDevice')}
                 </p>
               </div>
             </div>

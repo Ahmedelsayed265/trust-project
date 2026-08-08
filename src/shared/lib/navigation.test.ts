@@ -27,8 +27,8 @@ describe('nav catalogs', () => {
   it('exposes primary, secondary, and system entries', () => {
     expect(primaryNav.map((item) => item.href)).toContain('/trades');
     expect(secondaryNav.map((item) => item.href)).toContain('/watchlist');
-    expect(systemNav.find((item) => item.action === 'logout')?.label).toBe(
-      'Log Out',
+    expect(systemNav.find((item) => item.action === 'logout')?.labelKey).toBe(
+      'logOut',
     );
   });
 });

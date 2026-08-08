@@ -1,24 +1,11 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import type {
   CalendarCategory,
   CalendarImpact,
 } from '@/features/calendar/types';
-
-const IMPACT_FILTERS: { id: 'all' | CalendarImpact; label: string }[] = [
-  { id: 'all', label: 'All impact' },
-  { id: 'high', label: 'High' },
-  { id: 'medium', label: 'Medium' },
-  { id: 'low', label: 'Low' },
-];
-
-const CATEGORY_FILTERS: { id: 'all' | CalendarCategory; label: string }[] = [
-  { id: 'all', label: 'All types' },
-  { id: 'economic', label: 'Economic' },
-  { id: 'earnings', label: 'Earnings' },
-  { id: 'crypto', label: 'Crypto' },
-  { id: 'dividend', label: 'Dividend' },
-  { id: 'ipo', label: 'IPO' },
-];
 
 type CalendarFiltersProps = {
   impact: 'all' | CalendarImpact;
@@ -33,10 +20,28 @@ export function CalendarFilters({
   onImpactChange,
   onCategoryChange,
 }: CalendarFiltersProps) {
+  const t = useTranslations('Calendar');
+
+  const impactFilters: { id: 'all' | CalendarImpact; label: string }[] = [
+    { id: 'all', label: t('allImpact') },
+    { id: 'high', label: t('high') },
+    { id: 'medium', label: t('medium') },
+    { id: 'low', label: t('low') },
+  ];
+
+  const categoryFilters: { id: 'all' | CalendarCategory; label: string }[] = [
+    { id: 'all', label: t('allTypes') },
+    { id: 'economic', label: t('economic') },
+    { id: 'earnings', label: t('earnings') },
+    { id: 'crypto', label: t('crypto') },
+    { id: 'dividend', label: t('dividend') },
+    { id: 'ipo', label: t('ipo') },
+  ];
+
   return (
     <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
       <div className="flex flex-wrap gap-2">
-        {IMPACT_FILTERS.map((filter) => (
+        {impactFilters.map((filter) => (
           <button
             key={filter.id}
             type="button"
@@ -53,7 +58,7 @@ export function CalendarFilters({
         ))}
       </div>
       <div className="flex flex-wrap gap-2">
-        {CATEGORY_FILTERS.map((filter) => (
+        {categoryFilters.map((filter) => (
           <button
             key={filter.id}
             type="button"

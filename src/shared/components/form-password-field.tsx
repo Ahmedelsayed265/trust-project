@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import {
   Controller,
@@ -37,6 +38,7 @@ export function FormPasswordField<T extends FieldValues>({
   className,
   inputClassName,
 }: FormPasswordFieldProps<T>) {
+  const t = useTranslations('SharedForm');
   const [visible, setVisible] = useState(false);
 
   return (
@@ -71,7 +73,7 @@ export function FormPasswordField<T extends FieldValues>({
                 size="icon-sm"
                 onClick={() => setVisible((v) => !v)}
                 className="text-muted-foreground absolute top-1/2 right-1.5 -translate-y-1/2"
-                aria-label={visible ? 'Hide password' : 'Show password'}
+                aria-label={visible ? t('hidePassword') : t('showPassword')}
               >
                 {visible ? <EyeOff /> : <Eye />}
               </Button>
@@ -91,6 +93,7 @@ export function PasswordInput({
   className,
   ...props
 }: React.ComponentProps<'input'>) {
+  const t = useTranslations('SharedForm');
   const [visible, setVisible] = useState(false);
 
   return (
@@ -106,7 +109,7 @@ export function PasswordInput({
         size="icon-sm"
         onClick={() => setVisible((v) => !v)}
         className="text-muted-foreground absolute top-1/2 right-1.5 -translate-y-1/2"
-        aria-label={visible ? 'Hide password' : 'Show password'}
+        aria-label={visible ? t('hidePassword') : t('showPassword')}
       >
         {visible ? <EyeOff /> : <Eye />}
       </Button>

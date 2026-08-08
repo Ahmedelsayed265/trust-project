@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { MessageSquarePlus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { ChatConversationSummary } from '@/features/ai-chat/types';
@@ -20,10 +21,15 @@ export function ChatConversationsList({
   onCreate: () => void;
   onDelete: (id: number) => void;
 }) {
+  const t = useTranslations('AiChat');
+  const tCommon = useTranslations('Common');
+
   return (
     <div className="border-border flex h-full min-h-0 flex-col border-r">
       <div className="border-border flex h-13.5 items-center justify-between gap-2 border-b px-3 py-3">
-        <p className="text-foreground text-sm font-semibold">Conversations</p>
+        <p className="text-foreground text-sm font-semibold">
+          {t('conversations')}
+        </p>
         <Button
           type="button"
           variant="outline"
@@ -33,14 +39,14 @@ export function ChatConversationsList({
           onClick={onCreate}
         >
           <MessageSquarePlus className="size-4" />
-          New
+          {tCommon('new')}
         </Button>
       </div>
 
       <div className="min-h-0 flex-1 space-y-1 overflow-y-auto p-2">
         {items.length === 0 ? (
           <p className="text-muted-foreground px-2 py-8 text-center text-xs">
-            No conversations yet. Ask a question to start.
+            {t('noConversations')}
           </p>
         ) : (
           items.map((item) => {
@@ -63,7 +69,7 @@ export function ChatConversationsList({
                     {item.title}
                   </p>
                   <p className="text-muted-foreground mt-0.5 text-xs">
-                    {item.last_message_label ?? 'No messages'}
+                    {item.last_message_label ?? t('noMessages')}
                     {` · ${item.messages_count}`}
                   </p>
                 </button>
@@ -73,7 +79,7 @@ export function ChatConversationsList({
                   size="icon"
                   className="text-muted-foreground hover:text-destructive mt-1 mr-1 size-8 shrink-0 rounded-lg opacity-0 group-hover:opacity-100"
                   disabled={pending}
-                  aria-label={`Delete ${item.title}`}
+                  aria-label={t('deleteAria', { title: item.title })}
                   onClick={() => onDelete(item.id)}
                 >
                   <Trash2 className="size-3.5" />

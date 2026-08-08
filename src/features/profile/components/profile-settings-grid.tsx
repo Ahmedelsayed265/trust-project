@@ -1,5 +1,6 @@
 'use client';
 
+import { useLocale, useTranslations } from 'next-intl';
 import {
   Bell,
   CircleHelp,
@@ -20,53 +21,64 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DeleteAccountCard } from '@/features/profile/components/delete-account-card';
 import { SettingsLink } from '@/features/profile/components/settings-link';
+
 export function ProfileSettingsGrid() {
+  const t = useTranslations('Profile');
+  const tCommon = useTranslations('Common');
+  const tLocale = useTranslations('LocaleSwitcher');
+  const locale = useLocale();
+
+  const languageLabel =
+    locale === 'en' || locale === 'ar' || locale === 'es'
+      ? tLocale(locale)
+      : locale;
+
   return (
     <div className="grid gap-4 xl:grid-cols-3">
       <div className="space-y-4">
         <SettingsCard
-          title="Account"
+          title={t('sectionAccount')}
           items={[
             {
-              label: 'Personal Information',
-              description: 'Name, email, phone',
+              label: t('personalInfo'),
+              description: t('personalInfoDesc'),
               icon: User,
               href: '/settings',
             },
             {
-              label: 'Verification',
-              description: 'Identity & KYC',
+              label: t('verification'),
+              description: t('verificationDesc'),
               icon: BadgeCheck,
-              badge: 'Verified',
+              badge: tCommon('verified'),
               badgeTone: 'success',
               href: '/profile/verification',
             },
             {
-              label: 'Security',
-              description: 'Password, 2FA',
+              label: t('security'),
+              description: t('securityDesc'),
               icon: Shield,
               href: '/profile/security',
             },
           ]}
         />
         <SettingsCard
-          title="Trading"
+          title={t('sectionTrading')}
           items={[
             {
-              label: 'Connected Accounts',
-              description: 'Binance Spot / Alpaca',
+              label: t('connectedAccounts'),
+              description: t('connectedAccountsDesc'),
               icon: Link2,
               href: '/accounts',
             },
             {
-              label: 'Trading Preferences',
-              description: 'Defaults & risk',
+              label: t('tradingPreferences'),
+              description: t('tradingPreferencesDesc'),
               icon: SlidersHorizontal,
               href: '/settings',
             },
             {
-              label: 'Order & Trade History',
-              description: 'View past activity',
+              label: t('orderTradeHistory'),
+              description: t('orderTradeHistoryDesc'),
               icon: History,
               href: '/orders',
             },
@@ -76,48 +88,48 @@ export function ProfileSettingsGrid() {
 
       <div className="space-y-4">
         <SettingsCard
-          title="Preferences"
+          title={t('sectionPreferences')}
           items={[
             {
-              label: 'Language',
-              description: 'English',
+              label: t('language'),
+              description: languageLabel,
               icon: Languages,
               href: '/settings',
             },
             {
-              label: 'Appearance',
-              description: 'Light Mode',
+              label: t('appearance'),
+              description: t('appearanceLight'),
               icon: Palette,
               href: '/settings',
             },
             {
-              label: 'Notifications',
-              description: 'Emails & push',
+              label: t('notifications'),
+              description: t('notificationsDesc'),
               icon: Bell,
               href: '/settings',
             },
           ]}
         />
         <SettingsCard
-          title="Support"
+          title={t('sectionSupport')}
           items={[
             {
-              label: 'Help Center',
-              description: 'Guides & FAQs',
+              label: t('helpCenter'),
+              description: t('helpCenterDesc'),
               icon: CircleHelp,
               href: '/help',
             },
             {
-              label: 'FAQs',
-              description: 'Common questions',
+              label: t('faqs'),
+              description: t('faqsDesc'),
               icon: HelpCircle,
               href: '/faq',
             },
             {
-              label: 'Chat with AI Assistant',
-              description: 'Ask anything',
+              label: t('chatAi'),
+              description: t('chatAiDesc'),
               icon: Sparkles,
-              badge: 'New',
+              badge: tCommon('new'),
               badgeTone: 'primary',
               href: '/ai-chat',
             },
@@ -127,25 +139,25 @@ export function ProfileSettingsGrid() {
 
       <div className="space-y-4">
         <SettingsCard
-          title="Other"
+          title={t('sectionOther')}
           items={[
             {
-              label: 'Invite Friends',
-              description: 'Earn rewards',
+              label: t('inviteFriends'),
+              description: t('inviteFriendsDesc'),
               icon: UserPlus,
-              badge: 'Rewards',
+              badge: t('rewardsBadge'),
               badgeTone: 'success',
               href: '/invite',
             },
             {
-              label: 'About TrustAI',
-              description: 'Version 1.0.0',
+              label: t('aboutTrustAi'),
+              description: t('aboutVersion'),
               icon: Info,
               href: '/about',
             },
             {
-              label: 'Log Out',
-              description: 'Sign out of this device',
+              label: t('logOut'),
+              description: t('logOutDesc'),
               icon: LogOut,
               action: 'logout',
             },
@@ -154,7 +166,9 @@ export function ProfileSettingsGrid() {
 
         <Card className="border-destructive/30 bg-destructive/5 dark:bg-destructive/10">
           <CardHeader>
-            <CardTitle className="text-destructive">Danger Zone</CardTitle>
+            <CardTitle className="text-destructive">
+              {t('dangerZone')}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <DeleteAccountCard />

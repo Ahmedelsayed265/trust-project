@@ -1,6 +1,7 @@
 'use client';
 
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import { useTransition } from 'react';
 import {
   ArrowLeftRight,
@@ -45,6 +46,7 @@ export function NotificationItem({
   onRead?: (notification: Notification) => void;
   onDelete?: (id: number) => void;
 }) {
+  const t = useTranslations('Notifications');
   const Icon = typeIcon[notification.type] ?? Info;
   const [pending, startTransition] = useTransition();
 
@@ -135,7 +137,7 @@ export function NotificationItem({
         variant="ghost"
         size="icon-sm"
         className="text-muted-foreground hover:text-destructive absolute top-3 right-3"
-        aria-label="Delete notification"
+        aria-label={t('deleteAria')}
         disabled={pending}
         onClick={() => onDelete(notification.id)}
       >

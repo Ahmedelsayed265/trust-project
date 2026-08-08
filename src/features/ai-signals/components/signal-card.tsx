@@ -1,4 +1,7 @@
-import Link from 'next/link';
+'use client';
+
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import { ArrowDownRight, ArrowUpRight, Lock, Sparkles } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -12,17 +15,32 @@ import {
 import {
   ASSET_ICON_BG,
   isBuySide,
-  planLabel,
-  strengthLabel,
 } from '@/features/ai-signals/lib/signal-display';
 import type { Signal } from '@/features/ai-signals/types';
 import { cn } from '@/lib/utils';
 import { formatMoney } from '@/shared/trading';
 
 export function SignalCard({ signal }: { signal: Signal }) {
+  const t = useTranslations('AiSignals');
+  const tCommon = useTranslations('Common');
   const buy = isBuySide(signal.side);
   const locked = signal.is_locked;
-  const planName = planLabel(signal.required_plan_key);
+  const planName =
+    signal.required_plan_key === 'signal-guard-plus'
+      ? t('planSignalGuardPlus')
+      : signal.required_plan_key === 'market-intel-pro'
+        ? t('planMarketIntelPro')
+        : signal.required_plan_key === 'signal-guard'
+          ? t('planSignalGuard')
+          : null;
+  const strengthText =
+    signal.strength === 'strong'
+      ? t('strengthStrong')
+      : signal.strength === 'moderate'
+        ? t('strengthModerate')
+        : signal.strength === 'watch'
+          ? t('strengthWatch')
+          : signal.strength;
   const iconBg =
     ASSET_ICON_BG[signal.asset_class] ??
     (buy
@@ -59,13 +77,13 @@ export function SignalCard({ signal }: { signal: Signal }) {
                 ) : (
                   <ArrowDownRight className="size-3" />
                 )}
-                {signal.side}
+                {buy ? tCommon('buy') : tCommon('sell')}
               </Badge>
             </div>
             <p className="text-muted-foreground text-xs">
               {signal.name}
               {signal.updated_label
-                ? ` · Updated ${signal.updated_label}`
+                ? ` · ${t('updated', { label: signal.updated_label })}`
                 : null}
               {signal.timeframe ? ` · ${signal.timeframe}` : null}
             </p>
@@ -82,7 +100,7 @@ export function SignalCard({ signal }: { signal: Signal }) {
                   : 'bg-amber-50 text-amber-700 hover:bg-amber-50 dark:bg-amber-950/40 dark:text-amber-300',
             )}
           >
-            {strengthLabel(signal.strength)}
+            {strengthText}
           </Badge>
           {signal.status !== 'active' && (
             <span className="text-muted-foreground text-right text-[11px] capitalize">
@@ -97,7 +115,7 @@ export function SignalCard({ signal }: { signal: Signal }) {
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">Spot Price</span>
+          <span className="text-muted-foreground">{t('spotPrice')}</span>
           <span className="text-foreground font-semibold">
             {formatMoney(signal.price)}
           </span>
@@ -106,7 +124,7 @@ export function SignalCard({ signal }: { signal: Signal }) {
           <div className="mb-1.5 flex items-center justify-between text-sm">
             <span className="text-muted-foreground flex items-center gap-1">
               <Sparkles className="size-3.5" />
-              Confidence
+              {tCommon('confidence')}
             </span>
             <span className="text-foreground font-semibold">
               {signal.confidence}%
@@ -128,7 +146,9 @@ export function SignalCard({ signal }: { signal: Signal }) {
             render={<Link href="/profile/plans" />}
           >
             <Lock className="size-3.5" />
-            {planName ? `Unlock with ${planName}` : 'Upgrade to unlock'}
+            {planName
+              ? t('unlockWithPlan', { plan: planName })
+              : t('upgradeUnlock')}
           </Button>
         ) : (
           <Button
@@ -136,7 +156,7 @@ export function SignalCard({ signal }: { signal: Signal }) {
             className="h-9 w-full rounded-xl"
             render={<Link href="/trades" />}
           >
-            Act on Signal
+            {t('actOnSignal')}
           </Button>
         )}
       </CardContent>

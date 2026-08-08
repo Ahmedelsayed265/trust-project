@@ -1,7 +1,7 @@
 'use client';
 
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { Link, useRouter } from '@/i18n/navigation';
 import { useTransition } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -27,6 +27,9 @@ import {
 const authInputClassName = 'h-12 rounded-[12px]! bg-card px-3';
 
 export function RegisterForm() {
+  const t = useTranslations('AuthRegister');
+  const tCommon = useTranslations('Common');
+  const tLogin = useTranslations('AuthLogin');
   const router = useRouter();
   const [pending, startTransition] = useTransition();
 
@@ -70,7 +73,7 @@ export function RegisterForm() {
         return;
       }
 
-      toast.success('Account created. Check your email for the code.');
+      toast.success(t('toastCreated'));
       router.push('/verify-email');
     });
   }
@@ -79,11 +82,9 @@ export function RegisterForm() {
     <>
       <div className="mb-8 space-y-2">
         <h2 className="text-foreground text-2xl font-bold tracking-tight">
-          Create your account
+          {t('title')}
         </h2>
-        <p className="text-muted-foreground text-sm">
-          Start trading with AI-powered insights
-        </p>
+        <p className="text-muted-foreground text-sm">{t('subtitle')}</p>
       </div>
 
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
@@ -91,18 +92,18 @@ export function RegisterForm() {
           <FormTextField
             control={form.control}
             name="first_name"
-            label="First name"
+            label={t('firstName')}
             autoComplete="given-name"
-            placeholder="John"
+            placeholder={t('firstNamePlaceholder')}
             inputClassName={authInputClassName}
           />
 
           <FormTextField
             control={form.control}
             name="last_name"
-            label="Last name"
+            label={t('lastName')}
             autoComplete="family-name"
-            placeholder="Doe"
+            placeholder={t('lastNamePlaceholder')}
             inputClassName={authInputClassName}
           />
         </div>
@@ -110,28 +111,28 @@ export function RegisterForm() {
         <FormTextField
           control={form.control}
           name="email"
-          label="Email"
+          label={tCommon('email')}
           type="email"
           autoComplete="email"
-          placeholder="you@example.com"
+          placeholder={tLogin('emailPlaceholder')}
           inputClassName={authInputClassName}
         />
 
         <FormPasswordField
           control={form.control}
           name="password"
-          label="Password"
+          label={tCommon('password')}
           autoComplete="new-password"
-          placeholder="8+ chars, upper, lower, number, symbol"
+          placeholder={t('passwordPlaceholder')}
           inputClassName={authInputClassName}
         />
 
         <FormPasswordField
           control={form.control}
           name="password_confirmation"
-          label="Confirm password"
+          label={t('confirmPassword')}
           autoComplete="new-password"
-          placeholder="Repeat your password"
+          placeholder={t('confirmPlaceholder')}
           inputClassName={authInputClassName}
         />
 
@@ -150,19 +151,19 @@ export function RegisterForm() {
                     className="mt-0.5 cursor-pointer"
                   />
                   <span>
-                    I agree to the{' '}
+                    {t('agreePrefix')}{' '}
                     <Link
                       href="/terms"
                       className="text-primary font-medium hover:underline"
                     >
-                      Terms of Service
+                      {t('termsOfService')}
                     </Link>{' '}
-                    and{' '}
+                    {t('and')}{' '}
                     <Link
                       href="/privacy"
                       className="text-primary font-medium hover:underline"
                     >
-                      Privacy Policy
+                      {t('privacyPolicy')}
                     </Link>
                   </span>
                 </label>
@@ -177,26 +178,26 @@ export function RegisterForm() {
 
         <SubmitButton
           loading={pending || form.formState.isSubmitting}
-          loadingText="Creating account..."
+          loadingText={t('submitting')}
         >
-          Create account
+          {t('submit')}
         </SubmitButton>
 
         <div className="space-y-4 pt-1">
           <FieldSeparator className="my-0 h-auto py-1">
-            Or continue with
+            {tLogin('orContinueWith')}
           </FieldSeparator>
           <OAuthButtons />
         </div>
       </form>
 
       <p className="text-muted-foreground mt-6 text-center text-sm">
-        Already have an account?{' '}
+        {t('haveAccount')}{' '}
         <Link
           href="/login"
           className="text-primary font-semibold hover:underline"
         >
-          Sign in
+          {t('signIn')}
         </Link>
       </p>
     </>

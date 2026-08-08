@@ -1,7 +1,7 @@
 'use client';
 
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { Link, useRouter } from '@/i18n/navigation';
 import { useTransition } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -18,8 +18,11 @@ import {
   loginSchema,
   type LoginFormValues,
 } from '@/features/auth/schemas/auth';
+import { LocaleSwitcher } from '@/shared/components/locale-switcher';
 
 export function LoginForm() {
+  const t = useTranslations('AuthLogin');
+  const tCommon = useTranslations('Common');
   const router = useRouter();
   const [pending, startTransition] = useTransition();
 
@@ -61,7 +64,7 @@ export function LoginForm() {
           return;
         }
 
-        toast.message('Verify your email to continue.');
+        toast.message(t('toastVerifyEmail'));
         router.push('/verify-email');
         return;
       }
@@ -73,32 +76,34 @@ export function LoginForm() {
 
   return (
     <>
+      <div className="mb-6 flex justify-end">
+        <LocaleSwitcher className="bg-card h-9 min-w-32 rounded-[12px]!" />
+      </div>
+
       <div className="mb-8 space-y-2">
         <h2 className="text-foreground text-2xl font-bold tracking-tight">
-          Welcome back
+          {t('title')}
         </h2>
-        <p className="text-muted-foreground text-sm">
-          Sign in to your TrustAI account
-        </p>
+        <p className="text-muted-foreground text-sm">{t('subtitle')}</p>
       </div>
 
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
         <FormTextField
           control={form.control}
           name="email"
-          label="Email"
+          label={tCommon('email')}
           type="email"
           autoComplete="email"
-          placeholder="you@example.com"
+          placeholder={t('emailPlaceholder')}
           inputClassName="h-12 rounded-[12px]! bg-card px-3"
         />
 
         <FormPasswordField
           control={form.control}
           name="password"
-          label="Password"
+          label={tCommon('password')}
           autoComplete="current-password"
-          placeholder="Enter your password"
+          placeholder={t('passwordPlaceholder')}
           inputClassName="h-12 rounded-[12px]! bg-card px-3"
         />
 
@@ -114,7 +119,7 @@ export function LoginForm() {
                     field.onChange(checked === true)
                   }
                 />
-                Remember me
+                {t('rememberMe')}
               </label>
             )}
           />
@@ -122,32 +127,32 @@ export function LoginForm() {
             href="/forgot-password"
             className="text-primary text-sm font-medium hover:underline"
           >
-            Forgot password?
+            {t('forgotPassword')}
           </Link>
         </div>
 
         <SubmitButton
           loading={pending || form.formState.isSubmitting}
-          loadingText="Signing in..."
+          loadingText={t('submitting')}
         >
-          Sign in
+          {t('submit')}
         </SubmitButton>
 
         <div className="space-y-4 pt-1">
           <FieldSeparator className="my-0 h-auto py-1">
-            Or continue with
+            {t('orContinueWith')}
           </FieldSeparator>
           <OAuthButtons />
         </div>
       </form>
 
       <p className="text-muted-foreground mt-6 text-center text-sm">
-        Don&apos;t have an account?{' '}
+        {t('noAccount')}{' '}
         <Link
           href="/register"
           className="text-primary font-semibold hover:underline"
         >
-          Create account
+          {t('createAccount')}
         </Link>
       </p>
     </>

@@ -1,3 +1,6 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import { Check, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -20,10 +23,12 @@ export function PlanComparison({
   plans: Plan[];
   comparison: PlanComparisonRow[];
 }) {
+  const t = useTranslations('Plans');
+
   return (
     <section className="space-y-4">
       <h2 className="text-foreground text-base font-semibold sm:text-lg">
-        Plan Comparison
+        {t('comparisonTitle')}
       </h2>
 
       <Card className="gap-0 overflow-hidden py-0">
@@ -33,7 +38,7 @@ export function PlanComparison({
               <TableHeader>
                 <TableRow className="hover:bg-transparent">
                   <TableHead className="text-muted-foreground h-auto px-4 py-4 sm:px-5">
-                    Features
+                    {t('features')}
                   </TableHead>
                   {plans.map((plan) => (
                     <TableHead
@@ -49,7 +54,7 @@ export function PlanComparison({
                         </span>
                         {plan.is_popular ? (
                           <Badge className="border-0 px-2 py-0 text-[10px]">
-                            Most Popular
+                            {t('mostPopular')}
                           </Badge>
                         ) : null}
                       </div>

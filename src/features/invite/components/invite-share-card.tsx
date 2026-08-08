@@ -1,3 +1,6 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import { Check, Copy, Share2, UserPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -28,6 +31,9 @@ export function InviteShareCard({
   onCopy,
   onSubmit,
 }: InviteShareCardProps) {
+  const t = useTranslations('Invite');
+  const tCommon = useTranslations('Common');
+
   return (
     <Card>
       <CardHeader className="border-border border-b">
@@ -36,16 +42,18 @@ export function InviteShareCard({
             <Share2 className="size-5" />
           </div>
           <div>
-            <CardTitle>Share your invite</CardTitle>
+            <CardTitle>{t('shareTitle')}</CardTitle>
             <p className="text-muted-foreground mt-1 text-sm">
-              Send your link or code — rewards unlock after first trade.
+              {t('shareDesc')}
             </p>
           </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <p className="text-foreground text-sm font-medium">Referral code</p>
+          <p className="text-foreground text-sm font-medium">
+            {t('referralCode')}
+          </p>
           <div className="flex gap-2">
             <Input
               readOnly
@@ -59,13 +67,15 @@ export function InviteShareCard({
               onClick={() => onCopy(code, 'code')}
             >
               {copied === 'code' ? <Check /> : <Copy />}
-              {copied === 'code' ? 'Copied' : 'Copy'}
+              {copied === 'code' ? tCommon('copied') : tCommon('copy')}
             </Button>
           </div>
         </div>
 
         <div className="space-y-2">
-          <p className="text-foreground text-sm font-medium">Invite link</p>
+          <p className="text-foreground text-sm font-medium">
+            {t('inviteLink')}
+          </p>
           <div className="flex gap-2">
             <Input
               readOnly
@@ -78,18 +88,20 @@ export function InviteShareCard({
               onClick={() => onCopy(link, 'link')}
             >
               {copied === 'link' ? <Check /> : <Copy />}
-              {copied === 'link' ? 'Copied' : 'Copy'}
+              {copied === 'link' ? tCommon('copied') : tCommon('copy')}
             </Button>
           </div>
         </div>
 
         <form onSubmit={onSubmit} className="space-y-3 border-t pt-4">
-          <p className="text-foreground text-sm font-medium">Invite by email</p>
+          <p className="text-foreground text-sm font-medium">
+            {t('inviteByEmail')}
+          </p>
           <div className="grid gap-2 sm:grid-cols-2">
             <Input
               type="email"
               required
-              placeholder="friend@email.com"
+              placeholder={t('emailPlaceholder')}
               value={email}
               onChange={(e) => onEmailChange(e.target.value)}
               className="bg-background h-11 rounded-xl"
@@ -97,7 +109,7 @@ export function InviteShareCard({
             />
             <Input
               type="text"
-              placeholder="Name (optional)"
+              placeholder={t('nameOptional')}
               value={name}
               onChange={(e) => onNameChange(e.target.value)}
               className="bg-background h-11 rounded-xl"
@@ -111,7 +123,7 @@ export function InviteShareCard({
             disabled={pending}
           >
             <UserPlus />
-            {pending ? 'Sending…' : 'Send invitation'}
+            {pending ? tCommon('sendingEllipsis') : t('sendInvitation')}
           </Button>
         </form>
       </CardContent>

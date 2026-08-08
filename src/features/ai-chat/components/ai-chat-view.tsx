@@ -1,6 +1,7 @@
 'use client';
 
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import { Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -24,6 +25,7 @@ export function AiChatView({
   initialSuggestions,
   initialQuery = '',
 }: AiChatViewProps) {
+  const t = useTranslations('AiChat');
   const chat = useAiChat({
     initialList,
     initialSuggestions,
@@ -34,8 +36,8 @@ export function AiChatView({
     <div className="flex min-h-0 w-full min-w-0 flex-1 flex-col gap-4">
       <div className="shrink-0">
         <PageHeader
-          title="Chat with AI Assistant"
-          description="Ask about markets, signals, risk, and TrustAI features."
+          title={t('title')}
+          description={t('description')}
           actions={
             <Button
               variant="outline"
@@ -44,7 +46,7 @@ export function AiChatView({
               render={<Link href="/ai-signals" />}
             >
               <Sparkles />
-              View AI Signals
+              {t('viewAiSignals')}
             </Button>
           }
         />

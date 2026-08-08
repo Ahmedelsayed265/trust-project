@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { PageHeader } from '@/shared/components/page-header';
 import { CalendarEvents } from '@/features/calendar/components/calendar-events';
 import { CalendarFilters } from '@/features/calendar/components/calendar-filters';
@@ -17,6 +18,7 @@ export function CalendarView({
   initialData: CalendarMonthData;
   initialUpcoming: CalendarEvent[];
 }) {
+  const t = useTranslations('Calendar');
   const {
     data,
     impact,
@@ -32,10 +34,7 @@ export function CalendarView({
 
   return (
     <div className="flex w-full min-w-0 flex-col gap-4 sm:gap-5">
-      <PageHeader
-        title="Calendar"
-        description="Economic events and market catalysts."
-      />
+      <PageHeader title={t('title')} description={t('description')} />
 
       <CalendarFilters
         impact={impact}

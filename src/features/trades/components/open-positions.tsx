@@ -1,6 +1,7 @@
 'use client';
 
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import {
   Card,
   CardAction,
@@ -23,23 +24,26 @@ export function OpenPositions({
   currency?: string;
   onSelectSymbol?: (symbol: string) => void;
 }) {
+  const t = useTranslations('Trades');
+  const tCommon = useTranslations('Common');
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Open Positions ({positions.length})</CardTitle>
+        <CardTitle>{t('openPositions', { count: positions.length })}</CardTitle>
         <CardAction>
           <Link
             href="/portfolio"
             className="text-primary text-sm font-medium hover:underline"
           >
-            View All
+            {tCommon('viewAll')}
           </Link>
         </CardAction>
       </CardHeader>
       <CardContent className="space-y-1">
         {positions.length === 0 ? (
           <p className="text-muted-foreground py-6 text-center text-sm">
-            No open positions yet. Place a trade to see holdings here.
+            {t('noOpenPositions')}
           </p>
         ) : (
           positions.map((position) => {

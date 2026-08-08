@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -21,6 +22,7 @@ export function PortfolioPerformance({
   initialHistory: PortfolioHistoryData | null;
   currency: string;
 }) {
+  const t = useTranslations('Portfolio');
   const [rangeId, setRangeId] = useState<PerformanceRangeId>('1M');
   const [history, setHistory] = useState(initialHistory);
   const [pending, startTransition] = useTransition();
@@ -52,7 +54,7 @@ export function PortfolioPerformance({
     <Card>
       <CardHeader className="flex-row items-start justify-between gap-3">
         <div className="min-w-0">
-          <CardTitle>Performance</CardTitle>
+          <CardTitle>{t('performance')}</CardTitle>
           <p className="text-foreground mt-1 text-2xl font-bold tracking-tight">
             {history ? formatMoney(history.end, currency) : '—'}
           </p>
@@ -65,7 +67,9 @@ export function PortfolioPerformance({
             >
               {formatSignedMoney(history.change, currency)} (
               {formatPct(history.change_pct)}){' '}
-              <span className="text-muted-foreground">past {rangeId}</span>
+              <span className="text-muted-foreground">
+                {t('pastRange', { range: rangeId })}
+              </span>
             </p>
           )}
         </div>
@@ -95,7 +99,7 @@ export function PortfolioPerformance({
           <Skeleton className="h-55 w-full" />
         ) : points.length < 2 ? (
           <div className="text-muted-foreground flex h-55 items-center justify-center text-sm">
-            Not enough history to plot this range yet.
+            {t('notEnoughHistory')}
           </div>
         ) : (
           <EquityChart

@@ -1,9 +1,10 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useState, useTransition } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/navigation';
 import { Bell, Check, Globe2, Mail, Sparkles, UserRound } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -33,27 +34,6 @@ import {
 } from '@/features/settings/schemas/settings';
 import type { UserSettings } from '@/features/settings/types';
 import { cn } from '@/lib/utils';
-
-const notificationOptions = [
-  {
-    name: 'emailAlerts' as const,
-    title: 'Email alerts',
-    description: 'Get notified about fills and provider account sync events.',
-    icon: Mail,
-  },
-  {
-    name: 'pushAlerts' as const,
-    title: 'Push alerts for AI signals',
-    description: 'Receive push notifications when strong signals fire.',
-    icon: Bell,
-  },
-  {
-    name: 'aiDigest' as const,
-    title: 'Daily AI market digest',
-    description: 'A morning summary of setups and market movers.',
-    icon: Sparkles,
-  },
-];
 
 type SettingsViewProps = {
   data: UserSettings;
@@ -91,12 +71,35 @@ function mapServerField(field: string): keyof SettingsFormValues | null {
 }
 
 export function SettingsView({ data, profile }: SettingsViewProps) {
+  const t = useTranslations('Settings');
+  const tCommon = useTranslations('Common');
   const router = useRouter();
   const [saved, setSaved] = useState(false);
   const [pending, startTransition] = useTransition();
 
   const languages = data.options.languages;
   const currencies = data.options.currencies;
+
+  const notificationOptions = [
+    {
+      name: 'emailAlerts' as const,
+      title: t('emailAlerts'),
+      description: t('emailAlertsDesc'),
+      icon: Mail,
+    },
+    {
+      name: 'pushAlerts' as const,
+      title: t('pushAlerts'),
+      description: t('pushAlertsDesc'),
+      icon: Bell,
+    },
+    {
+      name: 'aiDigest' as const,
+      title: t('aiDigest'),
+      description: t('aiDigestDesc'),
+      icon: Sparkles,
+    },
+  ];
 
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(settingsSchema),
@@ -159,17 +162,20 @@ export function SettingsView({ data, profile }: SettingsViewProps) {
 
       setSaved(true);
       window.setTimeout(() => setSaved(false), 2000);
-      toast.success('Settings saved.');
-      router.refresh();
+      toast.success(t('toastSaved'));
+
+      const nextLocale = values.language;
+      if (nextLocale === 'en' || nextLocale === 'ar' || nextLocale === 'es') {
+        router.replace('/settings', { locale: nextLocale });
+      } else {
+        router.refresh();
+      }
     });
   }
 
   return (
     <div className="flex w-full min-w-0 flex-col gap-4 sm:gap-5">
-      <PageHeader
-        title="Settings"
-        description="Manage account defaults and notification preferences."
-      />
+      <PageHeader title={t('title')} description={t('description')} />
 
       <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
         <Card>
@@ -179,10 +185,8 @@ export function SettingsView({ data, profile }: SettingsViewProps) {
                 <UserRound className="size-5" />
               </div>
               <div className="min-w-0">
-                <CardTitle>Account</CardTitle>
-                <CardDescription>
-                  Update how your profile appears across TrustAI.
-                </CardDescription>
+                <CardTitle>{t('accountTitle')}</CardTitle>
+                <CardDescription>{t('accountDesc')}</CardDescription>
               </div>
             </div>
           </CardHeader>
@@ -191,14 +195,14 @@ export function SettingsView({ data, profile }: SettingsViewProps) {
               <FormTextField
                 control={form.control}
                 name="firstName"
-                label="First name"
+                label={t('firstName')}
                 autoComplete="given-name"
                 inputClassName="h-12 rounded-[12px]! bg-background px-2.5"
               />
               <FormTextField
                 control={form.control}
                 name="lastName"
-                label="Last name"
+                label={t('lastName')}
                 autoComplete="family-name"
                 inputClassName="h-12 rounded-[12px]! bg-background px-2.5"
               />
@@ -207,7 +211,7 @@ export function SettingsView({ data, profile }: SettingsViewProps) {
             <FormTextField
               control={form.control}
               name="displayName"
-              label="Display name"
+              label={t('displayName')}
               autoComplete="nickname"
               inputClassName="h-12 rounded-[12px]! bg-background px-2.5"
             />
@@ -215,11 +219,11 @@ export function SettingsView({ data, profile }: SettingsViewProps) {
             <FormTextField
               control={form.control}
               name="email"
-              label="Email"
+              label={tCommon('email')}
               type="email"
               autoComplete="email"
               disabled
-              description="Contact support to change your email address."
+              description={t('emailReadonlyHint')}
               inputClassName="h-12 rounded-[12px]! bg-background px-2.5"
             />
 
@@ -227,7 +231,7 @@ export function SettingsView({ data, profile }: SettingsViewProps) {
               <FormTextField
                 control={form.control}
                 name="phone"
-                label="Phone"
+                label={t('phone')}
                 type="tel"
                 autoComplete="tel"
                 inputClassName="h-12 rounded-[12px]! bg-background px-2.5"
@@ -235,10 +239,10 @@ export function SettingsView({ data, profile }: SettingsViewProps) {
               <FormTextField
                 control={form.control}
                 name="country"
-                label="Country"
-                placeholder="EG"
+                label={t('country')}
+                placeholder={t('countryPlaceholder')}
                 autoComplete="country"
-                description="2-letter country code"
+                description={t('countryHint')}
                 inputClassName="h-12 rounded-[12px]! bg-background px-2.5 uppercase"
               />
             </div>
@@ -249,7 +253,7 @@ export function SettingsView({ data, profile }: SettingsViewProps) {
                 name="language"
                 render={({ field }) => (
                   <Field>
-                    <FieldLabel htmlFor="language">Language</FieldLabel>
+                    <FieldLabel htmlFor="language">{t('language')}</FieldLabel>
                     <FieldContent>
                       <Select
                         value={field.value}
@@ -288,7 +292,9 @@ export function SettingsView({ data, profile }: SettingsViewProps) {
                 name="currency"
                 render={({ field }) => (
                   <Field>
-                    <FieldLabel htmlFor="currency">Display currency</FieldLabel>
+                    <FieldLabel htmlFor="currency">
+                      {t('displayCurrency')}
+                    </FieldLabel>
                     <FieldContent>
                       <Select
                         value={field.value}
@@ -332,10 +338,8 @@ export function SettingsView({ data, profile }: SettingsViewProps) {
                 <Globe2 className="size-5" />
               </div>
               <div className="min-w-0">
-                <CardTitle>Notifications</CardTitle>
-                <CardDescription>
-                  Choose which alerts reach you by email and push.
-                </CardDescription>
+                <CardTitle>{t('notificationsTitle')}</CardTitle>
+                <CardDescription>{t('notificationsDesc')}</CardDescription>
               </div>
             </div>
           </CardHeader>
@@ -384,7 +388,7 @@ export function SettingsView({ data, profile }: SettingsViewProps) {
             {saved && (
               <p className="text-success inline-flex items-center gap-1.5 text-sm font-medium">
                 <Check className="size-4" />
-                Settings saved
+                {tCommon('saved')}
               </p>
             )}
           </div>
@@ -393,7 +397,7 @@ export function SettingsView({ data, profile }: SettingsViewProps) {
             className="rounded-xl px-5"
             disabled={pending || form.formState.isSubmitting}
           >
-            {pending ? 'Saving…' : 'Save changes'}
+            {pending ? tCommon('saving') : tCommon('save')}
           </Button>
         </div>
       </form>

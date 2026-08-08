@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useTransition } from 'react';
+import { useTranslations } from 'next-intl';
 import { Check, Copy } from 'lucide-react';
 import QRCode from 'qrcode';
 import { toast } from 'sonner';
@@ -21,7 +22,7 @@ import {
 import { confirmTwoFactorAction } from '@/features/security/actions/two-factor';
 import type { TwoFactorEnableData } from '@/features/security/types';
 
-function QrPreview({ uri }: { uri: string }) {
+function QrPreview({ uri, alt }: { uri: string; alt: string }) {
   const [dataUrl, setDataUrl] = useState<string | null>(null);
 
   useEffect(() => {
@@ -50,7 +51,7 @@ function QrPreview({ uri }: { uri: string }) {
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={dataUrl}
-        alt="Two-factor authentication QR code"
+        alt={alt}
         className="border-border size-48 rounded-xl border bg-white p-2"
       />
     </div>
@@ -68,6 +69,8 @@ export function EnableTwoFactorSheet({
   onOpenChange: (open: boolean) => void;
   onConfirmed: (codes: string[]) => void;
 }) {
+  const t = useTranslations('Security');
+  const tCommon = useTranslations('Common');
   const [code, setCode] = useState('');
   const [copied, setCopied] = useState(false);
   const [pending, startTransition] = useTransition();
@@ -87,13 +90,13 @@ export function EnableTwoFactorSheet({
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1600);
     } catch {
-      toast.error('Could not copy key.');
+      toast.error(t('toastCopyKeyFailed'));
     }
   }
 
   function onConfirm() {
     if (code.length !== 6) {
-      toast.error('Enter the 6-digit code from your authenticator.');
+      toast.error(t('toastEnterAuthenticatorCode'));
       return;
     }
 
@@ -103,7 +106,7 @@ export function EnableTwoFactorSheet({
         toast.error(result.message);
         return;
       }
-      toast.success('Two-factor authentication enabled.');
+      toast.success(t('toast2faEnabled'));
       onConfirmed(result.data.recovery_codes);
     });
   }
@@ -112,10 +115,8 @@ export function EnableTwoFactorSheet({
     <Sheet open={open} onOpenChange={handleOpenChange}>
       <SheetContent className="flex w-full flex-col sm:max-w-md" side="right">
         <SheetHeader>
-          <SheetTitle>Set up authenticator</SheetTitle>
-          <SheetDescription>
-            Scan the QR code, then enter a 6-digit code to confirm.
-          </SheetDescription>
+          <SheetTitle>{t('setupTitle')}</SheetTitle>
+          <SheetDescription>{t('setupDesc')}</SheetDescription>
         </SheetHeader>
 
         <div className="space-y-5 overflow-y-auto px-4 py-2">
@@ -123,6 +124,7 @@ export function EnableTwoFactorSheet({
             <QrPreview
               key={setup.provisioning_uri}
               uri={setup.provisioning_uri}
+              alt={t('qrAlt')}
             />
           ) : (
             <div className="border-border bg-muted/40 mx-auto size-48 animate-pulse rounded-xl border" />
@@ -130,7 +132,7 @@ export function EnableTwoFactorSheet({
 
           <div className="space-y-2">
             <p className="text-foreground text-sm font-medium">
-              Manual entry key
+              {t('manualKey')}
             </p>
             <div className="flex gap-2">
               <code className="border-border bg-muted/40 text-foreground flex-1 truncate rounded-xl border px-3 py-3 text-xs font-semibold tracking-wide">
@@ -153,7 +155,7 @@ export function EnableTwoFactorSheet({
 
           <div className="space-y-2">
             <p className="text-foreground text-sm font-medium">
-              Verification code
+              {t('verificationCode')}
             </p>
             <InputOTP
               maxLength={6}
@@ -178,7 +180,7 @@ export function EnableTwoFactorSheet({
             disabled={pending}
             onClick={() => handleOpenChange(false)}
           >
-            Cancel
+            {tCommon('cancel')}
           </Button>
           <Button
             type="button"
@@ -186,7 +188,7 @@ export function EnableTwoFactorSheet({
             disabled={pending || code.length !== 6}
             onClick={onConfirm}
           >
-            {pending ? 'Confirming…' : 'Confirm & enable'}
+            {pending ? t('confirming') : t('confirmEnable')}
           </Button>
         </SheetFooter>
       </SheetContent>

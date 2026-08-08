@@ -1,6 +1,7 @@
 'use client';
 
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import { Eye, Link2, TrendingDown, TrendingUp } from 'lucide-react';
 import { useState } from 'react';
 import type { HomePortfolio } from '@/features/dashboard/types';
@@ -30,6 +31,8 @@ export function PortfolioValue({
   plan,
   accountsCount = 0,
 }: PortfolioValueProps) {
+  const t = useTranslations('Dashboard');
+  const tCommon = useTranslations('Common');
   const [timeframe, setTimeframe] = useState<(typeof timeframes)[number]>('1D');
   const chartData = chartByTimeframe[timeframe];
   const { currency, equity, day_pnl, day_pnl_pct, is_positive, has_accounts } =
@@ -45,7 +48,7 @@ export function PortfolioValue({
         <div className="flex min-w-0 flex-1 flex-col justify-between gap-5">
           <div>
             <div className="text-muted-foreground mb-3 flex flex-wrap items-center gap-2 text-sm">
-              <span>Total equity</span>
+              <span>{t('totalEquity')}</span>
               <Eye className="size-3.5 opacity-70" />
               {plan ? (
                 <span className="border-border rounded-md border px-2 py-0.5 text-[11px] font-semibold">
@@ -54,11 +57,11 @@ export function PortfolioValue({
               ) : null}
               {has_accounts ? (
                 <span className="border-border text-muted-foreground rounded-md border px-2 py-0.5 text-[11px] font-semibold">
-                  {accountsCount} linked
+                  {t('linkedCount', { count: accountsCount })}
                 </span>
               ) : (
                 <span className="rounded-md border border-amber-200 bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-700 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-300">
-                  No accounts
+                  {t('noAccounts')}
                 </span>
               )}
             </div>
@@ -82,7 +85,7 @@ export function PortfolioValue({
               </div>
             ) : (
               <p className="text-muted-foreground mt-2 text-sm">
-                Connect a broker or exchange to see live balances.
+                {t('connectBrokerHint')}
               </p>
             )}
           </div>
@@ -93,13 +96,15 @@ export function PortfolioValue({
               className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center gap-2 rounded-md px-5 py-2.5 text-sm font-semibold transition-colors"
             >
               <Link2 className="size-4" />
-              {has_accounts ? 'Manage accounts' : 'Connect account'}
+              {has_accounts
+                ? tCommon('manageAccounts')
+                : tCommon('connectAccount')}
             </Link>
             <Link
               href="/trades"
               className="border-primary text-primary hover:bg-accent rounded-md border bg-transparent px-5 py-2.5 text-sm font-semibold transition-colors"
             >
-              Trade
+              {tCommon('trade')}
             </Link>
           </div>
         </div>
@@ -108,7 +113,7 @@ export function PortfolioValue({
           <div className="mb-3 flex items-start justify-between gap-3">
             <div>
               <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
-                Day P&L
+                {t('dayPnl')}
               </p>
               <p
                 className={cn(
@@ -153,7 +158,7 @@ export function PortfolioValue({
 
           <div
             role="tablist"
-            aria-label="Chart timeframe"
+            aria-label={t('chartTimeframeAria')}
             className="border-border bg-card mt-4 flex rounded-md border p-1"
           >
             {timeframes.map((tf) => (

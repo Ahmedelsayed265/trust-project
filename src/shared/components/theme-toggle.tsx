@@ -1,6 +1,7 @@
 'use client';
 
 import { useSyncExternalStore } from 'react';
+import { useTranslations } from 'next-intl';
 import { Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
@@ -17,6 +18,7 @@ export function ThemeToggle({
   collapsed?: boolean;
   className?: string;
 }) {
+  const t = useTranslations('Theme');
   const { resolvedTheme, setTheme } = useTheme();
   const mounted = useSyncExternalStore(
     subscribe,
@@ -46,7 +48,7 @@ export function ThemeToggle({
         size="icon"
         className={cn('rounded-full', className)}
         onClick={() => setTheme(isDark ? 'light' : 'dark')}
-        aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+        aria-label={isDark ? t('switchToLight') : t('switchToDark')}
       >
         {isDark ? <Sun /> : <Moon />}
       </Button>
@@ -71,7 +73,7 @@ export function ThemeToggle({
         )}
       >
         <Sun className="size-3.5" />
-        Light
+        {t('light')}
       </button>
       <button
         type="button"
@@ -84,7 +86,7 @@ export function ThemeToggle({
         )}
       >
         <Moon className="size-3.5" />
-        Dark
+        {t('dark')}
       </button>
     </div>
   );

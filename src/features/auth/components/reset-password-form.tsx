@@ -1,7 +1,8 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useTransition } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowLeft } from 'lucide-react';
@@ -20,6 +21,9 @@ import {
 const authInputClassName = 'h-12 rounded-[12px]! bg-card px-3';
 
 export function ResetPasswordForm({ email }: { email: string }) {
+  const t = useTranslations('AuthResetPassword');
+  const tCommon = useTranslations('Common');
+  const tRegister = useTranslations('AuthRegister');
   const router = useRouter();
   const [pending, startTransition] = useTransition();
 
@@ -48,7 +52,7 @@ export function ResetPasswordForm({ email }: { email: string }) {
         return;
       }
 
-      toast.success('Password updated. You can sign in now.');
+      toast.success(t('toastUpdated'));
       router.push('/login');
       router.refresh();
     });
@@ -71,16 +75,15 @@ export function ResetPasswordForm({ email }: { email: string }) {
         className="text-muted-foreground hover:text-foreground mb-6 inline-flex items-center gap-1.5 text-sm font-medium disabled:opacity-60"
       >
         <ArrowLeft className="size-4" />
-        Back
+        {tCommon('back')}
       </button>
 
       <div className="mb-8 space-y-2">
         <h2 className="text-foreground text-2xl font-bold tracking-tight">
-          Choose a new password
+          {t('title')}
         </h2>
         <p className="text-muted-foreground text-sm">
-          Create a new password for{' '}
-          <span className="text-foreground font-medium">{email}</span>
+          {t('subtitle', { email })}
         </p>
       </div>
 
@@ -88,23 +91,23 @@ export function ResetPasswordForm({ email }: { email: string }) {
         <FormPasswordField
           control={form.control}
           name="password"
-          label="New password"
+          label={t('newPassword')}
           autoComplete="new-password"
-          placeholder="8+ chars, upper, lower, number, symbol"
+          placeholder={tRegister('passwordPlaceholder')}
           inputClassName={authInputClassName}
         />
 
         <FormPasswordField
           control={form.control}
           name="password_confirmation"
-          label="Confirm password"
+          label={t('confirmPassword')}
           autoComplete="new-password"
-          placeholder="Repeat your password"
+          placeholder={tRegister('confirmPlaceholder')}
           inputClassName={authInputClassName}
         />
 
-        <SubmitButton loading={pending} loadingText="Updating...">
-          Reset password
+        <SubmitButton loading={pending} loadingText={t('submitting')}>
+          {t('submit')}
         </SubmitButton>
       </form>
     </>

@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { useRouter } from '@/i18n/navigation';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import {
@@ -31,11 +32,12 @@ export function CancelOrderButton({
   providerId,
   symbol,
   className,
-  label = 'Cancel Order',
+  label,
   fullWidth = true,
   redirectToOrders = false,
   onCancelled,
 }: CancelOrderButtonProps) {
+  const t = useTranslations('Orders');
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition();
@@ -52,7 +54,7 @@ export function CancelOrderButton({
         return;
       }
 
-      toast.success(`Canceled ${symbol} order.`);
+      toast.success(t('toastCanceled', { symbol }));
       setOpen(false);
       onCancelled?.(orderId);
 
@@ -82,16 +84,15 @@ export function CancelOrderButton({
           setOpen(true);
         }}
       >
-        {label}
+        {label ?? t('cancelOrder')}
       </Button>
 
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent className="w-full sm:max-w-md">
           <SheetHeader>
-            <SheetTitle>Cancel order?</SheetTitle>
+            <SheetTitle>{t('cancelTitle')}</SheetTitle>
             <SheetDescription>
-              This will cancel your {symbol} order #{orderId}. This action
-              cannot be undone.
+              {t('cancelDescription', { symbol, orderId })}
             </SheetDescription>
           </SheetHeader>
 
@@ -102,7 +103,7 @@ export function CancelOrderButton({
               disabled={pending}
               onClick={() => setOpen(false)}
             >
-              Keep order
+              {t('keepOrder')}
             </Button>
             <Button
               variant="destructive"
@@ -110,7 +111,7 @@ export function CancelOrderButton({
               disabled={pending}
               onClick={onConfirm}
             >
-              {pending ? 'Cancelling…' : 'Confirm cancel'}
+              {pending ? t('cancelling') : t('confirmCancel')}
             </Button>
           </SheetFooter>
         </SheetContent>

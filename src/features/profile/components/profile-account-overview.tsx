@@ -1,3 +1,4 @@
+import { getTranslations } from 'next-intl/server';
 import { Crown, TrendingDown, TrendingUp } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { ChangeIndicator } from '@/shared/components/change-indicator';
@@ -14,6 +15,10 @@ export async function ProfileAccountOverview({
   portfolio,
   accounts,
 }: ProfileAccountOverviewProps) {
+  const t = await getTranslations('Profile');
+  const tPlans = await getTranslations('Plans');
+  const tBrand = await getTranslations('Brand');
+  const tTrades = await getTranslations('Trades');
   const user = await getCurrentUser();
   const currency = portfolio?.currency ?? 'USD';
   const hasData = portfolio != null && portfolio.has_accounts;
@@ -21,7 +26,7 @@ export async function ProfileAccountOverview({
   const PnlIcon = positive ? TrendingUp : TrendingDown;
 
   const equityLabel =
-    accounts.length === 1 ? accounts[0].label : 'Total equity';
+    accounts.length === 1 ? accounts[0].label : t('totalEquity');
 
   return (
     <Card>
@@ -32,14 +37,16 @@ export async function ProfileAccountOverview({
               <Crown className="size-5" />
             </div>
             <div>
-              <p className="text-muted-foreground text-xs">Current Plan</p>
+              <p className="text-muted-foreground text-xs">
+                {tPlans('currentPlan')}
+              </p>
               <p className="text-foreground text-base font-bold">
-                {user.plan?.name ?? 'Free'}
+                {user.plan?.name ?? tBrand('planFree')}
               </p>
               <p className="text-muted-foreground text-xs">
                 {user.plan?.renews_at_label
-                  ? `Renews ${user.plan.renews_at_label}`
-                  : 'No active renewal'}
+                  ? tPlans('renews', { date: user.plan.renews_at_label })
+                  : t('noActiveRenewal')}
               </p>
             </div>
           </div>
@@ -65,14 +72,16 @@ export async function ProfileAccountOverview({
           </div>
 
           <div>
-            <p className="text-muted-foreground text-xs">Buying Power</p>
+            <p className="text-muted-foreground text-xs">
+              {tTrades('buyingPower')}
+            </p>
             <p className="text-foreground text-base font-bold">
               {hasData ? formatMoney(portfolio.buying_power, currency) : '—'}
             </p>
           </div>
 
           <div>
-            <p className="text-muted-foreground text-xs">Day P&L</p>
+            <p className="text-muted-foreground text-xs">{tTrades('dayPnl')}</p>
             {hasData ? (
               <ChangeIndicator
                 value={`${formatSignedMoney(portfolio.day_pnl, currency)} (${formatPct(portfolio.day_pnl_pct)})`}

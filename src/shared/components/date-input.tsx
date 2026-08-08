@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { format, isValid, parse, subYears } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
@@ -36,16 +37,18 @@ export function DateInput({
   value,
   onChange,
   onBlur,
-  placeholder = 'Pick a date',
+  placeholder,
   disabled,
   invalid,
   className,
   adultOnly = false,
 }: DateInputProps) {
+  const t = useTranslations('SharedForm');
   const [open, setOpen] = useState(false);
   const selected = parseValue(value);
   const maxDate = adultOnly ? subYears(new Date(), 18) : new Date();
   const minDate = new Date(1900, 0, 1);
+  const resolvedPlaceholder = placeholder ?? t('pickDate');
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -68,7 +71,7 @@ export function DateInput({
         }
       >
         <span className="truncate">
-          {selected ? format(selected, 'PPP') : placeholder}
+          {selected ? format(selected, 'PPP') : resolvedPlaceholder}
         </span>
         <CalendarIcon className="text-muted-foreground size-4 shrink-0" />
       </PopoverTrigger>
@@ -97,7 +100,7 @@ export function DateInput({
               setOpen(false);
             }}
           >
-            Clear
+            {t('clearDate')}
           </Button>
           {!adultOnly ? (
             <Button
@@ -110,7 +113,7 @@ export function DateInput({
                 setOpen(false);
               }}
             >
-              Today
+              {t('todayDate')}
             </Button>
           ) : null}
         </div>

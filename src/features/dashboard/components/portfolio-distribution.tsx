@@ -1,4 +1,5 @@
-import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
+import { Link } from '@/i18n/navigation';
 import type { HomeAllocation } from '@/features/dashboard/types';
 import { formatMoney } from '@/shared/trading';
 
@@ -18,12 +19,14 @@ type PortfolioDistributionProps = {
   hasAccounts: boolean;
 };
 
-export function PortfolioDistribution({
+export async function PortfolioDistribution({
   allocation,
   equity,
   currency,
   hasAccounts,
 }: PortfolioDistributionProps) {
+  const t = await getTranslations('Dashboard');
+
   const segments = allocation.map((item, i) => ({
     label: item.display_symbol || item.symbol,
     percent: item.percent,
@@ -34,20 +37,19 @@ export function PortfolioDistribution({
   return (
     <div className="border-border bg-card rounded-lg border p-5">
       <h2 className="text-foreground mb-4 text-base font-semibold">
-        Portfolio Distribution
+        {t('portfolioDistribution')}
       </h2>
 
       {!hasAccounts || segments.length === 0 ? (
         <p className="text-muted-foreground text-sm">
-          {hasAccounts
-            ? 'No allocation data yet.'
-            : 'Connect a provider to see allocation.'}
+          {hasAccounts ? t('noAllocation') : t('connectForAllocation')}
         </p>
       ) : (
         <div className="flex flex-col items-center gap-5 sm:flex-row sm:items-center">
           <DonutChart
             segments={segments}
             total={formatMoney(equity, currency)}
+            equityLabel={t('equity')}
           />
 
           <ul className="w-full space-y-3">
@@ -81,7 +83,7 @@ export function PortfolioDistribution({
           href="/portfolio"
           className="text-primary mt-4 inline-block text-sm font-medium hover:underline"
         >
-          View portfolio
+          {t('viewPortfolio')}
         </Link>
       ) : null}
     </div>
@@ -91,9 +93,11 @@ export function PortfolioDistribution({
 function DonutChart({
   segments,
   total,
+  equityLabel,
 }: {
   segments: { label: string; percent: number; color: string }[];
   total: string;
+  equityLabel: string;
 }) {
   const size = 160;
   const stroke = 28;
@@ -133,7 +137,7 @@ function DonutChart({
         ))}
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <p className="text-muted-foreground text-[10px]">Equity</p>
+        <p className="text-muted-foreground text-[10px]">{equityLabel}</p>
         <p className="text-foreground text-sm font-bold">{total}</p>
       </div>
     </div>

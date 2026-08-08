@@ -35,7 +35,7 @@ export function BottomTicker({ items }: { items: MarketTickerItem[] }) {
 
   return (
     <div className="border-border bg-card shrink-0 overflow-hidden border-t py-4.5">
-      <div className="animate-ticker flex w-max">
+      <div dir="ltr" className="animate-ticker flex w-max">
         <TickerItems items={items} />
         <TickerItems items={items} />
       </div>

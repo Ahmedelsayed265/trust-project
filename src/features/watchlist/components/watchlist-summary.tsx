@@ -1,3 +1,6 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import { Card, CardContent } from '@/components/ui/card';
 import type { WatchlistSummary } from '@/features/watchlist/types';
 
@@ -6,10 +9,11 @@ export function WatchlistSummaryCards({
 }: {
   summary: WatchlistSummary;
 }) {
+  const t = useTranslations('Watchlist');
   const cards = [
-    { label: 'Watching', value: String(summary.total) },
-    { label: 'Gainers', value: String(summary.gainers) },
-    { label: 'Losers', value: String(summary.losers) },
+    { label: t('watching'), value: String(summary.total) },
+    { label: t('gainers'), value: String(summary.gainers) },
+    { label: t('losers'), value: String(summary.losers) },
   ];
 
   return (

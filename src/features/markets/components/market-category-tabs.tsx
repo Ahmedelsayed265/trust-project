@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { Search, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import type { MarketCategory } from '@/features/markets/types';
@@ -26,6 +27,24 @@ export function MarketCategoryTabs({
   searchOpen,
   onSearchOpenChange,
 }: MarketCategoryTabsProps) {
+  const t = useTranslations('Markets');
+
+  function categoryLabel(category: MarketCategory) {
+    const key = category.key as
+      'all' | 'crypto' | 'stocks' | 'metals' | 'forex' | 'indices';
+    if (
+      key === 'all' ||
+      key === 'crypto' ||
+      key === 'stocks' ||
+      key === 'metals' ||
+      key === 'forex' ||
+      key === 'indices'
+    ) {
+      return t(`assetClass.${key}`);
+    }
+    return category.label;
+  }
+
   return (
     <div className="flex w-full min-w-0 flex-col gap-2 sm:flex-row sm:items-center">
       <div className="flex min-w-0 flex-1 scrollbar-none items-center gap-2 overflow-x-auto overscroll-x-contain pb-0.5">
@@ -41,7 +60,7 @@ export function MarketCategoryTabs({
                 : 'bg-card text-muted-foreground ring-border hover:bg-muted hover:text-foreground ring-1',
             )}
           >
-            {category.label}
+            {categoryLabel(category)}
             <span
               className={cn(
                 'ml-1.5 text-xs',
@@ -64,9 +83,9 @@ export function MarketCategoryTabs({
               autoFocus
               value={searchDraft}
               onChange={(event) => onSearchDraftChange(event.target.value)}
-              placeholder="Search markets…"
+              placeholder={t('searchPlaceholder')}
               className="bg-card h-9 rounded-xl pr-9 pl-8 text-sm"
-              aria-label="Search markets"
+              aria-label={t('searchAria')}
             />
             <button
               type="button"
@@ -76,7 +95,7 @@ export function MarketCategoryTabs({
                 onSearchSubmit();
               }}
               className="text-muted-foreground hover:text-foreground absolute top-1/2 right-2 -translate-y-1/2 rounded-md p-0.5"
-              aria-label="Close search"
+              aria-label={t('closeSearch')}
             >
               <X className="size-4" />
             </button>
@@ -86,7 +105,7 @@ export function MarketCategoryTabs({
             type="button"
             onClick={() => onSearchOpenChange(true)}
             className="border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground shrink-0 rounded-xl border p-2 transition-colors"
-            aria-label="Search markets"
+            aria-label={t('searchAria')}
           >
             <Search className="size-4" />
           </button>
