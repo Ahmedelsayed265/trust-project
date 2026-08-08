@@ -28,7 +28,7 @@ export function HomeDashboard({ data }: HomeDashboardProps) {
         <AISignal signal={data.top_signal} />
       </div>
 
-      <div className="mb-4 grid gap-4 md:grid-cols-2 lg:gap-5 xl:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:gap-5 xl:grid-cols-3">
         <PortfolioDistribution
           allocation={data.allocation}
           equity={data.portfolio.equity}
