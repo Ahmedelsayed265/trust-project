@@ -1,9 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
 import { Bell, Check, Globe2, Mail, Sparkles, UserRound } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -23,12 +25,13 @@ import {
 } from '@/components/ui/select';
 import { FormTextField } from '@/shared/components/form-text-field';
 import { PageHeader } from '@/shared/components/page-header';
-import { useAppSettings } from '@/shared/providers/app-settings-provider';
-import { useCurrentUser } from '@/shared/providers/user-provider';
+import { updateUserProfileAction } from '@/features/settings/actions/update-user-profile';
+import { updateUserSettingsAction } from '@/features/settings/actions/update-user-settings';
 import {
   settingsSchema,
   type SettingsFormValues,
 } from '@/features/settings/schemas/settings';
+import type { UserSettings } from '@/features/settings/types';
 import { cn } from '@/lib/utils';
 
 const notificationOptions = [
@@ -52,39 +55,113 @@ const notificationOptions = [
   },
 ];
 
-export function SettingsView() {
-  const user = useCurrentUser();
-  const settings = useAppSettings();
-  const languages = settings.locales;
-  const currencies = settings.currencies.map((code) => ({
-    value: code,
-    label: code,
-  }));
-  const defaultLanguage =
-    languages.find((locale) => locale.value === user.language)?.value ??
-    languages[0]?.value ??
-    'en';
-  const defaultCurrency = settings.currencies.includes(user.currency)
-    ? user.currency
-    : (settings.currencies[0] ?? 'USD');
+type SettingsViewProps = {
+  data: UserSettings;
+  profile: {
+    first_name: string;
+    last_name: string;
+    phone: string | null;
+    country: string | null;
+  };
+};
 
+function mapServerField(field: string): keyof SettingsFormValues | null {
+  switch (field) {
+    case 'first_name':
+      return 'firstName';
+    case 'last_name':
+      return 'lastName';
+    case 'display_name':
+      return 'displayName';
+    case 'email_alerts':
+      return 'emailAlerts';
+    case 'push_alerts':
+      return 'pushAlerts';
+    case 'ai_digest':
+      return 'aiDigest';
+    case 'phone':
+    case 'country':
+    case 'language':
+    case 'currency':
+    case 'email':
+      return field;
+    default:
+      return null;
+  }
+}
+
+export function SettingsView({ data, profile }: SettingsViewProps) {
+  const router = useRouter();
   const [saved, setSaved] = useState(false);
+  const [pending, startTransition] = useTransition();
+
+  const languages = data.options.languages;
+  const currencies = data.options.currencies;
+
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(settingsSchema),
     defaultValues: {
-      displayName: user.name,
-      email: user.email,
-      language: defaultLanguage,
-      currency: defaultCurrency,
-      emailAlerts: user.email_alerts,
-      pushAlerts: user.push_alerts,
-      aiDigest: user.ai_digest,
+      firstName: profile.first_name,
+      lastName: profile.last_name,
+      phone: profile.phone ?? '',
+      country: profile.country ?? '',
+      displayName: data.display_name,
+      email: data.email,
+      language: data.language,
+      currency: data.currency,
+      emailAlerts: data.email_alerts,
+      pushAlerts: data.push_alerts,
+      aiDigest: data.ai_digest,
     },
   });
 
-  function onSubmit() {
-    setSaved(true);
-    window.setTimeout(() => setSaved(false), 2000);
+  function applyServerErrors(
+    errors: Record<string, string[] | undefined> | undefined,
+  ) {
+    if (!errors) return;
+    for (const [field, messages] of Object.entries(errors)) {
+      const message = messages?.[0];
+      const formField = mapServerField(field);
+      if (!message || !formField) continue;
+      form.setError(formField, { type: 'server', message });
+    }
+  }
+
+  function onSubmit(values: SettingsFormValues) {
+    startTransition(async () => {
+      const profileResult = await updateUserProfileAction({
+        first_name: values.firstName,
+        last_name: values.lastName,
+        phone: values.phone,
+        country: values.country.toUpperCase(),
+      });
+
+      if (!profileResult.ok) {
+        applyServerErrors(profileResult.errors);
+        toast.error(profileResult.message);
+        return;
+      }
+
+      const settingsResult = await updateUserSettingsAction({
+        display_name: values.displayName,
+        language: values.language,
+        currency: values.currency,
+        email_alerts: values.emailAlerts,
+        push_alerts: values.pushAlerts,
+        ai_digest: values.aiDigest,
+      });
+
+      if (!settingsResult.ok) {
+        applyServerErrors(settingsResult.errors);
+        toast.error(settingsResult.message);
+        return;
+      }
+
+      setSaved(true);
+      window.setTimeout(() => setSaved(false), 2000);
+      toast.success('Settings saved.');
+      router.refresh();
+    });
   }
 
   return (
@@ -110,21 +187,61 @@ export function SettingsView() {
             </div>
           </CardHeader>
           <CardContent className="space-y-5 pt-1">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <FormTextField
+                control={form.control}
+                name="firstName"
+                label="First name"
+                autoComplete="given-name"
+                inputClassName="h-12 rounded-[12px]! bg-background px-2.5"
+              />
+              <FormTextField
+                control={form.control}
+                name="lastName"
+                label="Last name"
+                autoComplete="family-name"
+                inputClassName="h-12 rounded-[12px]! bg-background px-2.5"
+              />
+            </div>
+
             <FormTextField
               control={form.control}
               name="displayName"
               label="Display name"
-              autoComplete="name"
-              inputClassName="h-12 rounded-xl bg-background px-2.5"
+              autoComplete="nickname"
+              inputClassName="h-12 rounded-[12px]! bg-background px-2.5"
             />
+
             <FormTextField
               control={form.control}
               name="email"
               label="Email"
               type="email"
               autoComplete="email"
-              inputClassName="h-12 rounded-xl bg-background px-2.5"
+              disabled
+              description="Contact support to change your email address."
+              inputClassName="h-12 rounded-[12px]! bg-background px-2.5"
             />
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <FormTextField
+                control={form.control}
+                name="phone"
+                label="Phone"
+                type="tel"
+                autoComplete="tel"
+                inputClassName="h-12 rounded-[12px]! bg-background px-2.5"
+              />
+              <FormTextField
+                control={form.control}
+                name="country"
+                label="Country"
+                placeholder="EG"
+                autoComplete="country"
+                description="2-letter country code"
+                inputClassName="h-12 rounded-[12px]! bg-background px-2.5 uppercase"
+              />
+            </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
               <Controller
@@ -143,7 +260,7 @@ export function SettingsView() {
                       >
                         <SelectTrigger
                           id="language"
-                          className="bg-background h-12 w-full min-w-0 rounded-xl px-2.5 py-3 data-[size=default]:h-12"
+                          className="bg-background h-12 w-full min-w-0 rounded-[12px]! px-2.5 py-3 data-[size=default]:h-12"
                         >
                           <SelectValue />
                         </SelectTrigger>
@@ -182,7 +299,7 @@ export function SettingsView() {
                       >
                         <SelectTrigger
                           id="currency"
-                          className="bg-background h-12 w-full min-w-0 rounded-xl px-2.5 py-3 data-[size=default]:h-12"
+                          className="bg-background h-12 w-full min-w-0 rounded-[12px]! px-2.5 py-3 data-[size=default]:h-12"
                         >
                           <SelectValue />
                         </SelectTrigger>
@@ -274,9 +391,9 @@ export function SettingsView() {
           <Button
             type="submit"
             className="rounded-xl px-5"
-            disabled={form.formState.isSubmitting}
+            disabled={pending || form.formState.isSubmitting}
           >
-            Save changes
+            {pending ? 'Saving…' : 'Save changes'}
           </Button>
         </div>
       </form>

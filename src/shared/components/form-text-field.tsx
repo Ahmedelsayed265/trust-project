@@ -24,6 +24,7 @@ type FormTextFieldProps<T extends FieldValues> = {
   type?: React.HTMLInputTypeAttribute;
   placeholder?: string;
   autoComplete?: string;
+  disabled?: boolean;
   className?: string;
   inputClassName?: string;
 };
@@ -36,6 +37,7 @@ export function FormTextField<T extends FieldValues>({
   type = 'text',
   placeholder,
   autoComplete,
+  disabled,
   className,
   inputClassName,
 }: FormTextFieldProps<T>) {
@@ -57,6 +59,7 @@ export function FormTextField<T extends FieldValues>({
               type={type}
               placeholder={placeholder}
               autoComplete={autoComplete}
+              disabled={disabled}
               aria-invalid={fieldState.invalid}
               className={cn('bg-card h-12 py-3 text-sm', inputClassName)}
             />

@@ -4,17 +4,32 @@ import { api, mapActionError, type ActionResult } from '@/shared/lib/api';
 import { requireAuth } from '@/features/auth/session';
 import type { ApiSuccessResponse } from '@/features/auth/types';
 import type {
-  AccountsListData,
+  AccountProviderCatalogItem,
   ConnectedAccount,
   SyncAccountsData,
+  UserAccountsData,
 } from '@/features/accounts/types';
 
+export async function getProvidersAction(): Promise<
+  ActionResult<AccountProviderCatalogItem[]>
+> {
+  try {
+    const response =
+      await api.get<ApiSuccessResponse<AccountProviderCatalogItem[]>>(
+        '/providers',
+      );
+    return { ok: true, data: response.data };
+  } catch (error) {
+    return mapActionError(error, 'Failed to load providers.');
+  }
+}
+
 export async function getAccountsAction(): Promise<
-  ActionResult<AccountsListData>
+  ActionResult<UserAccountsData>
 > {
   try {
     const token = await requireAuth();
-    const response = await api.get<ApiSuccessResponse<AccountsListData>>(
+    const response = await api.get<ApiSuccessResponse<UserAccountsData>>(
       '/user/accounts',
       { token },
     );

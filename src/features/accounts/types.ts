@@ -33,6 +33,12 @@ export type AccountProviderCatalogItem = {
   capabilities: string[];
 };
 
+export type UserAccountsData = {
+  accounts: ConnectedAccount[];
+  mode: string;
+  providers?: AccountProviderCatalogItem[];
+};
+
 export type AccountsListData = {
   accounts: ConnectedAccount[];
   providers: AccountProviderCatalogItem[];
