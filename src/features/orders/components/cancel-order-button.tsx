@@ -20,6 +20,7 @@ type CancelOrderButtonProps = {
   providerId?: string;
   symbol: string;
   className?: string;
+  label?: string;
   fullWidth?: boolean;
   redirectToOrders?: boolean;
   onCancelled?: (orderId: string) => void;
@@ -30,6 +31,7 @@ export function CancelOrderButton({
   providerId,
   symbol,
   className,
+  label = 'Cancel Order',
   fullWidth = true,
   redirectToOrders = false,
   onCancelled,
@@ -80,7 +82,7 @@ export function CancelOrderButton({
           setOpen(true);
         }}
       >
-        Cancel Order
+        {label}
       </Button>
 
       <Sheet open={open} onOpenChange={setOpen}>
