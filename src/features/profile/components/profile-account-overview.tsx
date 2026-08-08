@@ -1,23 +1,30 @@
-'use client';
-
-import { Crown, TrendingUp } from 'lucide-react';
+import { Crown, TrendingDown, TrendingUp } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { ChangeIndicator } from '@/shared/components/change-indicator';
-import { useCurrentUser } from '@/shared/providers/user-provider';
-import {
-  formatMoney,
-  formatPct,
-  formatSignedMoney,
-  useTrading,
-} from '@/shared/trading';
+import type { HomeAccount, HomePortfolio } from '@/features/dashboard/types';
+import { getCurrentUser } from '@/features/auth/get-current-user';
+import { formatMoney, formatPct, formatSignedMoney } from '@/shared/trading';
 
-export function ProfileAccountOverview() {
-  const user = useCurrentUser();
-  const { snapshot, activeProvider, loading } = useTrading();
-  const currency = snapshot?.currency ?? 'USD';
+type ProfileAccountOverviewProps = {
+  portfolio: HomePortfolio | null;
+  accounts: HomeAccount[];
+};
+
+export async function ProfileAccountOverview({
+  portfolio,
+  accounts,
+}: ProfileAccountOverviewProps) {
+  const user = await getCurrentUser();
+  const currency = portfolio?.currency ?? 'USD';
+  const hasData = portfolio != null && portfolio.has_accounts;
+  const positive = portfolio ? portfolio.is_positive : true;
+  const PnlIcon = positive ? TrendingUp : TrendingDown;
+
+  const equityLabel =
+    accounts.length === 1 ? accounts[0].label : 'Total equity';
 
   return (
-    <Card className="">
+    <Card>
       <CardContent>
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
           <div className="flex items-start gap-3">
@@ -38,21 +45,21 @@ export function ProfileAccountOverview() {
           </div>
 
           <div>
-            <p className="text-muted-foreground text-xs">
-              Provider equity · {activeProvider.displayName}
-            </p>
+            <p className="text-muted-foreground text-xs">{equityLabel}</p>
             <p className="text-foreground text-base font-bold">
-              {loading
-                ? '…'
-                : snapshot
-                  ? formatMoney(snapshot.equity, currency)
-                  : '—'}
+              {hasData ? formatMoney(portfolio.equity, currency) : '—'}
             </p>
-            {snapshot && (
-              <div className="text-success mt-0.5 flex items-center gap-1 text-xs font-semibold">
-                <TrendingUp className="size-3.5" />
-                {formatSignedMoney(snapshot.dayPnl, currency)} (
-                {formatPct(snapshot.dayPnlPct)})
+            {hasData && (
+              <div
+                className={
+                  positive
+                    ? 'text-success mt-0.5 flex items-center gap-1 text-xs font-semibold'
+                    : 'text-destructive mt-0.5 flex items-center gap-1 text-xs font-semibold'
+                }
+              >
+                <PnlIcon className="size-3.5" />
+                {formatSignedMoney(portfolio.day_pnl, currency)} (
+                {formatPct(portfolio.day_pnl_pct)})
               </div>
             )}
           </div>
@@ -60,15 +67,16 @@ export function ProfileAccountOverview() {
           <div>
             <p className="text-muted-foreground text-xs">Buying Power</p>
             <p className="text-foreground text-base font-bold">
-              {snapshot ? formatMoney(snapshot.buyingPower, currency) : '—'}
+              {hasData ? formatMoney(portfolio.buying_power, currency) : '—'}
             </p>
           </div>
 
           <div>
             <p className="text-muted-foreground text-xs">Day P&L</p>
-            {snapshot ? (
+            {hasData ? (
               <ChangeIndicator
-                value={`${formatSignedMoney(snapshot.dayPnl, currency)} (${formatPct(snapshot.dayPnlPct)})`}
+                value={`${formatSignedMoney(portfolio.day_pnl, currency)} (${formatPct(portfolio.day_pnl_pct)})`}
+                positive={positive}
                 className="text-base font-bold"
               />
             ) : (

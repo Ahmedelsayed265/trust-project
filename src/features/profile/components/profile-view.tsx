@@ -1,8 +1,14 @@
 import { ProfileHero } from '@/features/profile/components/profile-hero';
 import { ProfileAccountOverview } from '@/features/profile/components/profile-account-overview';
 import { ProfileSettingsGrid } from '@/features/profile/components/profile-settings-grid';
+import type { HomeAccount, HomePortfolio } from '@/features/dashboard/types';
 
-export function ProfileView() {
+type ProfileViewProps = {
+  portfolio: HomePortfolio | null;
+  accounts: HomeAccount[];
+};
+
+export function ProfileView({ portfolio, accounts }: ProfileViewProps) {
   return (
     <div className="flex flex-col gap-4 sm:gap-5">
       <div>
@@ -15,7 +21,7 @@ export function ProfileView() {
       </div>
 
       <ProfileHero />
-      <ProfileAccountOverview />
+      <ProfileAccountOverview portfolio={portfolio} accounts={accounts} />
       <ProfileSettingsGrid />
     </div>
   );
