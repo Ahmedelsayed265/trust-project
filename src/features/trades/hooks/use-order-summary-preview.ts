@@ -38,6 +38,9 @@ export function useOrderSummaryPreview(options: {
 
   useEffect(() => {
     if (!canPreview || !options.providerId) {
+      setSummary(null);
+      setError(null);
+      setLoading(false);
       return;
     }
 
@@ -63,6 +66,15 @@ export function useOrderSummaryPreview(options: {
         if (!result.ok) {
           setSummary(null);
           setError(result.message);
+          setLoading(false);
+          return;
+        }
+
+        if (result.data.price <= 0) {
+          setSummary(result.data);
+          setError(
+            `No live price for ${result.data.display_symbol || result.data.symbol} on this account.`,
+          );
           setLoading(false);
           return;
         }

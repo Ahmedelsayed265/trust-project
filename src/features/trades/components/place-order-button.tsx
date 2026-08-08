@@ -42,7 +42,9 @@ export function PlaceOrderButton({
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition();
-  const { summary } = preview;
+  const { summary, error, loading } = preview;
+  const previewReady =
+    Boolean(summary) && !loading && !error && (summary?.price ?? 0) > 0;
 
   function openReview() {
     void form.handleSubmit(() => {
@@ -50,8 +52,18 @@ export function PlaceOrderButton({
         toast.error('Connect a trading account first.');
         return;
       }
-      if (!summary) {
+      if (loading) {
         toast.error('Wait for the order preview to finish updating.');
+        return;
+      }
+      if (error) {
+        toast.error(error);
+        return;
+      }
+      if (!summary || summary.price <= 0) {
+        toast.error(
+          'No market price available for this symbol on the selected account.',
+        );
         return;
       }
       setOpen(true);
@@ -59,7 +71,7 @@ export function PlaceOrderButton({
   }
 
   function onConfirm() {
-    if (!providerId) return;
+    if (!providerId || !previewReady || !summary) return;
 
     const values = form.getValues();
     const amount = parseAmount(values.amount);
@@ -107,10 +119,17 @@ export function PlaceOrderButton({
       <Button
         type="button"
         className="h-11 w-full rounded-xl"
-        disabled={disabled || pending}
+        disabled={disabled || pending || !previewReady}
         onClick={openReview}
       >
-        {disabledLabel ?? 'Review Order'}
+        {disabledLabel ??
+          (loading
+            ? 'Updating preview…'
+            : error
+              ? 'Preview unavailable'
+              : summary && summary.price <= 0
+                ? 'No price available'
+                : 'Review Order')}
       </Button>
 
       <Sheet open={open} onOpenChange={setOpen}>
@@ -168,7 +187,7 @@ export function PlaceOrderButton({
             </Button>
             <Button
               className="rounded-xl"
-              disabled={pending || !summary}
+              disabled={pending || !previewReady}
               onClick={onConfirm}
             >
               {pending ? 'Placing…' : 'Place Order'}

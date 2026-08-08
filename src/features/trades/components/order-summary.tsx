@@ -73,7 +73,7 @@ export function OrderSummary({
           </p>
         ) : null}
 
-        {error && !summary ? (
+        {error ? (
           <p className="text-destructive py-4 text-sm">{error}</p>
         ) : null}
 

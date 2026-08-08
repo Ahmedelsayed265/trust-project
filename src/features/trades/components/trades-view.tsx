@@ -145,6 +145,14 @@ export function TradesView({ initialData }: { initialData: TradesPageData }) {
     connectedAccounts.find((account) => account.provider_id === providerId) ??
     null;
 
+  const scopedMarkets = useMemo(
+    () =>
+      providerId
+        ? markets.filter((item) => item.provider_id === providerId)
+        : markets,
+    [markets, providerId],
+  );
+
   const form = useForm<OrderFormValues>({
     resolver: zodResolver(orderSchema),
     defaultValues: {
@@ -163,7 +171,9 @@ export function TradesView({ initialData }: { initialData: TradesPageData }) {
 
   const pair = form.watch('pair');
   const selectedMarket =
-    markets.find((item) => item.symbol === pair) ?? markets[0] ?? null;
+    scopedMarkets.find((item) => item.symbol === pair) ??
+    scopedMarkets[0] ??
+    null;
 
   function syncUrl(nextSymbol: string, nextProviderId: string | null) {
     const params = new URLSearchParams();
@@ -219,17 +229,80 @@ export function TradesView({ initialData }: { initialData: TradesPageData }) {
     });
   }
 
-  function handleSymbolChange(nextSymbol: string, nextProviderId = providerId) {
-    const symbol = normalizeTradeSymbol(nextSymbol);
-    const market = markets.find((item) => item.symbol === symbol);
-    form.setValue('pair', symbol, { shouldValidate: true });
-    form.setValue(
-      'currency',
-      market?.quote_asset ?? form.getValues('currency'),
-    );
+  function applyMarketSelection(
+    market: MarketSymbol,
+    nextProviderId: string | null = market.provider_id,
+  ) {
+    form.setValue('pair', market.symbol, { shouldValidate: true });
+    form.setValue('currency', market.quote_asset);
     form.setValue('percent', 0);
-    syncUrl(symbol, nextProviderId);
-    refreshSignal(symbol);
+    syncUrl(market.symbol, nextProviderId);
+    refreshSignal(market.symbol);
+  }
+
+  function handleSymbolChange(nextSymbol: string) {
+    const symbol = normalizeTradeSymbol(nextSymbol);
+    const local = scopedMarkets.find((item) => item.symbol === symbol);
+    if (local) {
+      applyMarketSelection(local, providerId);
+      return;
+    }
+
+    startMarketsLoad(async () => {
+      const probe = await getMarketsAction({
+        search: symbol,
+        per_page: 50,
+        sort: 'volume',
+        direction: 'desc',
+      });
+      if (!probe.ok) {
+        toast.error(probe.message);
+        return;
+      }
+
+      const match = probe.data.items.find(
+        (item) =>
+          item.is_tradable &&
+          normalizeTradeSymbol(item.symbol) === symbol &&
+          connectedAccounts.some(
+            (account) => account.provider_id === item.provider_id,
+          ),
+      );
+
+      if (!match) {
+        toast.error(
+          `${symbol} is not available on your connected trading accounts.`,
+        );
+        return;
+      }
+
+      if (match.provider_id !== providerId) {
+        const accountLabel =
+          connectedAccounts.find(
+            (account) => account.provider_id === match.provider_id,
+          )?.label ?? match.provider_id;
+        setProviderId(match.provider_id);
+        refreshPortfolio(match.provider_id);
+        toast.info(`Switched to ${accountLabel} for ${symbol}.`);
+      }
+
+      const scoped = await getMarketsAction({
+        provider_id: match.provider_id,
+        per_page: 50,
+        sort: 'volume',
+        direction: 'desc',
+      });
+      if (!scoped.ok) {
+        toast.error(scoped.message);
+        return;
+      }
+
+      const nextMarkets = scoped.data.items.filter((item) => item.is_tradable);
+      setMarkets(nextMarkets);
+      const nextMarket =
+        nextMarkets.find((item) => item.symbol === match.symbol) ?? match;
+      applyMarketSelection(nextMarket, match.provider_id);
+    });
   }
 
   function handleProviderChange(nextProviderId: string) {
@@ -252,12 +325,9 @@ export function TradesView({ initialData }: { initialData: TradesPageData }) {
       setMarkets(nextMarkets);
       const stillExists = nextMarkets.some((item) => item.symbol === pair);
       if (!stillExists && nextMarkets[0]) {
-        const nextMarket = nextMarkets[0];
-        form.setValue('pair', nextMarket.symbol, { shouldValidate: true });
-        form.setValue('currency', nextMarket.quote_asset);
-        form.setValue('percent', 0);
-        syncUrl(nextMarket.symbol, nextProviderId);
-        refreshSignal(nextMarket.symbol);
+        applyMarketSelection(nextMarkets[0], nextProviderId);
+      } else {
+        syncUrl(pair, nextProviderId);
       }
     });
   }
@@ -312,6 +382,19 @@ export function TradesView({ initialData }: { initialData: TradesPageData }) {
     setSignal(initialData.signal);
     setProviderId(initialData.initialProviderId);
   }, [initialData]);
+
+  const selectedSymbol = selectedMarket?.symbol ?? null;
+  const selectedQuote = selectedMarket?.quote_asset;
+
+  // Keep the ticket on a market that belongs to the active provider.
+  useEffect(() => {
+    if (!selectedSymbol || selectedSymbol === pair || !selectedQuote) return;
+    form.setValue('pair', selectedSymbol, { shouldValidate: true });
+    form.setValue('currency', selectedQuote);
+    form.setValue('percent', 0);
+    syncUrl(selectedSymbol, providerId);
+    refreshSignal(selectedSymbol);
+  }, [selectedSymbol, selectedQuote, pair, providerId, form]);
 
   const accountTriggerLabel = selectedAccount?.label ?? 'All Accounts';
 
@@ -467,7 +550,7 @@ export function TradesView({ initialData }: { initialData: TradesPageData }) {
       <FormProvider {...form}>
         {tab === 'trade' ? (
           <TradeOrderPanel
-            markets={markets}
+            markets={scopedMarkets}
             market={selectedMarket}
             providerId={providerId}
             buyingPower={portfolio?.buying_power ?? 0}

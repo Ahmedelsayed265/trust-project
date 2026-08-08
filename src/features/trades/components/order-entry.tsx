@@ -103,7 +103,11 @@ export function OrderEntry({
     });
   }
 
-  const canTrade = Boolean(providerId && market?.is_tradable !== false);
+  const marketMatchesProvider =
+    !market || !providerId || market.provider_id === providerId;
+  const canTrade = Boolean(
+    providerId && market?.is_tradable !== false && marketMatchesProvider,
+  );
 
   return (
     <Card>
@@ -371,7 +375,9 @@ export function OrderEntry({
               ? 'Connect provider to trade'
               : !market
                 ? 'Select a market'
-                : undefined
+                : !marketMatchesProvider
+                  ? 'Switch account for this market'
+                  : undefined
           }
           onPlaced={onPlaced}
         />
