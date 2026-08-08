@@ -1,9 +1,16 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState, useTransition } from 'react';
+import {
+  useEffect,
+  useEffectEvent,
+  useMemo,
+  useRef,
+  useState,
+  useTransition,
+} from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { FormProvider, useForm } from 'react-hook-form';
+import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   ChevronDown,
@@ -169,7 +176,7 @@ export function TradesView({ initialData }: { initialData: TradesPageData }) {
     },
   });
 
-  const pair = form.watch('pair');
+  const pair = useWatch({ control: form.control, name: 'pair' });
   const selectedMarket =
     scopedMarkets.find((item) => item.symbol === pair) ??
     scopedMarkets[0] ??
@@ -375,26 +382,24 @@ export function TradesView({ initialData }: { initialData: TradesPageData }) {
     );
   }
 
-  useEffect(() => {
-    setPortfolio(initialData.portfolio);
-    setPositions(initialData.positions);
-    setMarkets(initialData.markets);
-    setSignal(initialData.signal);
-    setProviderId(initialData.initialProviderId);
-  }, [initialData]);
-
   const selectedSymbol = selectedMarket?.symbol ?? null;
   const selectedQuote = selectedMarket?.quote_asset;
+
+  const syncTicketToScopedMarket = useEffectEvent(
+    (nextSymbol: string, nextQuote: string, nextProviderId: string | null) => {
+      form.setValue('pair', nextSymbol, { shouldValidate: true });
+      form.setValue('currency', nextQuote);
+      form.setValue('percent', 0);
+      syncUrl(nextSymbol, nextProviderId);
+      refreshSignal(nextSymbol);
+    },
+  );
 
   // Keep the ticket on a market that belongs to the active provider.
   useEffect(() => {
     if (!selectedSymbol || selectedSymbol === pair || !selectedQuote) return;
-    form.setValue('pair', selectedSymbol, { shouldValidate: true });
-    form.setValue('currency', selectedQuote);
-    form.setValue('percent', 0);
-    syncUrl(selectedSymbol, providerId);
-    refreshSignal(selectedSymbol);
-  }, [selectedSymbol, selectedQuote, pair, providerId, form]);
+    syncTicketToScopedMarket(selectedSymbol, selectedQuote, providerId);
+  }, [selectedSymbol, selectedQuote, pair, providerId]);
 
   const accountTriggerLabel = selectedAccount?.label ?? 'All Accounts';
 

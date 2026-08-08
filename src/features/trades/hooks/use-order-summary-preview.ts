@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { previewOrderSummaryAction } from '@/features/orders/actions/get-orders';
 import type { OrderSummaryPreview } from '@/features/orders/types';
 import {
@@ -22,8 +22,8 @@ export function useOrderSummaryPreview(options: {
   providerId: string | null;
   quoteAsset: string;
 }): OrderSummaryPreviewState {
-  const form = useFormContext<OrderFormValues>();
-  const values = form.watch();
+  const { control } = useFormContext<OrderFormValues>();
+  const values = useWatch({ control }) as OrderFormValues;
 
   const [summary, setSummary] = useState<OrderSummaryPreview | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -38,9 +38,6 @@ export function useOrderSummaryPreview(options: {
 
   useEffect(() => {
     if (!canPreview || !options.providerId) {
-      setSummary(null);
-      setError(null);
-      setLoading(false);
       return;
     }
 

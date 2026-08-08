@@ -95,6 +95,7 @@ export default async function TradesPage({
 
   return (
     <TradesView
+      key={`${defaultProviderId ?? 'none'}:${initialSymbol}`}
       initialData={{
         accounts,
         providers,
