@@ -50,8 +50,8 @@ export function AiChatView({
         />
       </div>
 
-      <Card className="flex min-h-86.5 flex-1 flex-col gap-0 overflow-hidden py-0">
-        <CardContent className="grid min-h-0 flex-1 grid-cols-1 p-0 lg:grid-cols-[260px_minmax(0,1fr)]">
+      <Card className="flex min-h-0 flex-1 flex-col gap-0 overflow-hidden py-0">
+        <CardContent className="grid h-full min-h-0 flex-1 grid-cols-1 p-0 lg:grid-cols-[260px_minmax(0,1fr)]">
           <div className="hidden h-full min-h-0 overflow-hidden lg:block">
             <ChatConversationsList
               items={chat.conversations}
@@ -63,18 +63,20 @@ export function AiChatView({
             />
           </div>
 
-          <ChatPanel
-            conversations={chat.conversations}
-            suggestions={chat.suggestions}
-            displayMessages={chat.displayMessages}
-            input={chat.input}
-            pending={chat.pending}
-            bottomRef={chat.bottomRef}
-            onInputChange={chat.setInput}
-            onSend={chat.sendMessage}
-            onCreate={chat.createConversation}
-            onSelectRecent={chat.selectConversation}
-          />
+          <div className="flex h-full min-h-0 min-w-0 flex-col overflow-hidden">
+            <ChatPanel
+              conversations={chat.conversations}
+              suggestions={chat.suggestions}
+              displayMessages={chat.displayMessages}
+              input={chat.input}
+              pending={chat.pending}
+              bottomRef={chat.bottomRef}
+              onInputChange={chat.setInput}
+              onSend={chat.sendMessage}
+              onCreate={chat.createConversation}
+              onSelectRecent={chat.selectConversation}
+            />
+          </div>
         </CardContent>
       </Card>
     </div>

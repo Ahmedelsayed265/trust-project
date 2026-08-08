@@ -33,7 +33,7 @@ export function ChatPanel({
   onSelectRecent: (id: number) => void;
 }) {
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-hidden">
+    <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden">
       <div className="border-border flex shrink-0 items-center justify-between gap-2 border-b px-4 py-3 lg:hidden">
         <Button
           type="button"
