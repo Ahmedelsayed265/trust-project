@@ -1,80 +1,72 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useState, useTransition } from 'react';
+import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
-import {
-  formatMoney,
-  formatPct,
-  formatSignedMoney,
-  type PortfolioSnapshot,
-} from '@/shared/trading';
+import { formatMoney, formatPct, formatSignedMoney } from '@/shared/trading';
 import { EquityChart } from '@/features/portfolio/components/equity-chart';
+import { getPortfolioHistoryAction } from '@/features/portfolio/actions/get-portfolio';
 import {
-  buildEquityCurve,
   PERFORMANCE_RANGES,
   type PerformanceRangeId,
 } from '@/features/portfolio/lib/portfolio-data';
+import type { PortfolioHistoryData } from '@/features/portfolio/types';
 
 export function PortfolioPerformance({
-  snapshot,
-  loading,
+  initialHistory,
+  currency,
 }: {
-  snapshot: PortfolioSnapshot | null;
-  loading: boolean;
+  initialHistory: PortfolioHistoryData | null;
+  currency: string;
 }) {
   const [rangeId, setRangeId] = useState<PerformanceRangeId>('1M');
-  const range =
-    PERFORMANCE_RANGES.find((item) => item.id === rangeId) ??
-    PERFORMANCE_RANGES[1];
-  const currency = snapshot?.currency ?? 'USD';
+  const [history, setHistory] = useState(initialHistory);
+  const [pending, startTransition] = useTransition();
 
-  const curve = useMemo(() => {
-    if (!snapshot) return null;
-    return buildEquityCurve({
-      equity: snapshot.equity,
-      dayPnlPct: snapshot.dayPnlPct,
-      range,
-      seed: snapshot.providerId,
+  function selectRange(next: PerformanceRangeId) {
+    if (next === rangeId) return;
+    const range = PERFORMANCE_RANGES.find((item) => item.id === next);
+    if (!range) return;
+
+    setRangeId(next);
+    startTransition(async () => {
+      const result = await getPortfolioHistoryAction(range.apiRange);
+      if (!result.ok) {
+        toast.error(result.message);
+        return;
+      }
+      setHistory(result.data);
     });
-  }, [snapshot, range]);
+  }
 
-  const positive = (curve?.changeValue ?? 0) >= 0;
-
-  const formatDate = (timestamp: number) =>
-    new Intl.DateTimeFormat(
-      'en-US',
-      range.id === '1Y'
-        ? { month: 'short', year: '2-digit' }
-        : { month: 'short', day: 'numeric' },
-    ).format(new Date(timestamp));
+  const points =
+    history?.points.map((point) => ({
+      label: point.label,
+      value: point.equity,
+    })) ?? [];
+  const positive = history?.is_positive ?? true;
 
   return (
     <Card>
       <CardHeader className="flex-row items-start justify-between gap-3">
         <div className="min-w-0">
           <CardTitle>Performance</CardTitle>
-          {loading ? (
-            <Skeleton className="mt-2 h-7 w-36" />
-          ) : (
-            <>
-              <p className="text-foreground mt-1 text-2xl font-bold tracking-tight">
-                {snapshot ? formatMoney(snapshot.equity, currency) : '—'}
-              </p>
-              {curve && (
-                <p
-                  className={cn(
-                    'text-xs font-semibold',
-                    positive ? 'text-success' : 'text-destructive',
-                  )}
-                >
-                  {formatSignedMoney(curve.changeValue, currency)} (
-                  {formatPct(curve.changePct)}){' '}
-                  <span className="text-muted-foreground">past {range.id}</span>
-                </p>
+          <p className="text-foreground mt-1 text-2xl font-bold tracking-tight">
+            {history ? formatMoney(history.end, currency) : '—'}
+          </p>
+          {history && (
+            <p
+              className={cn(
+                'text-xs font-semibold',
+                positive ? 'text-success' : 'text-destructive',
               )}
-            </>
+            >
+              {formatSignedMoney(history.change, currency)} (
+              {formatPct(history.change_pct)}){' '}
+              <span className="text-muted-foreground">past {rangeId}</span>
+            </p>
           )}
         </div>
 
@@ -83,9 +75,10 @@ export function PortfolioPerformance({
             <button
               key={item.id}
               type="button"
-              onClick={() => setRangeId(item.id)}
+              onClick={() => selectRange(item.id)}
+              disabled={pending}
               className={cn(
-                'rounded-md px-2.5 py-1 text-xs font-medium transition-colors',
+                'rounded-md px-2.5 py-1 text-xs font-medium transition-colors disabled:opacity-60',
                 item.id === rangeId
                   ? 'bg-card text-foreground shadow-sm'
                   : 'text-muted-foreground hover:text-foreground',
@@ -98,14 +91,17 @@ export function PortfolioPerformance({
       </CardHeader>
 
       <CardContent>
-        {loading || !curve ? (
+        {pending ? (
           <Skeleton className="h-55 w-full" />
+        ) : points.length < 2 ? (
+          <div className="text-muted-foreground flex h-55 items-center justify-center text-sm">
+            Not enough history to plot this range yet.
+          </div>
         ) : (
           <EquityChart
-            points={curve.points}
+            points={points}
             positive={positive}
             formatValue={(value) => formatMoney(value, currency)}
-            formatDate={formatDate}
           />
         )}
       </CardContent>

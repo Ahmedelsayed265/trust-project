@@ -1,4 +1,7 @@
-import type { PortfolioSnapshot, ProviderPosition } from '@/shared/trading';
+import type {
+  PortfolioAllocationSlice,
+  PortfolioPosition,
+} from '@/features/portfolio/types';
 
 const QUOTE_ASSETS = ['USDT', 'USDC', 'BUSD', 'FDUSD', 'USD', 'EUR'];
 
@@ -14,12 +17,14 @@ export type Holding = {
   symbol: string;
   asset: string;
   kind: 'position' | 'cash';
+  side: string | null;
   qty: number;
   avgEntryPrice: number | null;
   markPrice: number | null;
   value: number;
   pnl: number;
   pnlPct: number;
+  positive: boolean;
   allocation: number;
   series: number[];
 };
@@ -38,9 +43,9 @@ function createRandom(seed: string) {
 }
 
 /**
- * Provider adapters expose point-in-time snapshots, not historical curves.
- * Until a history endpoint exists, charts use a walk that is stable per seed
- * and always lands exactly on the real current change.
+ * The API exposes point-in-time positions, not a per-symbol history. The row
+ * sparkline uses a walk that is stable per symbol and always lands exactly on
+ * the position's real unrealized change.
  */
 export function seededSeries(seed: string, points: number, changePct: number) {
   const random = createRandom(seed);
@@ -60,103 +65,73 @@ export function seededSeries(seed: string, points: number, changePct: number) {
   });
 }
 
+const CASH_SYMBOL = 'CASH';
+
 export function buildHoldings(
-  snapshot: PortfolioSnapshot | null,
-  positions: ProviderPosition[],
+  positions: PortfolioPosition[],
+  allocation: PortfolioAllocationSlice[],
+  equity: number,
 ): Holding[] {
-  if (!snapshot) return [];
+  const percentOf = (symbol: string, value: number) => {
+    const slice = allocation.find((item) => item.symbol === symbol);
+    if (slice) return slice.percent / 100;
+    return equity > 0 ? value / equity : 0;
+  };
 
-  const equity = snapshot.equity;
-  const allocationOf = (value: number) => (equity > 0 ? value / equity : 0);
+  const fromPositions: Holding[] = positions.map((position) => ({
+    id: position.id,
+    symbol: position.display_symbol || position.symbol,
+    asset: baseAsset(position.symbol),
+    kind: 'position',
+    side: position.side,
+    qty: position.qty,
+    avgEntryPrice: position.avg_entry_price,
+    markPrice: position.mark_price,
+    value: position.market_value,
+    pnl: position.unrealized_pnl,
+    pnlPct: position.unrealized_pnl_pct,
+    positive: position.is_positive,
+    allocation: percentOf(position.symbol, position.market_value),
+    series: seededSeries(position.symbol, 16, position.unrealized_pnl_pct),
+  }));
 
-  const fromPositions: Holding[] = positions.map((position) => {
-    const cost = position.marketValue - position.unrealizedPnl;
-    const pnlPct = cost !== 0 ? (position.unrealizedPnl / cost) * 100 : 0;
+  const cashSlice = allocation.find((item) => item.symbol === CASH_SYMBOL);
+  const cash: Holding[] =
+    cashSlice && cashSlice.value > 0
+      ? [
+          {
+            id: 'cash',
+            symbol: cashSlice.display_symbol || 'Cash',
+            asset: 'Cash',
+            kind: 'cash',
+            side: null,
+            qty: cashSlice.value,
+            avgEntryPrice: null,
+            markPrice: null,
+            value: cashSlice.value,
+            pnl: 0,
+            pnlPct: 0,
+            positive: true,
+            allocation: cashSlice.percent / 100,
+            series: seededSeries('cash', 16, 0),
+          },
+        ]
+      : [];
 
-    return {
-      id: position.id,
-      symbol: position.symbol,
-      asset: baseAsset(position.symbol),
-      kind: 'position',
-      qty: position.qty,
-      avgEntryPrice: position.avgEntryPrice,
-      markPrice: position.markPrice,
-      value: position.marketValue,
-      pnl: position.unrealizedPnl,
-      pnlPct,
-      allocation: allocationOf(position.marketValue),
-      series: seededSeries(position.symbol, 16, pnlPct),
-    };
-  });
-
-  const invested = new Set(fromPositions.map((holding) => holding.asset));
-
-  const fromBalances: Holding[] = snapshot.balances
-    .filter(
-      (balance) => (balance.usdValue ?? 0) > 0 && !invested.has(balance.asset),
-    )
-    .map((balance) => {
-      const value = balance.usdValue ?? 0;
-
-      return {
-        id: `cash-${balance.asset}`,
-        symbol: balance.asset,
-        asset: balance.asset,
-        kind: 'cash',
-        qty: balance.free + balance.locked,
-        avgEntryPrice: null,
-        markPrice: null,
-        value,
-        pnl: 0,
-        pnlPct: 0,
-        allocation: allocationOf(value),
-        series: seededSeries(balance.asset, 16, 0),
-      };
-    });
-
-  return [...fromPositions, ...fromBalances].sort((a, b) => b.value - a.value);
+  return [...fromPositions, ...cash].sort((a, b) => b.value - a.value);
 }
 
 export const PERFORMANCE_RANGES = [
-  { id: '1W', days: 7, points: 8, dayFactor: 3.2 },
-  { id: '1M', days: 30, points: 22, dayFactor: 6.4 },
-  { id: '3M', days: 90, points: 34, dayFactor: 11 },
-  { id: '1Y', days: 365, points: 40, dayFactor: 22 },
+  { id: '1W', apiRange: '1w' },
+  { id: '1M', apiRange: '1m' },
+  { id: '3M', apiRange: '3m' },
+  { id: '1Y', apiRange: '1y' },
 ] as const;
 
 export type PerformanceRange = (typeof PERFORMANCE_RANGES)[number];
 export type PerformanceRangeId = PerformanceRange['id'];
 
-export type EquityPoint = { timestamp: number; value: number };
-
-export function buildEquityCurve({
-  equity,
-  dayPnlPct,
-  range,
-  seed,
-  now = Date.now(),
-}: {
-  equity: number;
-  dayPnlPct: number;
-  range: PerformanceRange;
-  seed: string;
-  now?: number;
-}) {
-  const changePct = dayPnlPct * range.dayFactor;
-  const startValue = equity / Math.max(1 + changePct / 100, 0.1);
-  const stepMs = (range.days / Math.max(range.points - 1, 1)) * 86_400_000;
-
-  const points: EquityPoint[] = seededSeries(
-    `${seed}-${range.id}`,
-    range.points,
-    changePct,
-  ).map((normalized, index) => ({
-    timestamp: now - (range.points - 1 - index) * stepMs,
-    value: (normalized / 100) * startValue,
-  }));
-
-  return { points, changePct, changeValue: equity - startValue };
-}
+export type EquityPoint = { label: string; value: number };
 
 const ASSET_TONES = [
   'bg-chart-1/12 text-chart-1',

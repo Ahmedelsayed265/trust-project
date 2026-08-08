@@ -31,13 +31,11 @@ export function EquityChart({
   points,
   positive,
   formatValue,
-  formatDate,
   className,
 }: {
   points: EquityPoint[];
   positive: boolean;
   formatValue: (value: number) => string;
-  formatDate: (timestamp: number) => string;
   className?: string;
 }) {
   const gradientId = useId();
@@ -168,17 +166,15 @@ export function EquityChart({
             <p className="text-foreground font-semibold">
               {formatValue(active.value)}
             </p>
-            <p className="text-muted-foreground">
-              {formatDate(active.timestamp)}
-            </p>
+            <p className="text-muted-foreground">{active.label}</p>
           </div>
         )}
       </div>
 
       {points.length > 0 && (
         <div className="text-muted-foreground mt-2 flex items-center justify-between text-xs">
-          <span>{formatDate(points[0].timestamp)}</span>
-          <span>{formatDate(points[points.length - 1].timestamp)}</span>
+          <span>{points[0].label}</span>
+          <span>{points[points.length - 1].label}</span>
         </div>
       )}
     </div>

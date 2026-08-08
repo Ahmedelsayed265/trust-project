@@ -1,110 +1,90 @@
-'use client';
-
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
-import {
-  formatMoney,
-  type PortfolioSnapshot,
-  type ProviderAccount,
-} from '@/shared/trading';
-import { formatRelativeTime } from '@/features/portfolio/lib/portfolio-data';
-
-const STATUS_TONE: Record<ProviderAccount['status'], string> = {
-  connected: 'bg-success/12 text-success',
-  pending: 'bg-chart-4/12 text-chart-4',
-  disconnected: 'bg-muted text-muted-foreground',
-  error: 'bg-destructive/12 text-destructive',
-};
+import { formatMoney, formatSignedMoney } from '@/shared/trading';
+import type { PortfolioAccountSummary } from '@/features/portfolio/types';
 
 export function PortfolioAccount({
-  account,
-  snapshot,
-  providerName,
-  loading,
+  accounts,
 }: {
-  account: ProviderAccount | undefined;
-  snapshot: PortfolioSnapshot | null;
-  providerName: string;
-  loading: boolean;
+  accounts: PortfolioAccountSummary[];
 }) {
-  const currency = snapshot?.currency ?? 'USD';
-  const locked =
-    snapshot?.balances.reduce((sum, balance) => {
-      const total = balance.free + balance.locked;
-      const usd = balance.usdValue ?? 0;
-      return sum + (total > 0 ? (balance.locked / total) * usd : 0);
-    }, 0) ?? 0;
-
-  const rows = [
-    { label: 'Provider', value: providerName },
-    { label: 'Environment', value: account?.environment ?? '—' },
-    { label: 'Reporting currency', value: currency },
-    {
-      label: 'Locked in orders',
-      value: snapshot ? formatMoney(locked, currency) : '—',
-    },
-    {
-      label: 'Last sync',
-      value: account?.lastSyncedAt
-        ? formatRelativeTime(account.lastSyncedAt)
-        : 'Never',
-    },
-  ];
-
   return (
     <Card>
       <CardHeader className="flex-row items-center justify-between gap-3">
-        <CardTitle>Account</CardTitle>
-        {account && (
-          <Badge
-            variant="secondary"
-            className={cn('border-0 capitalize', STATUS_TONE[account.status])}
-          >
-            {account.status}
-          </Badge>
-        )}
+        <CardTitle>Accounts</CardTitle>
+        <Badge variant="secondary" className="border-0">
+          {accounts.length} linked
+        </Badge>
       </CardHeader>
 
       <CardContent className="space-y-3">
-        {loading ? (
-          [0, 1, 2, 3].map((index) => (
-            <Skeleton key={index} className="h-5 w-full" />
-          ))
+        {accounts.length === 0 ? (
+          <p className="text-muted-foreground text-sm">
+            No providers linked yet. Connect a broker or exchange to see
+            balances here.
+          </p>
         ) : (
-          <>
-            <dl className="space-y-2.5">
-              {rows.map((row) => (
-                <div
-                  key={row.label}
-                  className="flex items-center justify-between gap-3 text-sm"
+          <ul className="space-y-2.5">
+            {accounts.map((account) => {
+              const positive = account.day_pnl >= 0;
+
+              return (
+                <li
+                  key={account.provider_id}
+                  className="border-border rounded-[12px] border px-3 py-2.5"
                 >
-                  <dt className="text-muted-foreground">{row.label}</dt>
-                  <dd className="text-foreground truncate font-medium capitalize">
-                    {row.value}
-                  </dd>
-                </div>
-              ))}
-            </dl>
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-foreground truncate text-sm font-semibold">
+                        {account.label}
+                      </p>
+                      <p className="text-muted-foreground text-xs capitalize">
+                        {account.environment} · {account.currency}
+                      </p>
+                    </div>
 
-            <p className="text-muted-foreground text-xs leading-relaxed">
-              Balances are read directly from {providerName}. TrustAI never
-              holds funds and cannot move them between accounts.
-            </p>
+                    <div className="shrink-0 text-right">
+                      <p className="text-foreground text-sm font-semibold">
+                        {formatMoney(account.equity, account.currency)}
+                      </p>
+                      <p
+                        className={cn(
+                          'text-xs font-medium',
+                          positive ? 'text-success' : 'text-destructive',
+                        )}
+                      >
+                        {formatSignedMoney(account.day_pnl, account.currency)}{' '}
+                        today
+                      </p>
+                    </div>
+                  </div>
 
-            <Button
-              variant="outline"
-              className="w-full rounded-md"
-              nativeButton={false}
-              render={<Link href="/accounts" />}
-            >
-              Manage connection
-            </Button>
-          </>
+                  <p className="text-muted-foreground mt-1.5 text-xs">
+                    Buying power{' '}
+                    {formatMoney(account.buying_power, account.currency)}
+                  </p>
+                </li>
+              );
+            })}
+          </ul>
         )}
+
+        <p className="text-muted-foreground text-xs leading-relaxed">
+          Balances are read directly from each provider. TrustAI never holds
+          funds and cannot move them between accounts.
+        </p>
+
+        <Button
+          variant="outline"
+          className="w-full rounded-md"
+          nativeButton={false}
+          render={<Link href="/accounts" />}
+        >
+          Manage connections
+        </Button>
       </CardContent>
     </Card>
   );

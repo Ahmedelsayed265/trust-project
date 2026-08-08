@@ -1,9 +1,6 @@
-'use client';
-
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
 import { formatMoney } from '@/shared/trading';
-import type { Holding } from '@/features/portfolio/lib/portfolio-data';
+import type { PortfolioAllocationSlice } from '@/features/portfolio/types';
 
 const PALETTE = [
   'var(--chart-1)',
@@ -16,24 +13,23 @@ const PALETTE = [
 const MAX_SLICES = 5;
 
 export function PortfolioAllocation({
-  holdings,
+  allocation,
   currency,
-  loading,
 }: {
-  holdings: Holding[];
+  allocation: PortfolioAllocationSlice[];
   currency: string;
-  loading: boolean;
 }) {
-  const top = holdings.slice(0, MAX_SLICES);
-  const rest = holdings.slice(MAX_SLICES);
+  const ranked = [...allocation].sort((a, b) => b.percent - a.percent);
+  const top = ranked.slice(0, MAX_SLICES);
+  const rest = ranked.slice(MAX_SLICES);
 
   const slices = [
-    ...top.map((holding, index) => ({
-      key: holding.id,
-      label: holding.asset,
-      caption: holding.kind === 'cash' ? 'Cash' : holding.symbol,
-      value: holding.value,
-      allocation: holding.allocation,
+    ...top.map((item, index) => ({
+      key: item.symbol,
+      label: item.display_symbol || item.symbol,
+      caption: item.symbol === 'CASH' ? 'Idle funds' : item.symbol,
+      value: item.value,
+      percent: item.percent,
       color: PALETTE[index % PALETTE.length],
     })),
     ...(rest.length > 0
@@ -42,11 +38,8 @@ export function PortfolioAllocation({
             key: 'other',
             label: 'Other',
             caption: `${rest.length} assets`,
-            value: rest.reduce((sum, holding) => sum + holding.value, 0),
-            allocation: rest.reduce(
-              (sum, holding) => sum + holding.allocation,
-              0,
-            ),
+            value: rest.reduce((sum, item) => sum + item.value, 0),
+            percent: rest.reduce((sum, item) => sum + item.percent, 0),
             color: 'var(--muted-foreground)',
           },
         ]
@@ -60,18 +53,9 @@ export function PortfolioAllocation({
       </CardHeader>
 
       <CardContent className="space-y-4">
-        {loading ? (
-          <>
-            <Skeleton className="h-2.5 w-full rounded-full" />
-            <div className="space-y-3">
-              {[0, 1, 2].map((index) => (
-                <Skeleton key={index} className="h-9 w-full" />
-              ))}
-            </div>
-          </>
-        ) : slices.length === 0 ? (
+        {slices.length === 0 ? (
           <p className="text-muted-foreground text-sm">
-            No provider holdings to allocate yet.
+            No holdings to allocate yet.
           </p>
         ) : (
           <>
@@ -81,10 +65,10 @@ export function PortfolioAllocation({
                   key={slice.key}
                   className="h-full first:rounded-l-full last:rounded-r-full"
                   style={{
-                    width: `${Math.max(slice.allocation * 100, 1)}%`,
+                    width: `${Math.max(slice.percent, 1)}%`,
                     backgroundColor: slice.color,
                   }}
-                  title={`${slice.label} · ${(slice.allocation * 100).toFixed(1)}%`}
+                  title={`${slice.label} · ${slice.percent.toFixed(1)}%`}
                 />
               ))}
             </div>
@@ -112,7 +96,7 @@ export function PortfolioAllocation({
 
                   <div className="shrink-0 text-right">
                     <p className="text-foreground text-sm font-semibold">
-                      {(slice.allocation * 100).toFixed(1)}%
+                      {slice.percent.toFixed(1)}%
                     </p>
                     <p className="text-muted-foreground text-xs">
                       {formatMoney(slice.value, currency)}

@@ -1,12 +1,10 @@
-'use client';
-
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
-import { formatMoney, type ProviderOrder } from '@/shared/trading';
+import { formatMoney } from '@/shared/trading';
+import type { Order } from '@/features/orders/types';
 import {
   formatQty,
   formatRelativeTime,
@@ -15,11 +13,9 @@ import {
 export function PortfolioOpenOrders({
   orders,
   currency,
-  loading,
 }: {
-  orders: ProviderOrder[];
+  orders: Order[];
   currency: string;
-  loading: boolean;
 }) {
   return (
     <Card>
@@ -35,11 +31,7 @@ export function PortfolioOpenOrders({
       </CardHeader>
 
       <CardContent className="space-y-2.5">
-        {loading ? (
-          [0, 1].map((index) => (
-            <Skeleton key={index} className="h-16 w-full" />
-          ))
-        ) : orders.length === 0 ? (
+        {orders.length === 0 ? (
           <p className="text-muted-foreground text-sm">
             No working orders at the provider.
           </p>
@@ -63,14 +55,14 @@ export function PortfolioOpenOrders({
                     {order.side}
                   </Badge>
                   <p className="text-foreground truncate text-sm font-semibold">
-                    {order.symbol}
+                    {order.display_symbol || order.symbol}
                   </p>
                 </div>
                 <p className="text-muted-foreground mt-1 text-xs">
-                  {order.type === 'limit' && order.limitPrice != null
-                    ? `Limit ${formatMoney(order.limitPrice, currency)}`
+                  {order.type === 'limit' && order.limit_price != null
+                    ? `Limit ${formatMoney(order.limit_price, currency)}`
                     : 'Market'}{' '}
-                  · {formatRelativeTime(order.createdAt)}
+                  · {formatRelativeTime(order.created_at)}
                 </p>
               </div>
 
@@ -79,7 +71,7 @@ export function PortfolioOpenOrders({
                   {formatQty(order.qty)}
                 </p>
                 <p className="text-muted-foreground text-xs">
-                  {formatQty(order.filledQty)} filled
+                  {formatQty(order.filled_qty)} filled
                 </p>
               </div>
             </div>
