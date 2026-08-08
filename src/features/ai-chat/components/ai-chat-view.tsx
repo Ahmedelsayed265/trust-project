@@ -51,8 +51,8 @@ export function AiChatView({
       </div>
 
       <Card className="flex min-h-0 flex-1 flex-col gap-0 overflow-hidden py-0">
-        <CardContent className="grid h-full min-h-0 flex-1 grid-cols-1 p-0 lg:grid-cols-[260px_minmax(0,1fr)]">
-          <div className="hidden h-full min-h-0 overflow-hidden lg:block">
+        <CardContent className="grid h-full max-h-129.25 min-h-0 flex-1 grid-cols-1 p-0 lg:grid-cols-[260px_minmax(0,1fr)]">
+          <div className="hidden h-full overflow-hidden lg:block">
             <ChatConversationsList
               items={chat.conversations}
               activeId={chat.activeId}

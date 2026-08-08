@@ -40,7 +40,7 @@ export default async function MainLayout({
               <MaintenanceBanner />
 
               <main className="flex min-h-0 min-w-0 flex-1 flex-col overflow-x-hidden overflow-y-auto overscroll-contain p-5">
-                <div className="mx-auto flex min-h-0 w-full flex-1 flex-col">
+                <div className="mx-auto flex w-full flex-1 flex-col">
                   {children}
                 </div>
               </main>
