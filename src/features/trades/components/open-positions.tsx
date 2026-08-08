@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import {
   Card,
@@ -7,15 +9,27 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { ChangeIndicator } from '@/shared/components/change-indicator';
-import { openPositions } from '@/features/trades/data/positions';
-export function OpenPositions() {
+import { baseAsset } from '@/features/portfolio/lib/portfolio-data';
+import type { PortfolioPosition } from '@/features/portfolio/types';
+import { formatMoney, formatPct, formatSignedMoney } from '@/shared/trading';
+import { cn } from '@/lib/utils';
+
+export function OpenPositions({
+  positions,
+  currency = 'USD',
+  onSelectSymbol,
+}: {
+  positions: PortfolioPosition[];
+  currency?: string;
+  onSelectSymbol?: (symbol: string) => void;
+}) {
   return (
-    <Card className="">
+    <Card>
       <CardHeader>
-        <CardTitle>Open Positions ({openPositions.length})</CardTitle>
+        <CardTitle>Open Positions ({positions.length})</CardTitle>
         <CardAction>
           <Link
-            href="/trades"
+            href="/portfolio"
             className="text-primary text-sm font-medium hover:underline"
           >
             View All
@@ -23,36 +37,46 @@ export function OpenPositions() {
         </CardAction>
       </CardHeader>
       <CardContent className="space-y-1">
-        {openPositions.map((position) => (
-          <div
-            key={position.symbol}
-            className="hover:bg-muted/50 flex items-center gap-3 rounded-xl px-1 py-2.5 transition-colors"
-          >
-            <div
-              className={`flex size-9 shrink-0 items-center justify-center rounded-full text-xs font-bold ${position.iconBg}`}
-            >
-              {position.iconLabel}
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-foreground text-sm font-semibold">
-                {position.symbol}
-              </p>
-              <p className="text-muted-foreground text-xs">
-                {position.quantity}
-              </p>
-            </div>
-            <div className="text-right">
-              <p className="text-foreground text-sm font-semibold">
-                {position.value}
-              </p>
-              <ChangeIndicator
-                value={`${position.pnl} / ${position.pnlPct}`}
-                positive={position.positive}
-                className="text-xs"
-              />
-            </div>
-          </div>
-        ))}
+        {positions.length === 0 ? (
+          <p className="text-muted-foreground py-6 text-center text-sm">
+            No open positions yet. Place a trade to see holdings here.
+          </p>
+        ) : (
+          positions.map((position) => {
+            const asset = baseAsset(position.symbol);
+            return (
+              <button
+                key={position.id}
+                type="button"
+                onClick={() => onSelectSymbol?.(position.symbol)}
+                className="hover:bg-muted/50 flex w-full items-center gap-3 rounded-xl px-1 py-2.5 text-left transition-colors"
+              >
+                <div className="bg-primary/10 text-primary flex size-9 shrink-0 items-center justify-center rounded-full text-xs font-bold">
+                  {asset.slice(0, 2).toUpperCase()}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-foreground text-sm font-semibold">
+                    {position.display_symbol || position.symbol}
+                  </p>
+                  <p className="text-muted-foreground text-xs">
+                    {position.qty} {asset}
+                    <span className="capitalize"> · {position.side}</span>
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-foreground text-sm font-semibold">
+                    {formatMoney(position.market_value, currency)}
+                  </p>
+                  <ChangeIndicator
+                    value={`${formatSignedMoney(position.unrealized_pnl, currency)} / ${formatPct(position.unrealized_pnl_pct)}`}
+                    positive={position.is_positive}
+                    className={cn('text-xs')}
+                  />
+                </div>
+              </button>
+            );
+          })
+        )}
       </CardContent>
     </Card>
   );

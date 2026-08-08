@@ -11,16 +11,23 @@ describe('parseAmount', () => {
 
 describe('orderSchema', () => {
   const base = {
-    pair: 'BTC/USDT',
+    pair: 'BTCUSDT',
     orderType: 'market' as const,
     side: 'buy' as const,
     amount: '0.01',
-    currency: 'USDT' as const,
+    currency: 'USDT',
     percent: 25,
   };
 
   it('accepts a market order without limit price', () => {
     expect(orderSchema.safeParse(base).success).toBe(true);
+  });
+
+  it('accepts base-asset currency amounts', () => {
+    expect(
+      orderSchema.safeParse({ ...base, currency: 'BTC', amount: '0.01' })
+        .success,
+    ).toBe(true);
   });
 
   it('requires a positive amount', () => {

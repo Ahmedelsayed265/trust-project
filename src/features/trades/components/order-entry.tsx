@@ -1,7 +1,7 @@
 'use client';
 
+import { useEffect, useMemo } from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
-import { ChevronDown } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -10,62 +10,174 @@ import {
   FieldError,
   FieldLabel,
 } from '@/components/ui/field';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Sparkline } from '@/shared/components/sparkline';
 import { PlaceOrderButton } from '@/features/trades/components/place-order-button';
 import type { OrderSummaryPreviewState } from '@/features/trades/hooks/use-order-summary-preview';
 import type { OrderFormValues } from '@/features/trades/schemas/order';
-import { formatMoney, useTrading } from '@/shared/trading';
+import type { MarketSymbol } from '@/features/markets/types';
+import { formatMoney } from '@/shared/trading';
 import { cn } from '@/lib/utils';
 
 const percents = [25, 50, 75, 100] as const;
-const priceData = [40, 42, 38, 45, 48, 46, 52, 55, 58, 62, 65];
 
-export function OrderEntry({ preview }: { preview: OrderSummaryPreviewState }) {
+export function OrderEntry({
+  preview,
+  markets,
+  market,
+  providerId,
+  buyingPower,
+  focusToken = 0,
+  onSymbolChange,
+  onPlaced,
+}: {
+  preview: OrderSummaryPreviewState;
+  markets: MarketSymbol[];
+  market: MarketSymbol | null;
+  providerId: string | null;
+  buyingPower: number;
+  focusToken?: number;
+  onSymbolChange: (symbol: string) => void;
+  onPlaced?: () => void;
+}) {
   const form = useFormContext<OrderFormValues>();
-  const { snapshot, activeProvider, supports } = useTrading();
   const { summary } = preview;
   const side = form.watch('side');
   const orderType = form.watch('orderType');
   const percent = form.watch('percent');
+  const currency = form.watch('currency');
   const pair = form.watch('pair');
-  const snapshotBuyingPower = snapshot?.buyingPower ?? 0;
-  const buyingPower = summary?.buying_power ?? snapshotBuyingPower;
-  const currency = summary?.currency ?? snapshot?.currency ?? 'USDT';
-  const canTrade = supports('marketOrders') || supports('limitOrders');
-  const displayPrice = summary?.market_price ?? summary?.price;
+
+  useEffect(() => {
+    if (!focusToken) return;
+    const input = document.getElementById('amount');
+    if (input instanceof HTMLInputElement) {
+      window.setTimeout(() => {
+        input.focus();
+        input.select();
+      }, 180);
+    }
+  }, [focusToken]);
+
+  const quoteAsset = market?.quote_asset ?? summary?.currency ?? 'USDT';
+  const baseAsset = market?.base_asset ?? 'BTC';
+  const displayCurrency = summary?.currency ?? quoteAsset;
+  const power = summary?.buying_power ?? buyingPower;
+  const displayPrice =
+    summary?.market_price ?? summary?.price ?? market?.price ?? null;
+  const sparkline =
+    market?.sparkline?.length && market.sparkline.length > 1
+      ? market.sparkline
+      : [40, 42, 38, 45, 48, 46, 52, 55, 58, 62, 65];
+
+  const marketItems = useMemo(
+    () =>
+      markets.map((item) => ({
+        value: item.symbol,
+        label: item.display_symbol || item.symbol,
+      })),
+    [markets],
+  );
+
+  const currencyItems = [
+    { value: quoteAsset, label: quoteAsset },
+    { value: baseAsset, label: baseAsset },
+  ];
 
   function applyPercent(value: number) {
     form.setValue('percent', value);
-    form.setValue('amount', ((buyingPower * value) / 100).toFixed(2), {
+    const quoteNotional = (power * value) / 100;
+    const useQuote = currency.toUpperCase() === quoteAsset.toUpperCase();
+    const nextAmount =
+      useQuote || !displayPrice || displayPrice <= 0
+        ? quoteNotional
+        : quoteNotional / displayPrice;
+    form.setValue('amount', nextAmount.toFixed(useQuote ? 2 : 6), {
       shouldValidate: true,
     });
   }
+
+  const canTrade = Boolean(providerId && market?.is_tradable !== false);
 
   return (
     <Card>
       <CardHeader className="border-b [.border-b]:pb-4">
         <div className="flex w-full items-start justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <div className="bg-primary/10 text-primary flex size-10 items-center justify-center rounded-full text-sm font-bold">
-              {(summary?.display_symbol || pair).slice(0, 1)}
+          <div className="flex min-w-0 flex-1 items-center gap-3">
+            <div className="bg-primary/10 text-primary flex size-10 shrink-0 items-center justify-center rounded-full text-sm font-bold">
+              {(market?.icon_label || summary?.display_symbol || pair).slice(
+                0,
+                2,
+              )}
             </div>
-            <div>
-              <CardTitle className="text-base">
-                {summary?.display_symbol || pair}
-              </CardTitle>
-              <p className="text-muted-foreground text-xs">
-                {activeProvider.displayName}
+            <div className="min-w-0 flex-1">
+              {markets.length > 0 ? (
+                <Controller
+                  control={form.control}
+                  name="pair"
+                  render={({ field }) => (
+                    <Select
+                      value={field.value}
+                      onValueChange={(value) => {
+                        if (!value) return;
+                        field.onChange(value);
+                        onSymbolChange(value);
+                      }}
+                      items={marketItems}
+                    >
+                      <SelectTrigger className="bg-background h-10 w-full min-w-0 rounded-[12px]! px-2.5">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent align="start" alignItemWithTrigger={false}>
+                        {markets.map((item) => (
+                          <SelectItem key={item.symbol} value={item.symbol}>
+                            {item.display_symbol || item.symbol}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+              ) : (
+                <CardTitle className="text-base">
+                  {summary?.display_symbol || pair}
+                </CardTitle>
+              )}
+              <p className="text-muted-foreground mt-1 text-xs">
+                {market?.name ??
+                  (markets.length === 0
+                    ? 'No tradable markets loaded'
+                    : 'Select a market')}
               </p>
             </div>
           </div>
           <div className="text-right">
             <p className="text-foreground text-sm font-semibold">
-              {displayPrice != null ? formatMoney(displayPrice, currency) : '—'}
+              {displayPrice != null
+                ? formatMoney(displayPrice, displayCurrency)
+                : '—'}
             </p>
+            {market ? (
+              <p
+                className={cn(
+                  'text-xs font-semibold',
+                  market.is_positive ? 'text-success' : 'text-destructive',
+                )}
+              >
+                {market.change_24h_pct >= 0 ? '+' : ''}
+                {market.change_24h_pct.toFixed(2)}%
+              </p>
+            ) : null}
           </div>
         </div>
         <Sparkline
-          data={priceData}
+          data={sparkline}
           className="mt-2 h-8 w-full"
           fill
           strokeWidth={1.75}
@@ -136,7 +248,7 @@ export function OrderEntry({ preview }: { preview: OrderSummaryPreviewState }) {
                     {...field}
                     id="limitPrice"
                     inputMode="decimal"
-                    className="bg-background h-11 rounded-xl text-sm"
+                    className="bg-background h-11 rounded-[12px]! text-sm"
                     placeholder="0.00"
                   />
                   {fieldState.error ? (
@@ -160,16 +272,38 @@ export function OrderEntry({ preview }: { preview: OrderSummaryPreviewState }) {
                     {...field}
                     id="amount"
                     inputMode="decimal"
-                    className="bg-background h-11 rounded-xl pr-20 text-sm"
+                    className="bg-background h-11 rounded-[12px]! pr-24 text-sm"
                     placeholder="0.00"
                   />
-                  <button
-                    type="button"
-                    className="border-border bg-muted text-foreground absolute right-1.5 inline-flex h-8 items-center gap-1 rounded-lg border px-2.5 text-xs font-semibold"
-                  >
-                    {currency}
-                    <ChevronDown className="text-muted-foreground size-3.5" />
-                  </button>
+                  <div className="absolute right-1.5">
+                    <Controller
+                      control={form.control}
+                      name="currency"
+                      render={({ field: currencyField }) => (
+                        <Select
+                          value={currencyField.value}
+                          onValueChange={(value) => {
+                            if (value) currencyField.onChange(value);
+                          }}
+                          items={currencyItems}
+                        >
+                          <SelectTrigger className="bg-muted h-8 w-auto min-w-20 rounded-lg border px-2 text-xs font-semibold">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent
+                            align="end"
+                            alignItemWithTrigger={false}
+                          >
+                            {currencyItems.map((item) => (
+                              <SelectItem key={item.value} value={item.value}>
+                                {item.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
+                  </div>
                 </div>
                 {fieldState.error ? (
                   <FieldError>{fieldState.error.message}</FieldError>
@@ -213,8 +347,10 @@ export function OrderEntry({ preview }: { preview: OrderSummaryPreviewState }) {
             ))}
           </div>
           <p className="text-muted-foreground mt-2 text-xs">
-            Buying power from {activeProvider.displayName}:{' '}
-            {formatMoney(buyingPower, currency)}
+            Buying power: {formatMoney(power, displayCurrency)}
+            {currency !== quoteAsset
+              ? ` · Amount in ${currency}`
+              : ` · Quote ${quoteAsset}`}
           </p>
         </div>
 
@@ -227,14 +363,17 @@ export function OrderEntry({ preview }: { preview: OrderSummaryPreviewState }) {
 
         <PlaceOrderButton
           preview={preview}
-          disabled={!canTrade || !snapshot}
+          providerId={providerId}
+          quoteAsset={quoteAsset}
+          disabled={!canTrade}
           disabledLabel={
-            !snapshot
+            !providerId
               ? 'Connect provider to trade'
-              : !canTrade
-                ? 'Trading not supported'
+              : !market
+                ? 'Select a market'
                 : undefined
           }
+          onPlaced={onPlaced}
         />
       </CardContent>
     </Card>

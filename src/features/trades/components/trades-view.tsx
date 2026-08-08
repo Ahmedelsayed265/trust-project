@@ -1,12 +1,44 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useMemo, useRef, useState, useTransition } from 'react';
 import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { History, Plus, ChevronDown } from 'lucide-react';
+import {
+  ChevronDown,
+  History,
+  Link2,
+  Plus,
+  Rocket,
+  SlidersHorizontal,
+} from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
+import { getSignalsAction } from '@/features/ai-signals/actions/get-signals';
+import type { Signal } from '@/features/ai-signals/types';
+import { getMarketsAction } from '@/features/markets/actions/get-markets';
+import type { MarketSymbol } from '@/features/markets/types';
+import {
+  getPortfolioAction,
+  getPortfolioPositionsAction,
+} from '@/features/portfolio/actions/get-portfolio';
+import type {
+  PortfolioData,
+  PortfolioPosition,
+} from '@/features/portfolio/types';
 import {
   orderSchema,
   type OrderFormValues,
@@ -17,37 +49,271 @@ import { OrderSummary } from '@/features/trades/components/order-summary';
 import { TradeAiSignal } from '@/features/trades/components/trade-ai-signal';
 import { OpenPositions } from '@/features/trades/components/open-positions';
 import { useOrderSummaryPreview } from '@/features/trades/hooks/use-order-summary-preview';
+import { normalizeTradeSymbol } from '@/features/trades/lib/trade-symbol';
+import type { TradesPageData } from '@/features/trades/types';
 
-function TradeOrderPanel() {
-  const preview = useOrderSummaryPreview();
+function TradeOrderPanel({
+  markets,
+  market,
+  providerId,
+  buyingPower,
+  positions,
+  currency,
+  signal,
+  focusToken,
+  onSymbolChange,
+  onApplySignal,
+  onPlaced,
+}: {
+  markets: MarketSymbol[];
+  market: MarketSymbol | null;
+  providerId: string | null;
+  buyingPower: number;
+  positions: PortfolioPosition[];
+  currency: string;
+  signal: Signal | null;
+  focusToken: number;
+  onSymbolChange: (symbol: string) => void;
+  onApplySignal: (signal: Signal) => void;
+  onPlaced?: () => void;
+}) {
+  const preview = useOrderSummaryPreview({
+    providerId,
+    quoteAsset: market?.quote_asset ?? 'USDT',
+  });
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!focusToken) return;
+    panelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [focusToken]);
 
   return (
-    <div className="grid gap-4 lg:gap-5 xl:grid-cols-3">
-      <OrderEntry preview={preview} />
+    <div ref={panelRef} className="grid gap-4 lg:gap-5 xl:grid-cols-3">
+      <OrderEntry
+        preview={preview}
+        markets={markets}
+        market={market}
+        providerId={providerId}
+        buyingPower={buyingPower}
+        focusToken={focusToken}
+        onSymbolChange={onSymbolChange}
+        onPlaced={onPlaced}
+      />
       <div className="flex flex-col gap-4">
         <OrderSummary preview={preview} />
-        <TradeAiSignal />
+        <TradeAiSignal signal={signal} onApply={onApplySignal} />
       </div>
-      <OpenPositions />
+      <OpenPositions
+        positions={positions}
+        currency={currency}
+        onSelectSymbol={onSymbolChange}
+      />
     </div>
   );
 }
 
-export function TradesView() {
+export function TradesView({ initialData }: { initialData: TradesPageData }) {
+  const router = useRouter();
+  const pathname = usePathname();
   const [tab, setTab] = useState<'trade' | 'positions'>('trade');
+  const [providerId, setProviderId] = useState<string | null>(
+    initialData.initialProviderId,
+  );
+  const [markets, setMarkets] = useState(initialData.markets);
+  const [portfolio, setPortfolio] = useState<PortfolioData | null>(
+    initialData.portfolio,
+  );
+  const [positions, setPositions] = useState<PortfolioPosition[]>(
+    initialData.positions,
+  );
+  const [signal, setSignal] = useState<Signal | null>(initialData.signal);
+  const [portfolioError, setPortfolioError] = useState<string | null>(
+    initialData.initialProviderId
+      ? null
+      : 'Connect a provider to view equity and trade.',
+  );
+  const [loadingPortfolio, startPortfolioLoad] = useTransition();
+  const [loadingMarkets, startMarketsLoad] = useTransition();
+
+  const connectedAccounts = useMemo(
+    () => initialData.accounts.filter((account) => account.is_connected),
+    [initialData.accounts],
+  );
+
+  const selectedAccount =
+    connectedAccounts.find((account) => account.provider_id === providerId) ??
+    null;
 
   const form = useForm<OrderFormValues>({
     resolver: zodResolver(orderSchema),
     defaultValues: {
-      pair: 'BTC/USDT',
+      pair: initialData.initialSymbol,
       orderType: 'market',
       side: 'buy',
-      amount: '1000',
-      currency: 'USDT',
+      amount: '100',
+      currency:
+        initialData.markets.find(
+          (item) => item.symbol === initialData.initialSymbol,
+        )?.quote_asset ?? 'USDT',
       percent: 0,
       limitPrice: '',
     },
   });
+
+  const pair = form.watch('pair');
+  const selectedMarket =
+    markets.find((item) => item.symbol === pair) ?? markets[0] ?? null;
+
+  function syncUrl(nextSymbol: string, nextProviderId: string | null) {
+    const params = new URLSearchParams();
+    if (nextSymbol) params.set('symbol', nextSymbol);
+    if (nextProviderId) params.set('provider_id', nextProviderId);
+    const query = params.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname, {
+      scroll: false,
+    });
+  }
+
+  function refreshPortfolio(nextProviderId: string | null) {
+    if (!nextProviderId) {
+      setPortfolio(null);
+      setPositions([]);
+      setPortfolioError('Connect a provider to view equity and trade.');
+      return;
+    }
+
+    startPortfolioLoad(async () => {
+      const [portfolioResult, positionsResult] = await Promise.all([
+        getPortfolioAction({ provider_id: nextProviderId }),
+        getPortfolioPositionsAction(nextProviderId),
+      ]);
+
+      if (!portfolioResult.ok) {
+        setPortfolio(null);
+        setPortfolioError(portfolioResult.message);
+      } else {
+        setPortfolio(portfolioResult.data);
+        setPortfolioError(null);
+      }
+
+      if (positionsResult.ok) {
+        setPositions(positionsResult.data);
+      } else {
+        setPositions([]);
+      }
+    });
+  }
+
+  function refreshSignal(symbol: string) {
+    void getSignalsAction({
+      symbol: normalizeTradeSymbol(symbol),
+      status: 'active',
+      per_page: 1,
+    }).then((result) => {
+      if (!result.ok) {
+        setSignal(null);
+        return;
+      }
+      setSignal(result.data.items[0] ?? null);
+    });
+  }
+
+  function handleSymbolChange(nextSymbol: string, nextProviderId = providerId) {
+    const symbol = normalizeTradeSymbol(nextSymbol);
+    const market = markets.find((item) => item.symbol === symbol);
+    form.setValue('pair', symbol, { shouldValidate: true });
+    form.setValue(
+      'currency',
+      market?.quote_asset ?? form.getValues('currency'),
+    );
+    form.setValue('percent', 0);
+    syncUrl(symbol, nextProviderId);
+    refreshSignal(symbol);
+  }
+
+  function handleProviderChange(nextProviderId: string) {
+    setProviderId(nextProviderId);
+    syncUrl(pair, nextProviderId);
+    refreshPortfolio(nextProviderId);
+
+    startMarketsLoad(async () => {
+      const result = await getMarketsAction({
+        provider_id: nextProviderId,
+        per_page: 50,
+        sort: 'volume',
+        direction: 'desc',
+      });
+      if (!result.ok) {
+        toast.error(result.message);
+        return;
+      }
+      const nextMarkets = result.data.items.filter((item) => item.is_tradable);
+      setMarkets(nextMarkets);
+      const stillExists = nextMarkets.some((item) => item.symbol === pair);
+      if (!stillExists && nextMarkets[0]) {
+        const nextMarket = nextMarkets[0];
+        form.setValue('pair', nextMarket.symbol, { shouldValidate: true });
+        form.setValue('currency', nextMarket.quote_asset);
+        form.setValue('percent', 0);
+        syncUrl(nextMarket.symbol, nextProviderId);
+        refreshSignal(nextMarket.symbol);
+      }
+    });
+  }
+
+  function handleApplySignal(next: Signal) {
+    const symbol = normalizeTradeSymbol(next.symbol);
+    handleSymbolChange(symbol);
+    form.setValue('side', next.side.toLowerCase() === 'buy' ? 'buy' : 'sell');
+    if (next.entry_low != null || next.entry_high != null) {
+      form.setValue('orderType', 'limit');
+      const mid =
+        next.entry_low != null && next.entry_high != null
+          ? (next.entry_low + next.entry_high) / 2
+          : (next.entry_low ?? next.entry_high ?? next.price);
+      form.setValue('limitPrice', String(mid), { shouldValidate: true });
+    } else {
+      form.setValue('orderType', 'market');
+    }
+    setTab('trade');
+    toast.success('Signal applied to the order ticket.');
+  }
+
+  const [focusToken, setFocusToken] = useState(0);
+
+  function startNewTrade(orderType: 'market' | 'limit' = 'market') {
+    const market = selectedMarket;
+    const price =
+      market?.price != null && market.price > 0 ? String(market.price) : '';
+
+    form.reset({
+      pair: market?.symbol ?? initialData.initialSymbol,
+      orderType,
+      side: 'buy',
+      amount: '',
+      currency: market?.quote_asset ?? 'USDT',
+      percent: 0,
+      limitPrice: orderType === 'limit' ? price : '',
+    });
+    setTab('trade');
+    setFocusToken((value) => value + 1);
+    toast.success(
+      orderType === 'limit'
+        ? 'New limit order ready — enter amount and confirm.'
+        : 'New market order ready — enter amount and confirm.',
+    );
+  }
+
+  useEffect(() => {
+    setPortfolio(initialData.portfolio);
+    setPositions(initialData.positions);
+    setMarkets(initialData.markets);
+    setSignal(initialData.signal);
+    setProviderId(initialData.initialProviderId);
+  }, [initialData]);
+
+  const accountTriggerLabel = selectedAccount?.label ?? 'All Accounts';
 
   return (
     <div className="flex flex-col gap-4 sm:gap-5">
@@ -70,7 +336,12 @@ export function TradesView() {
         </Button>
       </div>
 
-      <AccountSummary />
+      <AccountSummary
+        portfolio={portfolio}
+        account={selectedAccount}
+        loading={loadingPortfolio}
+        error={portfolioError}
+      />
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="bg-muted flex items-center gap-1 rounded-xl p-1">
@@ -92,25 +363,141 @@ export function TradesView() {
         </div>
 
         <div className="flex items-center gap-2">
-          <Button variant="outline" className="rounded-xl">
-            All Accounts
-            <ChevronDown />
-          </Button>
-          <Button size="icon" className="rounded-xl" aria-label="New trade">
-            <Plus />
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={
+                <Button
+                  variant="outline"
+                  className="bg-card h-10 min-w-42 justify-between rounded-[12px]! px-3"
+                />
+              }
+            >
+              <span className="truncate">{accountTriggerLabel}</span>
+              <ChevronDown className="text-muted-foreground size-4 shrink-0" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="min-w-56 rounded-xl">
+              <DropdownMenuGroup>
+                <DropdownMenuLabel>Trading account</DropdownMenuLabel>
+                {connectedAccounts.length > 0 ? (
+                  <DropdownMenuRadioGroup
+                    value={providerId ?? undefined}
+                    onValueChange={(value) => {
+                      if (value) handleProviderChange(value);
+                    }}
+                  >
+                    {connectedAccounts.map((account) => (
+                      <DropdownMenuRadioItem
+                        key={account.provider_id}
+                        value={account.provider_id}
+                        className="rounded-lg"
+                      >
+                        <span className="flex min-w-0 flex-1 flex-col">
+                          <span className="truncate font-medium">
+                            {account.label}
+                          </span>
+                          <span className="text-muted-foreground text-xs capitalize">
+                            {account.environment}
+                            {account.is_default ? ' · Default' : ''}
+                          </span>
+                        </span>
+                      </DropdownMenuRadioItem>
+                    ))}
+                  </DropdownMenuRadioGroup>
+                ) : (
+                  <DropdownMenuItem disabled className="rounded-lg">
+                    No connected accounts
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="rounded-lg"
+                onClick={() => router.push('/accounts')}
+              >
+                <Link2 className="size-4" />
+                Manage accounts
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={
+                <Button
+                  size="icon"
+                  className="size-10 shrink-0 rounded-[12px]!"
+                  aria-label="New trade"
+                />
+              }
+            >
+              <Plus className="size-4" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="min-w-52 rounded-xl">
+              <DropdownMenuGroup>
+                <DropdownMenuLabel>Start a new trade</DropdownMenuLabel>
+                <DropdownMenuItem
+                  className="rounded-lg"
+                  onClick={() => startNewTrade('market')}
+                >
+                  <Rocket className="size-4" />
+                  New market order
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="rounded-lg"
+                  onClick={() => startNewTrade('limit')}
+                >
+                  <SlidersHorizontal className="size-4" />
+                  New limit order
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+              {selectedMarket ? (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem disabled className="rounded-lg text-xs">
+                    Using{' '}
+                    {selectedMarket.display_symbol || selectedMarket.symbol}
+                  </DropdownMenuItem>
+                </>
+              ) : null}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
       <FormProvider {...form}>
         {tab === 'trade' ? (
-          <TradeOrderPanel />
+          <TradeOrderPanel
+            markets={markets}
+            market={selectedMarket}
+            providerId={providerId}
+            buyingPower={portfolio?.buying_power ?? 0}
+            positions={positions}
+            currency={portfolio?.currency ?? 'USD'}
+            signal={signal}
+            focusToken={focusToken}
+            onSymbolChange={(symbol) => {
+              handleSymbolChange(symbol);
+              setTab('trade');
+            }}
+            onApplySignal={handleApplySignal}
+            onPlaced={() => refreshPortfolio(providerId)}
+          />
         ) : (
-          <div className="mx-auto w-full max-w-xl">
-            <OpenPositions />
-          </div>
+          <OpenPositions
+            positions={positions}
+            currency={portfolio?.currency ?? 'USD'}
+            onSelectSymbol={(symbol) => {
+              handleSymbolChange(symbol);
+              setTab('trade');
+              setFocusToken((value) => value + 1);
+            }}
+          />
         )}
       </FormProvider>
+
+      {loadingMarkets ? (
+        <p className="text-muted-foreground text-xs">Updating markets…</p>
+      ) : null}
     </div>
   );
 }

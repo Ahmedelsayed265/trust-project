@@ -16,23 +16,29 @@ import {
 } from '@/components/ui/sheet';
 import { placeOrderAction } from '@/features/orders/actions/get-orders';
 import type { OrderSummaryPreviewState } from '@/features/trades/hooks/use-order-summary-preview';
+import { isQuoteAmountCurrency } from '@/features/trades/lib/trade-symbol';
 import {
   parseAmount,
   type OrderFormValues,
 } from '@/features/trades/schemas/order';
-import { formatMoney, useTrading } from '@/shared/trading';
+import { formatMoney } from '@/shared/trading';
 
 export function PlaceOrderButton({
   preview,
+  providerId,
+  quoteAsset,
   disabled,
   disabledLabel,
+  onPlaced,
 }: {
   preview: OrderSummaryPreviewState;
+  providerId: string | null;
+  quoteAsset: string;
   disabled?: boolean;
   disabledLabel?: string;
+  onPlaced?: () => void;
 }) {
   const form = useFormContext<OrderFormValues>();
-  const { activeProviderId, refresh } = useTrading();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition();
@@ -40,6 +46,10 @@ export function PlaceOrderButton({
 
   function openReview() {
     void form.handleSubmit(() => {
+      if (!providerId) {
+        toast.error('Connect a trading account first.');
+        return;
+      }
       if (!summary) {
         toast.error('Wait for the order preview to finish updating.');
         return;
@@ -49,18 +59,21 @@ export function PlaceOrderButton({
   }
 
   function onConfirm() {
+    if (!providerId) return;
+
     const values = form.getValues();
     const amount = parseAmount(values.amount);
     const limitPrice = parseAmount(values.limitPrice ?? '');
+    const useQuote = isQuoteAmountCurrency(values.currency, quoteAsset);
 
     startTransition(async () => {
       const result = await placeOrderAction({
-        provider_id: activeProviderId,
+        provider_id: providerId,
         symbol: values.pair,
         side: values.side,
         type: values.orderType,
-        quote_amount: values.currency === 'USDT' ? amount : undefined,
-        qty: values.currency === 'BTC' ? amount : undefined,
+        quote_amount: useQuote ? amount : undefined,
+        qty: useQuote ? undefined : amount,
         limit_price: values.orderType === 'limit' ? limitPrice : undefined,
       });
 
@@ -84,7 +97,7 @@ export function PlaceOrderButton({
       setOpen(false);
       form.setValue('amount', '');
       form.setValue('percent', 0);
-      void refresh();
+      onPlaced?.();
       router.refresh();
     });
   }

@@ -8,7 +8,7 @@ import {
   parseAmount,
   type OrderFormValues,
 } from '@/features/trades/schemas/order';
-import { useTrading } from '@/shared/trading';
+import { isQuoteAmountCurrency } from '@/features/trades/lib/trade-symbol';
 
 const DEBOUNCE_MS = 300;
 
@@ -18,9 +18,11 @@ export type OrderSummaryPreviewState = {
   loading: boolean;
 };
 
-export function useOrderSummaryPreview(): OrderSummaryPreviewState {
+export function useOrderSummaryPreview(options: {
+  providerId: string | null;
+  quoteAsset: string;
+}): OrderSummaryPreviewState {
   const form = useFormContext<OrderFormValues>();
-  const { activeProviderId } = useTrading();
   const values = form.watch();
 
   const [summary, setSummary] = useState<OrderSummaryPreview | null>(null);
@@ -30,12 +32,17 @@ export function useOrderSummaryPreview(): OrderSummaryPreviewState {
   const amount = parseAmount(values.amount);
   const limitPrice = parseAmount(values.limitPrice ?? '');
   const canPreview =
-    amount > 0 && !(values.orderType === 'limit' && limitPrice <= 0);
+    Boolean(options.providerId) &&
+    amount > 0 &&
+    !(values.orderType === 'limit' && limitPrice <= 0);
 
   useEffect(() => {
-    if (!canPreview) return;
+    if (!canPreview || !options.providerId) {
+      return;
+    }
 
     let active = true;
+    const useQuote = isQuoteAmountCurrency(values.currency, options.quoteAsset);
 
     const timer = window.setTimeout(() => {
       if (!active) return;
@@ -43,12 +50,12 @@ export function useOrderSummaryPreview(): OrderSummaryPreviewState {
       setLoading(true);
 
       void previewOrderSummaryAction({
-        provider_id: activeProviderId,
+        provider_id: options.providerId ?? undefined,
         symbol: values.pair,
         side: values.side,
         type: values.orderType,
-        quote_amount: values.currency === 'USDT' ? amount : undefined,
-        qty: values.currency === 'BTC' ? amount : undefined,
+        quote_amount: useQuote ? amount : undefined,
+        qty: useQuote ? undefined : amount,
         limit_price: values.orderType === 'limit' ? limitPrice : undefined,
       }).then((result) => {
         if (!active) return;
@@ -71,10 +78,11 @@ export function useOrderSummaryPreview(): OrderSummaryPreviewState {
       window.clearTimeout(timer);
     };
   }, [
-    activeProviderId,
     amount,
     canPreview,
     limitPrice,
+    options.providerId,
+    options.quoteAsset,
     values.currency,
     values.orderType,
     values.pair,

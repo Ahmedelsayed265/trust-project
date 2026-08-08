@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const orderSchema = z
   .object({
-    pair: z.string().min(1),
+    pair: z.string().min(1, 'Select a market'),
     orderType: z.enum(['market', 'limit']),
     side: z.enum(['buy', 'sell']),
     amount: z
@@ -16,7 +16,7 @@ export const orderSchema = z
           message: 'Enter a valid amount',
         },
       ),
-    currency: z.enum(['USDT', 'BTC']),
+    currency: z.string().min(1, 'Currency is required'),
     limitPrice: z.string().optional(),
     percent: z.number().min(0).max(100),
   })
